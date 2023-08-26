@@ -1,0 +1,8 @@
+{
+	"compilerOptions": {
+		"types": [
+			"@ttou/uview-typings/v26",
+			"@ttou/uview-typings/refs"
+		]
+	}
+}
