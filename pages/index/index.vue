@@ -17,19 +17,16 @@
 				<u-form-item label="D" prop="option_d" label-width="80">
 					<u-input v-model="quiz.option_d" />
 				</u-form-item>
-				<button @click="onUpdateOne" :data-id="quiz?.id">更新本题</button>
-			</view>
-
-			<view class="uni-btn-submit">
-				<button type="warn" @click="onSubmitAll">更新全部</button>
+				<u-form-item label=" " label-width="80">
+					<button style="width: 100%;" class="btn" @click="onAddOne" v-if="quiz?.init" :data-id="quiz?.id">新建</button>
+					<button style="width: 100%;" class="btn" @click="onUpdateOne" v-if="!quiz?.init" :data-id="quiz?.id"
+						type="primary">更新</button>
+				</u-form-item>
 			</view>
 		</u-form>
 
 		<view class="uni-btn-new">
-			<button type="primary" @click="produceOne">新建一题</button>
-		</view>
-		<view class="uni-btn-new">
-			<button type="primary" @click="onTest">测试</button>
+			<button type="warn" @click="produceOne">新建一题</button>
 		</view>
 		<u-toast ref="uToast"></u-toast>
 	</view>
@@ -59,42 +56,55 @@
 				return rsp.result.data;
 			},
 			// 更新一条
-			onUpdateOne(evt : any) {
+			async onUpdateOne(evt : any) {
+				const id_to_update : string = evt.target.dataset.id;
+				console.log("id", evt.target.dataset.id);
 				console.log("quizList", this.quizList);
-			},
-			// 提交所有
-			async onSubmitAll(e : any) {
-				console.log('onSubmitAll quizList', this.quizList)
-				const promises = this.quizList.reverse().map((data) => {
-					return wx.cloud.callFunction({
-						name: 'addQuiz',
-						data
-					})
+				const data = this.quizList.find(v => v.id === id_to_update);
+				const rsp : any = await wx.cloud.callFunction({
+					name: 'updateQuiz',
+					data
 				})
-				const rsp : any[] = await Promise.all(promises);
-				console.log('rsp', rsp);
-				const result = rsp.every((v : any) => v.result?.errMsg === 'collection.add:ok');
+				console.log("onUpdateOne rsp", rsp);
+				const result = rsp.errMsg === "cloud.callFunction:ok";
 				if (result) {
 					(this.$refs.uToast as any).show({
 						type: 'success',
 						icon: false,
-						message: "提交成功",
+						message: "更新成功",
+					})
+				}
+			},
+			// 提交所有
+			async onAddOne(e : any) {
+				const id_to_add : string = e.target.dataset.id;
+				this.quizList.forEach(v => {
+					if (v.id === id_to_add) {
+						v.init = false;
+					}
+				});
+				const data = this.quizList.find(v => v.id === id_to_add);
+				const rsp : any = await wx.cloud.callFunction({
+					name: 'addQuiz',
+					data: { ...data, init: false }
+				})
+				console.log('onAddOne rsp', rsp);
+				const result = rsp.result?.errMsg === 'collection.add:ok';
+				if (result) {
+					(this.$refs.uToast as any).show({
+						type: 'success',
+						icon: false,
+						message: "新建成功",
 					})
 				}
 			},
 			// 生产一条
 			produceOne() {
 				this.quizList.push({
+					init: true,
 					id: generateUUID()
 				})
 			},
-			onTest() {
-				(this.$refs.uToast as any).show({
-					type: 'success',
-					icon: false,
-					message: "提交成功",
-				})
-			}
 		}
 	}
 </script>
@@ -113,21 +123,26 @@
 				width: 600rpx;
 				margin-bottom: 60rpx;
 
-				:deep(.u-form-item__body__left) {
-					width: 100rpx;
-				}
-
 				.quiz {
 					margin-bottom: 40rpx;
 
 					.title {
-						color: royalblue;
+						color: red;
 					}
 
 					.uni-form-item {
+						background-color: yellow;
+
 						.u-form-item__body {
-							.u-form-item__body__left__content {
-								width: 100rpx !important;
+							.u-form-item__body__right {
+								.u-form-item__body__right__content {
+									.u-form-item__body__right__content__slot {
+										background-color: yellow;
+										button{
+											width: 100%;
+										}
+									}
+								}
 							}
 						}
 					}
