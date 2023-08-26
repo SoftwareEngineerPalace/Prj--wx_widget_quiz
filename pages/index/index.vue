@@ -60,7 +60,6 @@
 			},
 			// 更新一条
 			onUpdateOne(evt : any) {
-				console.log('onUpdateOne id', evt.target.dataset.id);
 				console.log("quizList", this.quizList);
 			},
 			// 提交所有
