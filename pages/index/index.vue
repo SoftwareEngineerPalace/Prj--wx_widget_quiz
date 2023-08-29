@@ -1,158 +1,37 @@
 <template>
-	<view class="first-chapter">
-		<u-form id="form-wrapper" labelPosition="left" :model="quizList" ref="form">
-			<view v-for="(quiz, index) in quizList" :key="quiz.id" :data-id="quiz.id" class="quiz">
-				<u-form-item label="题干" prop="title" label-width="80">
-					<u-input v-model="quiz.title" />
-				</u-form-item>
-				<u-form-item label="A" prop="option_a" label-width="80">
-					<u-input v-model="quiz.option_a" />
-				</u-form-item>
-				<u-form-item label="B" prop="option_b" label-width="80">
-					<u-input v-model="quiz.option_b" />
-				</u-form-item>
-				<u-form-item label="C" prop="option_c" label-width="80">
-					<u-input v-model="quiz.option_c" />
-				</u-form-item>
-				<u-form-item label="D" prop="option_d" label-width="80">
-					<u-input v-model="quiz.option_d" />
-				</u-form-item>
-				<u-form-item label=" " label-width="80">
-					<button style="width: 100%;" class="btn" @click="onAddOne" v-if="quiz?.init" :data-id="quiz?.id">新建</button>
-					<button style="width: 100%;" class="btn" @click="onUpdateOne" v-if="!quiz?.init" :data-id="quiz?.id"
-						type="primary">更新</button>
-				</u-form-item>
-			</view>
-		</u-form>
-
-		<view class="uni-btn-new">
-			<button type="warn" @click="produceOne">新建一题</button>
-		</view>
-		<u-toast ref="uToast"></u-toast>
+	<view class="main">
+		<button class="btn" @click="onJavaScript" type="primary">JavaScript</button>
+		<button class="btn" @click="onEcmaScript" type="primary">EcmaScript 6</button>
+		<button class="btn" @click="onJavaScriptCMS">JavaScript 后台</button>
+		<button class="btn" @click="onEcmaScriptCMS">EcmaScript 6 后台</button>
 	</view>
 </template>
 
-<script lang="ts">
-	import { generateUUID } from '../../common/utils';
-	export default {
-		data() {
-			return {
-				quizList: [],
-			}
-		},
-		async mounted() {
-			wx.cloud.init({
-				env: "quiz-0gb2aw2vb2850af4"
-			});
-			const data = await this.getAllQuiz();
-			this.quizList.push(...data);
-		},
-		methods: {
-			// 获取全部题目
-			async getAllQuiz() {
-				const rsp : any = await wx.cloud.callFunction({
-					name: 'getAllQuiz',
-				})
-				return rsp.result.data;
-			},
-			// 更新一条
-			async onUpdateOne(evt : any) {
-				const id_to_update : string = evt.target.dataset.id;
-				console.log("id", evt.target.dataset.id);
-				console.log("quizList", this.quizList);
-				const data = this.quizList.find(v => v.id === id_to_update);
-				const rsp : any = await wx.cloud.callFunction({
-					name: 'updateQuiz',
-					data
-				})
-				console.log("onUpdateOne rsp", rsp);
-				const result = rsp.errMsg === "cloud.callFunction:ok";
-				if (result) {
-					(this.$refs.uToast as any).show({
-						type: 'success',
-						icon: false,
-						message: "更新成功",
-					})
-				}
-			},
-			// 提交所有
-			async onAddOne(e : any) {
-				const id_to_add : string = e.target.dataset.id;
-				this.quizList.forEach(v => {
-					if (v.id === id_to_add) {
-						v.init = false;
-					}
-				});
-				const data = this.quizList.find(v => v.id === id_to_add);
-				const rsp : any = await wx.cloud.callFunction({
-					name: 'addQuiz',
-					data: { ...data, init: false }
-				})
-				console.log('onAddOne rsp', rsp);
-				const result = rsp.result?.errMsg === 'collection.add:ok';
-				if (result) {
-					(this.$refs.uToast as any).show({
-						type: 'success',
-						icon: false,
-						message: "新建成功",
-					})
-				}
-			},
-			// 生产一条
-			produceOne() {
-				this.quizList.push({
-					init: true,
-					id: generateUUID()
-				})
-			},
-		}
+<script setup lang="ts">
+	const onJavaScript = () => {
+
+	}
+	const onEcmaScript = () => {
+
+	}
+	const onJavaScriptCMS = () => {
+		uni.navigateTo({
+			url: '/pages/javascript/javascript'
+		})
+	}
+	const onEcmaScriptCMS = () => {
+
 	}
 </script>
 
-<style lang="scss">
-	page {
-		min-height: 100vh;
+<style lang="scss" scoped>
+	.main {
+		display: flex;
+		flex-direction: column;
 
-		.first-chapter {
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			justify-content: center;
-
-			.u-form {
-				width: 600rpx;
-				margin-bottom: 60rpx;
-
-				.quiz {
-					margin-bottom: 40rpx;
-
-					.title {
-						color: red;
-					}
-
-					.uni-form-item {
-						background-color: yellow;
-
-						.u-form-item__body {
-							.u-form-item__body__right {
-								.u-form-item__body__right__content {
-									.u-form-item__body__right__content__slot {
-										background-color: yellow;
-										button{
-											width: 100%;
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-
-				.uni-form-item {
-					display: flex;
-					flex-direction: row;
-				}
-			}
+		.btn {
+			width: 60%;
+			margin-bottom: 30rpx;
 		}
 	}
 </style>

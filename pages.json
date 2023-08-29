@@ -8,8 +8,24 @@
 		{
 			"path": "pages/index/index",
 			"style": {
-				"navigationBarTitleText": "uni-app"
+				"navigationBarTitleText": "Frond End Quiz",
+				"enablePullDownRefresh": false
 			}
+		},
+		{
+			"path": "pages/javascript/javascript",
+			"style": {
+				"navigationBarTitleText": "JavaScript",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/es6cms/es6cms",
+			"style": {
+				"navigationBarTitleText": "ECMAScript 6.0",
+				"enablePullDownRefresh": false
+			}
+
 		}
 	],
 	"globalStyle": {

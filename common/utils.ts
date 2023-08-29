@@ -7,4 +7,13 @@ const generateUUID = () => {
 	});
 	return uuid;
 }
-export { generateUUID }
+
+const showToast = (self : any, message : string) => {
+	(self.$refs.uToast as any).show({
+		type: 'success',
+		icon: false,
+		message,
+	});
+}
+
+export { generateUUID, showToast }
