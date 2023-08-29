@@ -1,7 +1,7 @@
 <template>
 	<view class="main">
-		<button class="btn" @click="onJavaScript" type="primary">JavaScript</button>
-		<button class="btn" @click="onEcmaScript" type="primary">EcmaScript 6</button>
+		<button class="btn" @click="onJavaScript" type="primary">JavaScript 答题</button>
+		<button class="btn" @click="onEcmaScript" type="primary">EcmaScript 6 答题</button>
 		<button class="btn" @click="onJavaScriptCMS">JavaScript 后台</button>
 		<button class="btn" @click="onEcmaScriptCMS">EcmaScript 6 后台</button>
 	</view>
@@ -9,18 +9,24 @@
 
 <script setup lang="ts">
 	const onJavaScript = () => {
-
+		uni.navigateTo({
+			url: '/pages/javascriptquiz/javascriptquiz'
+		})
 	}
 	const onEcmaScript = () => {
-
+		uni.navigateTo({
+			url: '/pages/es6quiz/es6quiz'
+		})
 	}
 	const onJavaScriptCMS = () => {
 		uni.navigateTo({
-			url: '/pages/javascript/javascript'
+			url: '/pages/javascriptcms/javascriptcms'
 		})
 	}
 	const onEcmaScriptCMS = () => {
-
+		uni.navigateTo({
+			url: '/pages/es6cms/es6cms'
+		})
 	}
 </script>
 

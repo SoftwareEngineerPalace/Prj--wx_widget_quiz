@@ -64,7 +64,6 @@
 					name: 'updateQuiz',
 					data
 				})
-				console.log("onUpdateOne rsp", rsp);
 				const result = rsp.errMsg === "cloud.callFunction:ok";
 				if (result) {
 					showToast(this, "更新成功")

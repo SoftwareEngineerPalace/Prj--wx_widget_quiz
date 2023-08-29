@@ -13,16 +13,30 @@
 			}
 		},
 		{
-			"path": "pages/javascript/javascript",
+			"path": "pages/javascriptcms/javascriptcms",
 			"style": {
-				"navigationBarTitleText": "JavaScript",
+				"navigationBarTitleText": "JavaScript 后台",
 				"enablePullDownRefresh": false
 			}
 		},
 		{
 			"path": "pages/es6cms/es6cms",
 			"style": {
-				"navigationBarTitleText": "ECMAScript 6.0",
+				"navigationBarTitleText": "ECMAScript 6.0 后台",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/javascriptquiz/javascriptquiz",
+			"style": {
+				"navigationBarTitleText": "JS",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/es6quiz/es6quiz",
+			"style": {
+				"navigationBarTitleText": "ES6",
 				"enablePullDownRefresh": false
 			}
 
