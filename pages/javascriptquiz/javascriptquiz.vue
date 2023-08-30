@@ -1,6 +1,5 @@
 <template>
 	<view class="quiz">
-		<!-- <u-text class="title" type="primary" :text="curQuiz.title"></u-text> -->
 		<view class="title">{{ quiz_title }}</view>
 		<view v-bind:class="{ 'option': true, 
 			selected: option.selected, 
@@ -9,8 +8,11 @@
 			v-for="(option) in checkboxList" :key="option.id" @click="onClickOption">
 			{{ option.id + "、 " + option.value }}
 		</view>
-		<button type="primary" v-if="!curQuiz.submitted" class="btn-submit" @click="onSubmit">提交</button>
-		<button type="primary" v-if="curQuiz.submitted" class="btn-next" @click="onNext">下一题</button>
+		<view class="group-btn">
+			<button type="default" class="btn" v-show="quizController.getCurQuizIndex() > 0" @click="onPrev">上一题</button>
+			<button type="primary" v-show="!curQuiz.submitted" class="btn" @click="onSubmit">提交</button>
+			<button type="primary" v-show="curQuiz.submitted" class="btn" @click="onNext">下一题</button>
+		</view>
 	</view>
 </template>
 
@@ -48,6 +50,11 @@
 		return index === -1 ? '' : result;
 	})
 
+	const quiz_index = computed(() => {
+		const index = quizController.getCurQuizIndex();
+		return index;
+	})
+
 	const getAllQuizs = async () => {
 		const rsp : any = await wx.cloud.callFunction({
 			name: 'getAllQuiz',
@@ -59,9 +66,18 @@
 		curQuiz.value.submitted = true;
 	}
 
+	const onPrev = () => {
+		curQuiz.value = { ...quizController.goPreview(), submitted: false };
+		updateQuiz(curQuiz.value);
+	}
+
 	const onNext = () => {
 		curQuiz.value = { ...quizController.goNext(), submitted: false };
-		const { option_a, option_b, option_c, option_d, answer } = curQuiz.value;
+		updateQuiz(curQuiz.value);
+	}
+
+	const updateQuiz = (quiz : any) => {
+		const { option_a, option_b, option_c, option_d, answer } = quiz;
 		checkboxList = Object.entries({ option_a, option_b, option_c, option_d }).map(v => {
 			const id = v[0].charAt(v[0].length - 1).toUpperCase();
 			const option = {
@@ -130,18 +146,17 @@
 				}
 			}
 
-			.btn-submit {
-				width: 50%;
-				margin-top: 30rpx;
-				font-size: 40rpx;
-				border-radius: 20rpx;
-			}
+			.group-btn {
+				display: flex;
+				width: 100%;
+				flex-direction: row;
 
-			.btn-next {
-				width: 50%;
-				margin-top: 30rpx;
-				font-size: 40rpx;
-				border-radius: 20rpx;
+				.btn {
+					width: 40%;
+					margin-top: 30rpx;
+					font-size: 40rpx;
+					border-radius: 20rpx;
+				}
 			}
 		}
 	}
