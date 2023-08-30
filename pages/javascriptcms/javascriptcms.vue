@@ -53,6 +53,7 @@
 			async getAllQuiz() {
 				const rsp : any = await wx.cloud.callFunction({
 					name: 'getAllQuiz',
+					data: { dbName: 'javascript' }
 				})
 				return rsp.result.data;
 			},
@@ -62,7 +63,7 @@
 				const data = this.quizList.find(v => v.id === id_to_update);
 				const rsp : any = await wx.cloud.callFunction({
 					name: 'updateQuiz',
-					data
+					data: { ...data, dbName: 'javascript' }
 				})
 				const result = rsp.errMsg === "cloud.callFunction:ok";
 				if (result) {
@@ -80,7 +81,7 @@
 				const data = this.quizList.find(v => v.id === id_to_add);
 				const rsp : any = await wx.cloud.callFunction({
 					name: 'addQuiz',
-					data: { ...data, init: false }
+					data: { ...data, init: false, dbName: 'javascript' }
 				})
 				const result = rsp.result?.errMsg === 'collection.add:ok';
 				if (result) {
@@ -91,7 +92,8 @@
 			produceOne() {
 				this.quizList.push({
 					init: true,
-					id: generateUUID()
+					id: generateUUID(),
+					title: '下面关于的描述中，正确的有哪些'
 				})
 			},
 		}

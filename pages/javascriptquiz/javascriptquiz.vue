@@ -9,7 +9,8 @@
 			{{ option.id + "、 " + option.value }}
 		</view>
 		<view class="group-btn">
-			<button type="default" class="btn" v-show="quizController.getCurQuizIndex() > 0" @click="onPrev">上一题</button>
+			<button type="default" class="btn" v-show="quizController.getCurQuizIndex() > 0"
+				@click="onPrev">上一题</button>
 			<button type="primary" v-show="!curQuiz.submitted" class="btn" @click="onSubmit">提交</button>
 			<button type="primary" v-show="curQuiz.submitted" class="btn" @click="onNext">下一题</button>
 		</view>
@@ -50,14 +51,10 @@
 		return index === -1 ? '' : result;
 	})
 
-	const quiz_index = computed(() => {
-		const index = quizController.getCurQuizIndex();
-		return index;
-	})
-
 	const getAllQuizs = async () => {
 		const rsp : any = await wx.cloud.callFunction({
 			name: 'getAllQuiz',
+			data: { dbName: 'javascript' }
 		});
 		return rsp.result.data;
 	}

@@ -34,6 +34,7 @@
 	.main {
 		display: flex;
 		flex-direction: column;
+		padding-top: 30rpx;;
 
 		.btn {
 			width: 60%;
