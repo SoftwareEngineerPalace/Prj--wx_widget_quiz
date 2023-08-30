@@ -2,20 +2,23 @@
 	<view class="first-chapter">
 		<u-form id="form-wrapper" labelPosition="left" :model="quizList" ref="form">
 			<view v-for="(quiz, index) in quizList" :key="quiz.id" :data-id="quiz.id" class="quiz">
-				<u-form-item label="题干" prop="title" label-width="80">
-					<u-input v-model="quiz.title" />
+				<u-form-item :label="`第${index + 1}题`" prop="title" label-width="80">
+					<u-textarea autoHeight v-model="quiz.title"></u-textarea>
 				</u-form-item>
 				<u-form-item label="A" prop="option_a" label-width="80">
-					<u-input v-model="quiz.option_a" />
+					<u-textarea autoHeight v-model="quiz.option_a" ></u-textarea>
 				</u-form-item>
 				<u-form-item label="B" prop="option_b" label-width="80">
-					<u-input v-model="quiz.option_b" />
+					<u-textarea autoHeight v-model="quiz.option_b" ></u-textarea>
 				</u-form-item>
 				<u-form-item label="C" prop="option_c" label-width="80">
-					<u-input v-model="quiz.option_c" />
+					<u-textarea autoHeight v-model="quiz.option_c" ></u-textarea>
 				</u-form-item>
 				<u-form-item label="D" prop="option_d" label-width="80">
-					<u-input v-model="quiz.option_d" />
+					<u-textarea autoHeight v-model="quiz.option_d" ></u-textarea>
+				</u-form-item>
+				<u-form-item label="答案" prop="answer" label-width="80">
+					<u-textarea autoHeight v-model="quiz.answer" ></u-textarea>
 				</u-form-item>
 				<u-form-item label=" " label-width="80">
 					<button style="width: 100%;" class="btn" @click="onAddOne" v-if="quiz?.init"
@@ -73,19 +76,20 @@
 			//
 			async onAddOne(e : any) {
 				const id_to_add : string = e.target.dataset.id;
-				this.quizList.forEach(v => {
-					if (v.id === id_to_add) {
-						v.init = false;
-					}
-				});
 				const data = this.quizList.find(v => v.id === id_to_add);
+				const index = this.quizList.findIndex(v => v.id === id_to_add);
 				const rsp : any = await wx.cloud.callFunction({
 					name: 'addQuiz',
-					data: { ...data, init: false, dbName: 'javascript' }
+					data: { ...data, init: false, dbName: 'javascript', index }
 				})
 				const result = rsp.result?.errMsg === 'collection.add:ok';
 				if (result) {
-					showToast(this, "新建成功")
+					showToast(this, "新建成功");
+					this.quizList.forEach(v => {
+						if (v.id === id_to_add) {
+							v.init = false;
+						}
+					});
 				}
 			},
 			// 生产一条
