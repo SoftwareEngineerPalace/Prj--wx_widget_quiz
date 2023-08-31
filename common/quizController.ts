@@ -8,6 +8,10 @@ class QuizController {
 		return this._curQuizIndex;
 	}
 
+	public getQuizCount(){
+		return this._quizCount;
+	}
+
 	private static _instance : QuizController;
 
 	public static getInstance() : QuizController {
@@ -25,7 +29,11 @@ class QuizController {
 	setQuizList = (list : any[] = []) => {
 		this._quizList = list.concat();
 		this._quizCount = list.length;
-		console.log('setQuizList', list.length);
+		this._curQuizIndex = -1;
+	}
+	
+	hasNext = ()=> {
+		return this._curQuizIndex < this._quizCount - 1;
 	}
 
 	goNext = () => {

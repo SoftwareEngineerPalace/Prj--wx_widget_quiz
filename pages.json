@@ -8,8 +8,9 @@
 		{
 			"path": "pages/index/index",
 			"style": {
-				"navigationBarTitleText": "Frond End Quiz",
-				"enablePullDownRefresh": false
+				"navigationBarTitleText": "阮一峰教程配套练习题",
+				"enablePullDownRefresh": false,
+				"navigationBarBackgroundColor": "#eeeeee"
 			}
 		},
 		{
@@ -24,14 +25,16 @@
 			"path": "pages/javascriptcms/javascriptcms",
 			"style": {
 				"navigationBarTitleText": "JavaScript 后台",
-				"enablePullDownRefresh": false
+				"enablePullDownRefresh": false,
+				"navigationBarBackgroundColor": "#eeeeee"
 			}
 		},
 		{
 			"path": "pages/es6cms/es6cms",
 			"style": {
 				"navigationBarTitleText": "ECMAScript 6.0 后台",
-				"enablePullDownRefresh": false
+				"enablePullDownRefresh": false,
+				"navigationBarBackgroundColor": "#eeeeee"
 			}
 		},
 
@@ -39,7 +42,8 @@
 			"path": "pages/es6quiz/es6quiz",
 			"style": {
 				"navigationBarTitleText": "ES6",
-				"enablePullDownRefresh": false
+				"enablePullDownRefresh": false,
+				"navigationBarBackgroundColor": "#eeeeee"
 			}
 
 		}

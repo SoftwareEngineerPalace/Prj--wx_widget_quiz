@@ -2,7 +2,7 @@
 	<view class="first-chapter">
 		<u-form id="form-wrapper" labelPosition="left" :model="quizList" ref="form">
 			<view v-for="(quiz, index) in quizList" :key="quiz.id" :data-id="quiz.id" class="quiz">
-				<u-form-item :label="`第${index + 1}题`" prop="title" label-width="80">
+				<u-form-item :label="`${index + 1}`" prop="title" label-width="80">
 					<u-textarea autoHeight v-model="quiz.title"></u-textarea>
 				</u-form-item>
 				<u-form-item label="A" prop="option_a" label-width="80">

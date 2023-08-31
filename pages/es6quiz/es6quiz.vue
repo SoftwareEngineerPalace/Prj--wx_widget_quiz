@@ -8,11 +8,13 @@
 			v-for="(option) in checkboxList" :key="option.id" @click="onClickOption">
 			{{ option.id + "、 " + option.value }}
 		</view>
-		<view class="group-btn">
+		<view class="group-btn" v-if="showGroupBtns">
 			<button type="default" class="btn" v-show="quizController.getCurQuizIndex() > 0"
 				@click="onPrev">上一题</button>
 			<button type="primary" v-show="!curQuiz.submitted" class="btn" @click="onSubmit">提交</button>
-			<button type="primary" v-show="curQuiz.submitted" class="btn" @click="onNext">下一题</button>
+			<button type="primary" v-show="curQuiz.submitted && quizController.hasNext() " class="btn"
+				@click="onNext">下一题</button>
+			<button type="default" class="btn" v-show="!quizController.hasNext()" @click="onPrev">完成</button>
 		</view>
 	</view>
 </template>
@@ -32,15 +34,15 @@
 
 	let checkboxList = reactive([]);
 
+	const showGroupBtns = ref(false);
+
 	const onClickOption = (evt : any) => {
-		console.log("onClickOption", evt.target.dataset.id);
 		const clicked_id = evt.target.dataset.id;
 		checkboxList.forEach((v : any) => {
 			if (v.id === clicked_id) {
 				v.selected = !v.selected;
 			}
 		})
-		console.log('checkboxList', checkboxList);
 	}
 
 	const quiz_title = computed(() => {
@@ -48,7 +50,7 @@
 		const indexStr : string = `第 ${(index + 1)} 题、`;
 		const titleStr : string = curQuiz.value.title;
 		let result : string = indexStr + titleStr;
-		return index === -1 ? '' : result;
+		return index === -1 || !titleStr ? '' : result;
 	})
 
 	const getAllQuizs = async () => {
@@ -85,6 +87,7 @@
 			};
 			return reactive(option);
 		})
+		showGroupBtns.value = true;
 	}
 
 	onMounted(async () => {
@@ -93,10 +96,7 @@
 		});
 		const data = await getAllQuizs();
 		quizList.value.push(...data);
-		// console.log("quizList", quizList.value);
-
 		quizController.setQuizList(data);
-
 		onNext();
 	})
 </script>
@@ -114,14 +114,14 @@
 			flex-direction: column;
 
 			.title {
-				font-size: 40rpx;
-				margin: 0rpx 20rpx 30rpx 20rpx;
+				font-size: 35rpx;
+				margin: 0 30rpx 30rpx 30rpx;
 				font-weight: 500;
 			}
 
 			.option {
 				font-size: 35rpx;
-				margin: 0 20rpx 20rpx 20rpx;
+				margin: 0 30rpx 30rpx 30rpx;
 				background-color: white;
 				border-radius: 20rpx;
 				padding: 20rpx;
@@ -149,10 +149,16 @@
 				flex-direction: row;
 
 				.btn {
+					font-size: 30rpx;
 					width: 40%;
 					margin-top: 30rpx;
 					font-size: 40rpx;
 					border-radius: 20rpx;
+					border: none;
+
+					&::after {
+						border: none;
+					}
 				}
 			}
 		}
