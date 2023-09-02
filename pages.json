@@ -47,7 +47,25 @@
 			}
 
 		}
-	],
+	    ,{
+            "path" : "pages/tscms/tscms",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "TypeScript",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/tsquiz/tsquiz",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "TypeScript",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+    ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "uni-app",
