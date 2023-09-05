@@ -16,7 +16,7 @@
 		{
 			"path": "pages/javascriptquiz/javascriptquiz",
 			"style": {
-				"navigationBarTitleText": "JS",
+				"navigationBarTitleText": "JavaScript",
 				"enablePullDownRefresh": false,
 				"navigationBarBackgroundColor": "#eeeeee"
 			}
@@ -41,7 +41,7 @@
 		{
 			"path": "pages/es6quiz/es6quiz",
 			"style": {
-				"navigationBarTitleText": "ES6",
+				"navigationBarTitleText": "ECMAScript 6.0",
 				"enablePullDownRefresh": false,
 				"navigationBarBackgroundColor": "#eeeeee"
 			}
@@ -51,7 +51,7 @@
             "path" : "pages/tscms/tscms",
             "style" :                                                                                    
             {
-                "navigationBarTitleText": "TypeScript",
+                "navigationBarTitleText": "TypeScript 后台",
                 "enablePullDownRefresh": false
             }
             

@@ -11,10 +11,14 @@
 		<view class="group-btn" v-if="showGroupBtns">
 			<button type="default" class="btn" v-show="quizController.getCurQuizIndex() > 0"
 				@click="onPrev">上一题</button>
-			<button type="primary" v-show="!curQuiz.submitted" class="btn" @click="onSubmit">提交</button>
+
+			<button type="primary" v-show="!curQuiz.submitted && quizController.hasNext()" class="btn"
+				@click="onSubmit">提交</button>
+
 			<button type="primary" v-show="curQuiz.submitted && quizController.hasNext() " class="btn"
 				@click="onNext">下一题</button>
-			<button type="default" class="btn" v-show="!quizController.hasNext()" @click="onPrev">完成</button>
+
+			<button type="default" class="btn" v-show="!quizController.hasNext()" @click="onSubmit">完成</button>
 		</view>
 	</view>
 </template>
@@ -47,10 +51,14 @@
 
 	const quiz_title = computed(() => {
 		const index = quizController.getCurQuizIndex();
-		const indexStr : string = `第 ${(index + 1)} 题、`;
+		const count = quizController.getQuizCount();
+		const indexStr : string = `${(index + 1)}/${count}、`;
 		const titleStr : string = curQuiz.value.title;
-		let result : string = indexStr + titleStr;
-		return index === -1 || !titleStr ? '' : result;
+		let full_title : string = indexStr + titleStr;
+		// console.log('full_title', full_title);
+		const result = index === -1 || !titleStr ? '' : full_title;
+		// console.log('result', result);
+		return result;
 	})
 
 	const getAllQuizs = async () => {
