@@ -6,7 +6,7 @@
 			isCorrect: curQuiz.submitted && option.isCorrect, 
 			isWrong: curQuiz.submitted && option.selected && !option.isCorrect}" :data-id="option.id"
 			v-for="(option) in checkboxList" :key="option.id" @click="onClickOption">
-			{{ option.id + "、 " + option.value }}
+			{{ option.id + ".  " + option.value }}
 		</view>
 		<view class="group-btn" v-if="showGroupBtns">
 			<button type="default" class="btn" v-show="quizController.getCurQuizIndex() > 0"
@@ -46,7 +46,7 @@
 	const quiz_title = computed(() => {
 		const index = quizController.getCurQuizIndex();
 		const count = quizController.getQuizCount();
-		const indexStr : string = `${(index + 1)}/${count}、`;
+		const indexStr : string = `${(index + 1)}/${count}. `;
 		const titleStr : string = curQuiz.value.title;
 		let full_title : string = indexStr + titleStr;
 		// console.log('full_title', full_title);

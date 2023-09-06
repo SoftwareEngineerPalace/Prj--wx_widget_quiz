@@ -1,13 +1,19 @@
 <template>
 	<view class="quiz">
-		<view class="title">{{ quiz_title }}</view>
-		<view v-bind:class="{ 'option': true, 
+		
+		<!-- 题目 -->
+		<text style="flex: none;" :size="`35rpx`" class="title">{{quiz_title}}</text>
+		
+		<!-- 4 个选项 -->
+		<text class="option" style="flex: none;" :size="`35rpx`" v-for="(option) in checkboxList" :key="option.id"
+			autoHeight v-bind:class="{ option: true, 
 			selected: option.selected, 
 			isCorrect: curQuiz.submitted && option.isCorrect, 
-			isWrong: curQuiz.submitted && option.selected && !option.isCorrect}" :data-id="option.id"
-			v-for="(option) in checkboxList" :key="option.id" @click="onClickOption">
-			{{ option.id + "、 " + option.value }}
-		</view>
+			isWrong: curQuiz.submitted && option.selected && !option.isCorrect}" :data-id="option.id" @click="onClickOption">
+			{{option.value}}
+		</text>
+
+		<!-- 控制进度按钮 -->
 		<view class="group-btn" v-if="showGroupBtns">
 			<button type="default" class="btn" v-show="quizController.getCurQuizIndex() > 0"
 				@click="onPrev">上一题</button>
@@ -18,6 +24,7 @@
 			<button type="default" class="btn" v-show="!quizController.hasNext()" @click="onSubmit">完成</button>
 		</view>
 	</view>
+
 </template>
 
 <script lang="ts" setup>
@@ -36,6 +43,7 @@
 	let checkboxList = reactive([]);
 
 	const onClickOption = (evt : any) => {
+		console.log("onClickOption evt", evt);
 		const clicked_id = evt.target.dataset.id;
 		checkboxList.forEach((v : any) => {
 			if (v.id === clicked_id) {
@@ -47,12 +55,10 @@
 	const quiz_title = computed(() => {
 		const index = quizController.getCurQuizIndex();
 		const count = quizController.getQuizCount();
-		const indexStr : string = `${(index + 1)}/${count}、`;
+		const indexStr : string = `${(index + 1)}/${count}. `;
 		const titleStr : string = curQuiz.value.title;
 		let full_title : string = indexStr + titleStr;
-		// console.log('full_title', full_title);
 		const result = index === -1 || !titleStr ? '' : full_title;
-		// console.log('result', result);
 		return result;
 	})
 
@@ -84,7 +90,7 @@
 			const id = v[0].charAt(v[0].length - 1).toUpperCase();
 			const option = {
 				id,
-				value: v[1],
+				value: `${id}. ${v[1]}`,
 				selected: false,
 				isCorrect: answer.includes(id),
 			};
@@ -114,9 +120,9 @@
 
 		.quiz {
 			width: 100%;
-			height: 100%;
 			display: flex;
 			flex-direction: column;
+			justify-content: flex-start;
 
 			.title {
 				font-size: 35rpx;
