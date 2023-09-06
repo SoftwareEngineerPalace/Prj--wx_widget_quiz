@@ -17,8 +17,9 @@
             "path" : "pages/cms/cms",
             "style" :                                                                                    
             {
-                "navigationBarTitleText": "后台",
-                "enablePullDownRefresh": false
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false,
+				"navigationBarBackgroundColor": "#eeeeee"
             }
         }
         ,{
@@ -26,7 +27,8 @@
             "style" :                                                                                    
             {
                 "navigationBarTitleText": "",
-                "enablePullDownRefresh": false
+                "enablePullDownRefresh": false,
+				"navigationBarBackgroundColor": "#eeeeee"
             }
             
         }
