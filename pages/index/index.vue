@@ -12,36 +12,37 @@
 <script setup lang="ts">
 	const onJavaScript = () => {
 		uni.navigateTo({
-			url: '/pages/javascriptquiz/javascriptquiz'
-		})
-	}
-	const onJavaScriptCMS = () => {
-		uni.navigateTo({
-			url: '/pages/javascriptcms/javascriptcms'
+			url: '/pages/quiz/quiz?quizType=javascript',
 		})
 	}
 	
+	const onJavaScriptCMS = () => {
+		uni.navigateTo({
+			url: '/pages/cms/cms?quizType=javascript'
+		})
+	}
 	
 	const onEcmaScript = () => {
 		uni.navigateTo({
-			url: '/pages/es6quiz/es6quiz'
-		})
-	}
-	const onEcmaScriptCMS = () => {
-		uni.navigateTo({
-			url: '/pages/es6cms/es6cms'
+			url: '/pages/quiz/quiz?quizType=es6'
 		})
 	}
 	
+	const onEcmaScriptCMS = () => {
+		uni.navigateTo({
+			url: '/pages/cms/cms?quizType=es6'
+		})
+	}
 	
 	const onTypeScript = ()=>{
 		uni.navigateTo({
-			url: '/pages/tsquiz/tsquiz'
+			url: '/pages/quiz/quiz?quizType=ts'
 		})
 	}
+	
 	const onTypeScriptCMS = ()=>{
 		uni.navigateTo({
-			url: '/pages/tscms/tscms'
+		url: '/pages/cms/cms?quizType=ts'
 		})
 	}
 	

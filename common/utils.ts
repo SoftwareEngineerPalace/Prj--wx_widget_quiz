@@ -16,4 +16,10 @@ const showToast = (self : any, message : string) => {
 	});
 }
 
-export { generateUUID, showToast }
+const quizNameDic = {
+	'javascript': "JavaScript",
+	'es6': "ECMAScript 6",
+	'ts': "TypeScript"
+}
+
+export { generateUUID, showToast, quizNameDic }

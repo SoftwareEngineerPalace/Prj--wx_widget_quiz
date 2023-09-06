@@ -6,25 +6,25 @@
 					<u-textarea autoHeight v-model="quiz.title"></u-textarea>
 				</u-form-item>
 				<u-form-item label="A" prop="option_a" label-width="80">
-					<u-textarea autoHeight v-model="quiz.option_a" maxlength="500"></u-textarea>
+					<u-textarea autoHeight v-model="quiz.option_a" maxlength="400"></u-textarea>
 				</u-form-item>
 				<u-form-item label="B" prop="option_b" label-width="80">
-					<u-textarea autoHeight v-model="quiz.option_b" maxlength="500"></u-textarea>
+					<u-textarea autoHeight v-model="quiz.option_b"></u-textarea>
 				</u-form-item>
 				<u-form-item label="C" prop="option_c" label-width="80">
-					<u-textarea autoHeight v-model="quiz.option_c" maxlength="500"></u-textarea>
+					<u-textarea autoHeight v-model="quiz.option_c"></u-textarea>
 				</u-form-item>
 				<u-form-item label="D" prop="option_d" label-width="80">
-					<u-textarea autoHeight v-model="quiz.option_d" maxlength="500"></u-textarea>
+					<u-textarea autoHeight v-model="quiz.option_d"></u-textarea>
 				</u-form-item>
 				<u-form-item label="答案" prop="answer" label-width="80">
-					<u-textarea autoHeight v-model="quiz.answer" maxlength="500"></u-textarea>
+					<u-input v-model="quiz.answer" />
 				</u-form-item>
 				<u-form-item label=" " label-width="80">
-					<button style="width: 100%;" class="btn" @click="onAddOne" v-if="quiz?.init" type="primary"
+					<button type="primary" style="width: 100%;" class="btn" @click="onAddOne" v-if="quiz?.init"
 						:data-id="quiz?.id">插入数据库</button>
-					<button style="width: 100%;" class="btn" @click="onUpdateOne" v-if="!quiz?.init" :data-id="quiz?.id"
-						type="primary">更新</button>
+					<button type="primary" style="width: 100%;" class="btn" @click="onUpdateOne" v-if="!quiz?.init"
+						:data-id="quiz?.id">更新</button>
 				</u-form-item>
 			</view>
 		</u-form>
@@ -37,26 +37,35 @@
 </template>
 
 <script lang="ts">
-	import { generateUUID, showToast } from '../../common/utils';
+	import { generateUUID, quizNameDic, showToast } from '../../common/utils';
 	export default {
 		data() {
 			return {
 				quizList: [],
+				dbName: ''
 			}
 		},
-		async mounted() {
+		async onLoad(evt) {
+			console.log("onLoad", evt);
+			uni.setNavigationBarTitle({ title: `${quizNameDic[evt.quizType]} 后台` });
 			wx.cloud.init({
 				env: "quiz-0gb2aw2vb2850af4"
 			});
-			const data = await this.getAllQuiz();
+			const data = await this.getAllQuiz(evt.quizType);
 			this.quizList.push(...data);
+		},
+		async mounted() {
+			console.log("mounted");
+		},
+		onUnload() {
+			uni.setNavigationBarTitle({ title: '' });
 		},
 		methods: {
 			// 获取全部题目
-			async getAllQuiz() {
-				const rsp : { result : any } = await wx.cloud.callFunction({
+			async getAllQuiz(dbName : string) {
+				const rsp : any = await wx.cloud.callFunction({
 					name: 'getAllQuiz',
-					data: { dbName: 'ts' }
+					data: { dbName }
 				})
 				return rsp.result.data;
 			},
@@ -66,7 +75,7 @@
 				const data = this.quizList.find(v => v.id === id_to_update);
 				const rsp : any = await wx.cloud.callFunction({
 					name: 'updateQuiz',
-					data: { ...data, dbName: 'ts' }
+					data: { ...data, dbName: this.dbName }
 				})
 				const result = rsp.errMsg === "cloud.callFunction:ok";
 				if (result) {
@@ -80,7 +89,7 @@
 				const index = this.quizList.findIndex(v => v.id === id_to_add);
 				const rsp : any = await wx.cloud.callFunction({
 					name: 'addQuiz',
-					data: { ...data, init: false, dbName: 'ts', index }
+					data: { ...data, init: false, dbName: this.dbName, index }
 				})
 				const result = rsp.result?.errMsg === 'collection.add:ok';
 				if (result) {
@@ -134,9 +143,9 @@
 									.u-form-item__body__right__content__slot {
 										background-color: yellow;
 
-										// button {
-										// 	width: 100%;
-										// }
+										button {
+											width: 100%;
+										}
 									}
 								}
 							}

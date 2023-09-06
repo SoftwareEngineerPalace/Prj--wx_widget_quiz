@@ -1,9 +1,13 @@
 <template>
 	<view class="quiz">
-		
+
 		<!-- 题目 -->
-		<text style="flex: none;" :size="`35rpx`" class="title">{{quiz_title}}</text>
-		
+		<view class="group-title">
+			<text :size="`35rpx`" class="index">{{index_str}}</text>
+			<text>{{`&nbsp;&nbsp;`}}</text>
+			<text :size="`35rpx`" class="title">{{title_str}}</text>
+		</view>
+
 		<!-- 4 个选项 -->
 		<text class="option" style="flex: none;" :size="`35rpx`" v-for="(option) in checkboxList" :key="option.id"
 			autoHeight v-bind:class="{ option: true, 
@@ -32,9 +36,11 @@
 		onMounted,
 		reactive,
 		ref,
-		computed
+		computed,
 	} from 'vue';
 	import quizController from '../../common/quizController';
+	import { onLoad, onUnload } from '@dcloudio/uni-app';
+	import { quizNameDic } from '../../common/utils';
 
 	const quizList = ref([]);
 
@@ -52,20 +58,22 @@
 		})
 	}
 
-	const quiz_title = computed(() => {
+	const index_str = computed(() => {
+		curQuiz.value
 		const index = quizController.getCurQuizIndex();
 		const count = quizController.getQuizCount();
-		const indexStr : string = `${(index + 1)}/${count}. `;
-		const titleStr : string = curQuiz.value.title;
-		let full_title : string = indexStr + titleStr;
-		const result = index === -1 || !titleStr ? '' : full_title;
-		return result;
+		console.log('index_str index', index);
+		return index !== -1 ? `${(index + 1)}/${count}.  ` : "";
 	})
 
-	const getAllQuizs = async () => {
+	const title_str = computed(() => {
+		return curQuiz.value.title ?? '';
+	})
+
+	const getAllQuizs = async (dbName : string) => {
 		const rsp : any = await wx.cloud.callFunction({
 			name: 'getAllQuiz',
-			data: { dbName: 'javascript' }
+			data: { dbName }
 		});
 		return rsp.result.data;
 	}
@@ -99,16 +107,28 @@
 		showGroupBtns.value = true;
 	}
 
-	onMounted(async () => {
+	onLoad(async (evt) => {
+		console.log('onLoad', evt);
 		wx.cloud.init({
 			env: "quiz-0gb2aw2vb2850af4"
 		});
-		const data = await getAllQuizs();
+
+		uni.setNavigationBarTitle({ title: quizNameDic[evt.quizType] });
+		const data = await getAllQuizs(evt.quizType);
 		quizList.value.push(...data);
 
 		quizController.setQuizList(data);
 
 		onNext();
+	})
+
+	onUnload(() => {
+		uni.setNavigationBarTitle({ title: '' });
+		quizController.setQuizList([]);
+	})
+
+	onMounted(async () => {
+		console.log("onMounted")
 	})
 </script>
 
@@ -124,10 +144,18 @@
 			flex-direction: column;
 			justify-content: flex-start;
 
-			.title {
+			.group-title {
 				font-size: 35rpx;
 				margin: 0 30rpx 30rpx 30rpx;
-				font-weight: 500;
+				display: flex;
+				justify-content: flex-start;
+
+				.index {
+					// color: $uni-color-success;
+					font-weight: 500;
+				}
+
+				.title {}
 			}
 
 			.option {

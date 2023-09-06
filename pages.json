@@ -12,55 +12,20 @@
 				"enablePullDownRefresh": false,
 				"navigationBarBackgroundColor": "#eeeeee"
 			}
-		},
-		{
-			"path": "pages/javascriptquiz/javascriptquiz",
-			"style": {
-				"navigationBarTitleText": "JavaScript",
-				"enablePullDownRefresh": false,
-				"navigationBarBackgroundColor": "#eeeeee"
-			}
-		},
-		{
-			"path": "pages/javascriptcms/javascriptcms",
-			"style": {
-				"navigationBarTitleText": "JavaScript 后台",
-				"enablePullDownRefresh": false,
-				"navigationBarBackgroundColor": "#eeeeee"
-			}
-		},
-		{
-			"path": "pages/es6cms/es6cms",
-			"style": {
-				"navigationBarTitleText": "ECMAScript 6.0 后台",
-				"enablePullDownRefresh": false,
-				"navigationBarBackgroundColor": "#eeeeee"
-			}
-		},
-
-		{
-			"path": "pages/es6quiz/es6quiz",
-			"style": {
-				"navigationBarTitleText": "ECMAScript 6.0",
-				"enablePullDownRefresh": false,
-				"navigationBarBackgroundColor": "#eeeeee"
-			}
-
 		}
 	    ,{
-            "path" : "pages/tscms/tscms",
+            "path" : "pages/cms/cms",
             "style" :                                                                                    
             {
-                "navigationBarTitleText": "TypeScript 后台",
+                "navigationBarTitleText": "后台",
                 "enablePullDownRefresh": false
             }
-            
         }
         ,{
-            "path" : "pages/tsquiz/tsquiz",
+            "path" : "pages/quiz/quiz",
             "style" :                                                                                    
             {
-                "navigationBarTitleText": "TypeScript",
+                "navigationBarTitleText": "",
                 "enablePullDownRefresh": false
             }
             
