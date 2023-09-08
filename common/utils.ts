@@ -17,7 +17,7 @@ const showToast = (self : any, message : string) => {
 }
 
 const quizNameDic = {
-	'javascript': "JavaScript",
+	'js': "JavaScript",
 	'es6': "ECMAScript 6",
 	'ts': "TypeScript"
 }

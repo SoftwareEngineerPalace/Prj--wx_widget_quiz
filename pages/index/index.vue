@@ -1,11 +1,14 @@
 <template>
 	<view class="main">
-		<button class="btn" @click="onJavaScript" type="primary">JavaScript 答题</button>
-		<button class="btn" @click="onJavaScriptCMS">JavaScript 后台</button>
-		<button class="btn" @click="onEcmaScript" type="primary">ECMAScript 6 答题</button>
-		<button class="btn" @click="onEcmaScriptCMS">ECMAScript 6 后台</button>
-		<button class="btn" @click="onTypeScript" type="primary">TypeScript 答题</button>
-		<button class="btn" @click="onTypeScriptCMS">TypeScript 后台</button>
+		<button class="btn" @click="onQuiz" data-quizType="js" type="primary">JavaScript 答题</button>
+		<button class="btn" @click="onCms" data-quizType="js">JavaScript 后台</button>
+
+		<button class="btn" @click="onQuiz" data-quizType="es6" type="primary">ECMAScript 6 答题</button>
+		<button class="btn" @click="onCms" data-quizType="es6">ECMAScript 6 后台</button>
+
+		<button class="btn" @click="onQuiz" data-quizType="ts" type="primary">TypeScript 答题</button>
+		<button class="btn" @click="onCms" data-quizType="ts">TypeScript 后台</button>
+
 		<button @click="getUserInfo()" type="primary" v-if="!loggedIn">点击登录</button>
 		<button @click="logout()" type="warn" v-if="loggedIn">退出登录</button>
 	</view>
@@ -14,6 +17,7 @@
 <script setup lang="ts">
 	import { ref, onMounted, Ref } from 'vue';
 	import { checkSession } from '../../common/utils';
+	import queryString from 'query-string'
 
 	const loggedIn : Ref<boolean> = ref(false);
 	const codeRef : Ref<string> = ref('');
@@ -29,40 +33,22 @@
 		console.log('是已登录状态', hasSession);
 	})
 
-	const onJavaScript = () => {
-		uni.navigateTo({
-			url: '/pages/quiz/quiz?quizType=javascript',
-		})
+	const onQuiz = (evt : any) => {
+		console.log('onQuiz evt', evt);
+		const { quiztype } = evt.target.dataset;
+		const queryStr = queryString.stringify({ quizType: quiztype });
+		const url = `/pages/quiz/quiz?${queryStr}`;
+		console.log('onQuiz', url);
+		uni.navigateTo({ url })
 	}
 
-	const onJavaScriptCMS = () => {
-		uni.navigateTo({
-			url: '/pages/cms/cms?quizType=javascript'
-		})
-	}
-
-	const onEcmaScript = () => {
-		uni.navigateTo({
-			url: '/pages/quiz/quiz?quizType=es6'
-		})
-	}
-
-	const onEcmaScriptCMS = () => {
-		uni.navigateTo({
-			url: '/pages/cms/cms?quizType=es6'
-		})
-	}
-
-	const onTypeScript = () => {
-		uni.navigateTo({
-			url: '/pages/quiz/quiz?quizType=ts'
-		})
-	}
-
-	const onTypeScriptCMS = () => {
-		uni.navigateTo({
-			url: '/pages/cms/cms?quizType=ts'
-		})
+	const onCms = (evt : any) => {
+		console.log('onCms evt', evt);
+		const { quiztype } = evt.target.dataset;
+		const queryStr = queryString.stringify({ quizType: quiztype })
+		const url = `/pages/cms/cms?${queryStr}`;
+		console.log('onCms', url);
+		uni.navigateTo({ url });
 	}
 
 	const getUserInfo = async () => {
