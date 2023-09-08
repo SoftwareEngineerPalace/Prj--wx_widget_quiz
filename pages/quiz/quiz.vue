@@ -37,32 +37,43 @@
 		reactive,
 		ref,
 		computed,
+		Ref,
 	} from 'vue';
 	import quizController from '../../common/quizController';
 	import { onLoad, onUnload } from '@dcloudio/uni-app';
 	import { quizNameDic } from '../../common/utils';
 
+	// 所有题目
 	const quizList = ref([]);
+	// 题目类型
+	const quizType : Ref<string> = ref('');
 
-	let curQuiz : any = ref({});
 	const showGroupBtns = ref(false);
+	// 当前题目总数据
+	let curQuiz : any = ref({});
+	// 当前4个选项
 	let checkboxList = reactive([]);
+	// 用户的答案
+	const userAnswer : Ref<string> = ref('')
 
 	const onClickOption = (evt : any) => {
-		console.log("onClickOption evt", evt);
+		// console.log("onClickOption evt", evt);
 		const clicked_id = evt.target.dataset.id;
 		checkboxList.forEach((v : any) => {
 			if (v.id === clicked_id) {
 				v.selected = !v.selected;
 			}
 		})
+		const _userAnswer = checkboxList.filter(v => v.selected).map(v => v.id).join('');
+		// console.log({ _userAnswer });
+		userAnswer.value = _userAnswer;
 	}
 
 	const index_str = computed(() => {
 		curQuiz.value
 		const index = quizController.getCurQuizIndex();
 		const count = quizController.getQuizCount();
-		console.log('index_str index', index);
+		// console.log('index_str index', index);
 		return index !== -1 ? `${(index + 1)}/${count}.  ` : "";
 	})
 
@@ -78,8 +89,21 @@
 		return rsp.result.data;
 	}
 
-	const onSubmit = () => {
+	const onSubmit = async () => {
 		curQuiz.value.submitted = true;
+		const token = uni.getStorageSync('token');
+		const isCorrect = curQuiz.value.answer === userAnswer.value;
+		const quiz_index = quizController.getCurQuizIndex();
+		const data = {
+			quiz_title: curQuiz.value.title, quiz_id: curQuiz.value.id,
+			quizType: quizType.value, token, isCorrect, quiz_index
+		};
+		const rsp : any = await wx.cloud.callFunction({
+			name: 'answer',
+			data
+		});
+		console.log('答题结果', rsp)
+		return rsp.result.data;
 	}
 
 	const onPrev = () => {
@@ -108,10 +132,11 @@
 	}
 
 	onLoad(async (evt) => {
-		console.log('onLoad', evt);
+		// console.log('onLoad', evt);
 		wx.cloud.init({
 			env: "quiz-0gb2aw2vb2850af4"
 		});
+		quizType.value = evt.quizType;
 
 		uni.setNavigationBarTitle({ title: quizNameDic[evt.quizType] });
 		const data = await getAllQuizs(evt.quizType);
@@ -128,7 +153,7 @@
 	})
 
 	onMounted(async () => {
-		console.log("onMounted")
+		// console.log("onMounted")
 	})
 </script>
 

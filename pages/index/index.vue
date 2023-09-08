@@ -34,11 +34,11 @@
 	})
 
 	const onQuiz = (evt : any) => {
-		console.log('onQuiz evt', evt);
+		// console.log('onQuiz evt', evt);
 		const { quiztype } = evt.target.dataset;
 		const queryStr = queryString.stringify({ quizType: quiztype });
 		const url = `/pages/quiz/quiz?${queryStr}`;
-		console.log('onQuiz', url);
+		// console.log('onQuiz', url);
 		uni.navigateTo({ url })
 	}
 
@@ -47,7 +47,7 @@
 		const { quiztype } = evt.target.dataset;
 		const queryStr = queryString.stringify({ quizType: quiztype })
 		const url = `/pages/cms/cms?${queryStr}`;
-		console.log('onCms', url);
+		// console.log('onCms', url);
 		uni.navigateTo({ url });
 	}
 
