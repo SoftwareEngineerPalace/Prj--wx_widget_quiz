@@ -22,4 +22,17 @@ const quizNameDic = {
 	'ts': "TypeScript"
 }
 
-export { generateUUID, showToast, quizNameDic }
+const checkSession = () => {
+	return new Promise((resolve : Function) => {
+		uni.checkSession({
+			success() {
+				resolve(true);
+			},
+			fail() {
+				resolve(false);
+			}
+		})
+	});
+}
+
+export { generateUUID, showToast, quizNameDic, checkSession }

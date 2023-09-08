@@ -6,18 +6,27 @@
 		<button class="btn" @click="onEcmaScriptCMS">ECMAScript 6 后台</button>
 		<button class="btn" @click="onTypeScript" type="primary">TypeScript 答题</button>
 		<button class="btn" @click="onTypeScriptCMS">TypeScript 后台</button>
-		<button @click="getUserInfo()">点击登录</button>
-		<button @click="logout()">退出登录</button>
+		<button @click="getUserInfo()" type="primary" v-if="!loggedIn">点击登录</button>
+		<button @click="logout()" type="warn" v-if="loggedIn">退出登录</button>
 	</view>
 </template>
 
 <script setup lang="ts">
-	import { ref, onMounted } from 'vue';
+	import { ref, onMounted, Ref } from 'vue';
+	import { checkSession } from '../../common/utils';
 
-	onMounted(() => {
+	const loggedIn : Ref<boolean> = ref(false);
+	const codeRef : Ref<string> = ref('');
+	const loginInfo = ref({});
+
+	onMounted(async () => {
 		wx.cloud.init({
 			env: "quiz-0gb2aw2vb2850af4"
 		});
+
+		const hasSession = await checkSession();
+		loggedIn.value = hasSession as boolean;
+		console.log('是已登录状态', hasSession);
 	})
 
 	const onJavaScript = () => {
@@ -55,8 +64,7 @@
 			url: '/pages/cms/cms?quizType=ts'
 		})
 	}
-	const codeRef = ref('');
-	const loginInfo = ref({});
+
 	const getUserInfo = async () => {
 		uni.showLoading({
 			title: '加载中',
@@ -83,7 +91,8 @@
 							});
 							console.log("applet call login callback", rsp)
 							if (rsp.result.status === 200) {
-								uni.setStorageSync('localtoken', rsp.result.token)
+								uni.setStorageSync('token', rsp.result.token)
+								loggedIn.value = true;
 							}
 						}
 					},
@@ -109,9 +118,10 @@
 			success: function (res) {
 				if (res.confirm) {
 					uni.removeStorageSync('token')
-					loginInfo.value = { nickname: "", avatarUrl: '' }
+					loginInfo.value = { nickname: "", avatarUrl: '' };
+					loggedIn.value = false;
 				} else if (res.cancel) {
-					// console.log('用户点击取消');
+					console.log('用户点击取消');
 				}
 			}
 		});
