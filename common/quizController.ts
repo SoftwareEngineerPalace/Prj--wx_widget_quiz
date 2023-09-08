@@ -8,7 +8,7 @@ class QuizController {
 		return this._curQuizIndex;
 	}
 
-	public getQuizCount(){
+	public getQuizCount() {
 		return this._quizCount;
 	}
 
@@ -31,8 +31,12 @@ class QuizController {
 		this._quizCount = list.length;
 		this._curQuizIndex = -1;
 	}
-	
-	hasNext = ()=> {
+
+	setCurQuizIndex = (index : number) => {
+		this._curQuizIndex = index;
+	}
+
+	hasNext = () => {
 		return this._curQuizIndex < this._quizCount - 1;
 	}
 

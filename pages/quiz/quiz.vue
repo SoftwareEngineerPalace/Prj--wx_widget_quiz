@@ -139,11 +139,20 @@
 		quizType.value = evt.quizType;
 
 		uni.setNavigationBarTitle({ title: quizNameDic[evt.quizType] });
+
+		// 加载所有题目
 		const data = await getAllQuizs(evt.quizType);
 		quizList.value.push(...data);
-
 		quizController.setQuizList(data);
 
+		// 加载做题进度
+		const token = uni.getStorageSync('token');
+		const rsp : any = await wx.cloud.callFunction({
+			name: 'getProcess',
+			data: { token, quiz_type: evt.quizType }
+		});
+		console.log('拿到的进度', rsp.result.latest_quiz_index);
+		quizController.setCurQuizIndex(rsp.result.latest_quiz_index)
 		onNext();
 	})
 
