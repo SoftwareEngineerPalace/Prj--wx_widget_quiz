@@ -64,7 +64,6 @@
 		uni.getUserProfile({
 			desc: '登录后可同步数据',
 			success: async (value) => {
-				// console.log('getUserProfile success', value);
 				const { nickName, avatarUrl } = value.userInfo;
 				loginInfo.value = { nickName, avatarUrl };
 				uni.login({
@@ -83,7 +82,9 @@
 								data
 							});
 							console.log("applet call login callback", rsp)
-							// uni.setStorageSync('localtoken', rsp.data.data.access_token)
+							if (rsp.result.status === 200) {
+								uni.setStorageSync('localtoken', rsp.result.token)
+							}
 						}
 					},
 				});
