@@ -22,6 +22,10 @@ const quizNameDic = {
 	'ts': "TypeScript"
 }
 
+const quizTypeArray = [{ value: 'js', label: "JavaScript" },
+{ value: 'es6', label: "ECMAScript 6" },
+{ value: 'ts', label: "TypeScript" }]
+
 const checkSession = () => {
 	return new Promise((resolve : Function) => {
 		uni.checkSession({
@@ -35,4 +39,4 @@ const checkSession = () => {
 	});
 }
 
-export { generateUUID, showToast, quizNameDic, checkSession }
+export { generateUUID, showToast, quizNameDic, checkSession, quizTypeArray }

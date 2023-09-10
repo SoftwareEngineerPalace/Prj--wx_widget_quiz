@@ -35,14 +35,12 @@
 				"enablePullDownRefresh": false,
 				"navigationBarBackgroundColor": "#eeeeee"
 			}
-
 		}, {
 			"path": "pages/summary/summary",
 			"style": {
 				"navigationBarTitleText": "",
 				"enablePullDownRefresh": false
 			}
-
 		}
 	    ,{
             "path" : "pages/mine/mine",
@@ -51,7 +49,6 @@
                 "navigationBarTitleText": "",
                 "enablePullDownRefresh": false
             }
-            
         }
     ],
 	"globalStyle": {

@@ -94,15 +94,17 @@
 		const token = uni.getStorageSync('token');
 		const isCorrect = curQuiz.value.answer === userAnswer.value;
 		const quiz_index = quizController.getCurQuizIndex();
+		const quizCount = quizController.getQuizCount();
 		const data = {
 			quiz_title: curQuiz.value.title, quiz_id: curQuiz.value.id,
-			quizType: quizType.value, token, isCorrect, quiz_index
+			quizType: quizType.value, token, isCorrect, quiz_index, quiz_count: quizCount
 		};
+		// console.log("onSubmit", data);
 		const rsp : any = await wx.cloud.callFunction({
 			name: 'answer',
 			data
 		});
-		console.log('答题结果', rsp)
+		// console.log('答题结果', rsp)
 		return rsp.result.data;
 	}
 
@@ -138,6 +140,7 @@
 		});
 		quizType.value = evt.quizType;
 
+		// 设置 bar title
 		uni.setNavigationBarTitle({ title: quizNameDic[evt.quizType] });
 
 		// 加载所有题目
@@ -151,7 +154,7 @@
 			name: 'getProcess',
 			data: { token, quiz_type: evt.quizType }
 		});
-		console.log('拿到的进度', rsp.result.latest_quiz_index);
+		// console.log('已经做了的题目数', rsp.result.latest_quiz_index + 1);
 		quizController.setCurQuizIndex(rsp.result.latest_quiz_index)
 		onNext();
 	})

@@ -2,6 +2,9 @@
 	export default {
 		onLaunch: function() {
 			// console.log('App Launch')
+			wx.cloud.init({
+				env: "quiz-0gb2aw2vb2850af4"
+			});
 		},
 		onShow: function() {
 			// console.log('App Show')
