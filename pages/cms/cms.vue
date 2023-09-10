@@ -46,6 +46,7 @@
 			}
 		},
 		async onLoad(evt) {
+			this.dbName = evt.quizType;
 			console.log("onLoad", evt);
 			uni.setNavigationBarTitle({ title: `${quizNameDic[evt.quizType]} 后台` });
 			wx.cloud.init({
@@ -72,10 +73,12 @@
 			// 更新一条
 			async onUpdateOne(evt : any) {
 				const id_to_update : string = evt.target.dataset.id;
-				const data = this.quizList.find(v => v.id === id_to_update);
+				const quiz = this.quizList.find(v => v.id === id_to_update);
+				const data = { ...quiz, dbName: this.dbName };
+				console.log('onUpdateOne', data)
 				const rsp : any = await wx.cloud.callFunction({
 					name: 'updateQuiz',
-					data: { ...data, dbName: this.dbName }
+					data
 				})
 				const result = rsp.errMsg === "cloud.callFunction:ok";
 				if (result) {
