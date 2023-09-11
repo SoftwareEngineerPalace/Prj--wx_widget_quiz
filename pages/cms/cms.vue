@@ -6,16 +6,16 @@
 					<u-textarea autoHeight v-model="quiz.title"></u-textarea>
 				</u-form-item>
 				<u-form-item label="A" prop="option_a" label-width="80">
-					<u-textarea autoHeight v-model="quiz.option_a" maxlength="400"></u-textarea>
+					<u-textarea autoHeight v-model="quiz.option_a" maxlength="1000"></u-textarea>
 				</u-form-item>
 				<u-form-item label="B" prop="option_b" label-width="80">
-					<u-textarea autoHeight v-model="quiz.option_b"></u-textarea>
+					<u-textarea autoHeight v-model="quiz.option_b" maxlength="1000"></u-textarea>
 				</u-form-item>
 				<u-form-item label="C" prop="option_c" label-width="80">
-					<u-textarea autoHeight v-model="quiz.option_c"></u-textarea>
+					<u-textarea autoHeight v-model="quiz.option_c" maxlength="1000"></u-textarea>
 				</u-form-item>
 				<u-form-item label="D" prop="option_d" label-width="80">
-					<u-textarea autoHeight v-model="quiz.option_d"></u-textarea>
+					<u-textarea autoHeight v-model="quiz.option_d" maxlength="1000"></u-textarea>
 				</u-form-item>
 				<u-form-item label="答案" prop="answer" label-width="80">
 					<u-input v-model="quiz.answer" />
