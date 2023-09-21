@@ -45,6 +45,8 @@ class QuizController {
 			this._curQuizIndex += 1;
 			// console.log('goNext', this._quizList[this._curQuizIndex])
 			return this._quizList[this._curQuizIndex];
+		} else {
+			return null;
 		}
 	}
 

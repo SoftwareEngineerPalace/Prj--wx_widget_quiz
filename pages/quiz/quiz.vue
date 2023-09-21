@@ -44,7 +44,7 @@
 	import { quizNameDic } from '../../common/utils';
 
 	// 所有题目
-	const quizList = ref([]);
+	const quizList = ref<Array<unknown>>([]);
 	// 题目类型
 	const quizType : Ref<string> = ref('');
 
@@ -52,7 +52,7 @@
 	// 当前题目总数据
 	let curQuiz : any = ref({});
 	// 当前4个选项
-	let checkboxList = reactive([]);
+	let checkboxList = reactive<{ id : string, selected : boolean }[]>([]);
 	// 用户的答案
 	const userAnswer : Ref<string> = ref('')
 
@@ -114,8 +114,15 @@
 	}
 
 	const onNext = () => {
-		curQuiz.value = { ...quizController.goNext(), submitted: false };
-		updateQuiz(curQuiz.value);
+		const nextQuiz = quizController.goNext();
+		console.log('nextQuiz', nextQuiz);
+		if (nextQuiz !== null) {
+			curQuiz.value = { ...quizController.goNext(), submitted: false };
+			updateQuiz(curQuiz.value);
+		} else {
+			const url = `/pages/summary/summary?${quizType.value}`;
+			uni.navigateTo({ url })
+		}
 	}
 
 	const updateQuiz = (quiz : any) => {
@@ -133,7 +140,7 @@
 		showGroupBtns.value = true;
 	}
 
-	onLoad(async (evt) => {
+	onLoad(async (evt : { quizType : string }) => {
 		// console.log('onLoad', evt);
 		wx.cloud.init({
 			env: "quiz-0gb2aw2vb2850af4"
@@ -141,7 +148,9 @@
 		quizType.value = evt.quizType;
 
 		// 设置 bar title
-		uni.setNavigationBarTitle({ title: quizNameDic[evt.quizType] });
+		const title : string = quizNameDic.get(evt.quizType) as string;
+		console.log("title", title);
+		uni.setNavigationBarTitle({ title });
 
 		// 加载所有题目
 		const data = await getAllQuizs(evt.quizType);

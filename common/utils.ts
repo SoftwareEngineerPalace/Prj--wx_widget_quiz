@@ -16,11 +16,11 @@ const showToast = (self : any, message : string) => {
 	});
 }
 
-const quizNameDic = {
-	'js': "JavaScript",
-	'es6': "ECMAScript 6",
-	'ts': "TypeScript"
-}
+const quizNameDic : Map<string, string> = new Map([
+	['js', "JavaScript"],
+	['es6', "ECMAScript 6"],
+	['ts', "TypeScript"]]
+)
 
 const quizTypeArray = [{ value: 'js', label: "JavaScript" },
 { value: 'es6', label: "ECMAScript 6" },

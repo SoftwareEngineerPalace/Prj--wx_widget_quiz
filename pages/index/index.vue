@@ -1,7 +1,7 @@
 <template>
 	<view class="main">
 		<view class="container-title" @click="onClickTitle">
-			<view>{{`当前题库: ${quizNameDic[curQuizType]}`}}</view>
+			<view>{{`当前题库: ${quizNameDic.get(curQuizType)}`}}</view>
 			<view>{{processDesc}}</view>
 		</view>
 		<view class="container-continue">
@@ -53,6 +53,10 @@
 	onShow(async () => {
 		console.log("index onShow");
 		updateOnQuizTypeChanged();
+	})
+
+	onLoad(() => {
+
 	})
 
 	/** 题目类型变化后，更新数据 */
