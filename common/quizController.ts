@@ -43,7 +43,7 @@ class QuizController {
 	goNext = () => {
 		if (this._curQuizIndex < this._quizCount - 1) {
 			this._curQuizIndex += 1;
-			// console.log('goNext', this._quizList[this._curQuizIndex])
+			// console.log('goNext', this._curQuizIndex, this._quizList[this._curQuizIndex])
 			return this._quizList[this._curQuizIndex];
 		} else {
 			return null;

@@ -17,6 +17,9 @@
 <script lang="ts" setup>
 	import { Ref, ref, computed } from 'vue';
 	import { onLoad } from '@dcloudio/uni-app';
+	import queryString from 'query-string';
+
+	const quizType : Ref<string> = ref('js');
 
 	const quizCount : Ref<number> = ref(0);
 	const answerTimes : Ref<number> = ref(0);
@@ -28,13 +31,21 @@
 		return `${rate}%`;
 	});
 
-	const restart = () => {
-
+	const restart = async () => {
+		// const queryStr = queryString.stringify({ quizType: quizType.value });
+		const token = uni.getStorageSync('token');
+		const data = {
+			name: 'resetProcess',
+			data: { token, quiz_type: quizType.value }
+		};
+		await wx.cloud.callFunction(data);
+		uni.navigateBack();
 	}
 
 	onLoad(async (evt : { quizType : string }) => {
 		// console.log("summary onLoad", evt);
 		if (evt.hasOwnProperty('quizType')) {
+			quizType.value = evt.quizType;
 			getHistory(evt.quizType)
 		}
 	})
@@ -52,11 +63,11 @@
 			name: 'getQuizHistory',
 			data: { token, quiz_type }
 		};
-		console.log('getHistory data', data);
+		// console.log('getHistory data', data);
 		const rsp = await wx.cloud.callFunction(data);
-		console.log("summary getHistory getQuizHistory 加载做题历史记录", rsp);
+		// console.log("summary getHistory getQuizHistory 加载做题历史记录", rsp);
 		const { quiz_count, answer_times, correct_times } = rsp.result as IQuizHistory;
-		console.log({ quiz_count, answer_times, correct_times });
+		// console.log({ quiz_count, answer_times, correct_times });
 		quizCount.value = quiz_count;
 		answerTimes.value = answer_times;
 		correctTimes.value = correct_times;

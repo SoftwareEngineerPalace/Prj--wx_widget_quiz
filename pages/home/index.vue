@@ -35,7 +35,7 @@
 	import queryString from 'query-string';
 	import { onShow, onLoad } from '@dcloudio/uni-app';
 
-	const latestQuizIndex : Ref<number> = ref(0);
+	const latestQuizIndex : Ref<number> = ref(-1);
 	const quizCount : Ref<number> = ref(0);
 	// 题目类型
 	const curQuizType : Ref<string> = ref('js');
@@ -44,14 +44,15 @@
 
 	const processDesc = computed(() => {
 		if (quizCount.value) {
-			return `本题库已练习 ${latestQuizIndex.value + 1}/${quizCount.value}`;
+			return `本题库练习进度 ${latestQuizIndex.value + 1}/${quizCount.value}`;
 		} else {
-			return '还没开始练习';
+			// return '还没开始练习';
+			return `本题库练习进度为 ${latestQuizIndex.value + 1}`;
 		}
 	})
 
 	onShow(async () => {
-		console.log("index onShow");
+		console.log("home index onShow");
 		updateOnQuizTypeChanged();
 	})
 
@@ -76,7 +77,7 @@
 	onMounted(async () => {
 		const hasSession = await checkSession();
 		const token = uni.getStorageSync('token');
-		// console.log({ hasSession, token })
+		console.log('onMounted', { hasSession, token })
 		if (!hasSession || !token) {
 			uni.switchTab({
 				url: '/pages/mine/index'
@@ -88,7 +89,7 @@
 		const quizType = curQuizType.value;
 		const queryStr = queryString.stringify({ quizType });
 		const url = `/pages/quiz/index?${queryStr}`;
-		console.log('continueExercise', url);
+		// console.log('continueExercise', url);
 		uni.navigateTo({ url })
 	}
 
@@ -96,17 +97,8 @@
 		showSelectPopup.value = true;
 	}
 
-	const onQuiz = (evt : any) => {
-		// console.log('onQuiz evt', evt);
-		const { quiztype } = evt.target.dataset;
-		const queryStr = queryString.stringify({ quizType: quiztype });
-		const url = `/pages/quiz/index?${queryStr}`;
-		// console.log('onQuiz', url);
-		uni.navigateTo({ url })
-	}
-
 	const onCms = (evt : any) => {
-		console.log('onCms evt', evt);
+		// console.log('onCms evt', evt);
 		const { quiztype } = evt.target.dataset;
 		const queryStr = queryString.stringify({ quizType: quiztype })
 		const url = `/pages/cms/index?${queryStr}`;

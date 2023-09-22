@@ -52,6 +52,7 @@
 							});
 							console.log("applet call login callback", rsp)
 							if (rsp.result.status === 200) {
+								console.log('uni.setStorageSync', rsp.result.token);
 								uni.setStorageSync('token', rsp.result.token)
 								loggedIn.value = true;
 							}

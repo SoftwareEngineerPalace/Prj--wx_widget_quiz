@@ -44,6 +44,13 @@
 	import { quizNameDic } from '../../common/utils';
 	import queryString from 'query-string'
 
+	interface ICheckbox {
+		id : string;
+		selected : boolean;
+		value : string;
+		isCorrect : boolean;
+	}
+
 	// 所有题目
 	const quizList = ref<Array<unknown>>([]);
 	// 题目类型
@@ -53,7 +60,7 @@
 	// 当前题目的数据
 	let curQuiz : any = ref({});
 	// 当前4个选项
-	let checkboxList = reactive<{ id : string, selected : boolean }[]>([]);
+	let checkboxList = reactive<ICheckbox[]>([]);
 	// 用户的答案
 	const userAnswer : Ref<string> = ref('')
 
@@ -116,15 +123,15 @@
 
 	const onNext = () => {
 		const nextQuiz = quizController.goNext();
-		console.log('nextQuiz', nextQuiz);
+		// console.log('nextQuiz', nextQuiz);
 		if (nextQuiz !== null) {
-			curQuiz.value = { ...quizController.goNext(), submitted: false };
+			curQuiz.value = { ...nextQuiz, submitted: false };
 			updateQuiz(curQuiz.value);
 		} else {
-			console.log('onNext quizType.value', quizType.value);
+			// console.log('onNext quizType.value', quizType.value);
 			const queryStr = queryString.stringify({ quizType: quizType.value });
 			const url = `/pages/summary/index?${queryStr}`;
-			uni.navigateTo({ url })
+			uni.redirectTo({ url })
 		}
 	}
 
@@ -152,7 +159,7 @@
 
 		// 设置 bar title
 		const title : string = quizNameDic.get(evt.quizType) as string;
-		console.log("title", title);
+		// console.log("title", title);
 		uni.setNavigationBarTitle({ title });
 
 		// 加载所有题目
