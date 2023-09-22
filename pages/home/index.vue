@@ -68,7 +68,7 @@
 			name: 'getProcess',
 			data: { token, quiz_type: curQuizType.value }
 		});
-		console.log('index updateOnQuizTypeChanged 获得题目进度', rsp.result)
+		// console.log('index updateOnQuizTypeChanged 获得题目进度', rsp.result)
 		const { latest_quiz_index, quiz_count } = rsp.result;
 		latestQuizIndex.value = latest_quiz_index;
 		quizCount.value = quiz_count;
@@ -77,7 +77,7 @@
 	onMounted(async () => {
 		const hasSession = await checkSession();
 		const token = uni.getStorageSync('token');
-		console.log('onMounted', { hasSession, token })
+		// console.log('onMounted', { hasSession, token })
 		if (!hasSession || !token) {
 			uni.switchTab({
 				url: '/pages/mine/index'
