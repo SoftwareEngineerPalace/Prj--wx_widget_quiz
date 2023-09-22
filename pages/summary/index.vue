@@ -14,7 +14,7 @@
 		return `${rate}%`;
 	});
 	onLoad(async (evt : { quizType : string }) => {
-		console.log("summary onLoad", evt);
+		// console.log("summary onLoad", evt);
 		if (evt.hasOwnProperty('quizType')) {
 			getHistory(evt.quizType)
 		}
@@ -22,11 +22,13 @@
 	const getHistory = async (quiz_type : string) => {
 		// 加载做题历史记录
 		const token = uni.getStorageSync('token');
-		const rsp : unknown = await wx.cloud.callFunction({
-			name: 'getProcess',
+		const data = {
+			name: 'getQuizHistory',
 			data: { token, quiz_type }
-		});
-		console.log("加载做题历史记录", rsp);
+		};
+		console.log('getHistory data', data);
+		const rsp : unknown = await wx.cloud.callFunction(data);
+		console.log("summary getHistory getQuizHistory 加载做题历史记录", rsp);
 	}
 </script>
 

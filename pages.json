@@ -6,44 +6,44 @@
 	},
 	"tabBar": {
 		"list": [{
-			"pagePath": "pages/index/index",
+			"pagePath": "pages/home/index",
 			"text": "练习"
 		}, {
-			"pagePath": "pages/mine/mine",
+			"pagePath": "pages/mine/index",
 			"text": "我的"
 		}]
 	},
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
-			"path": "pages/index/index",
+			"path": "pages/home/index",
 			"style": {
 				"navigationBarTitleText": "阮一峰教程配套练习题",
 				"enablePullDownRefresh": false,
 				"navigationBarBackgroundColor": "#eeeeee"
 			}
 		}, {
-			"path": "pages/cms/cms",
+			"path": "pages/cms/index",
 			"style": {
 				"navigationBarTitleText": "",
 				"enablePullDownRefresh": false,
 				"navigationBarBackgroundColor": "#eeeeee"
 			}
 		}, {
-			"path": "pages/quiz/quiz",
+			"path": "pages/quiz/index",
 			"style": {
 				"navigationBarTitleText": "",
 				"enablePullDownRefresh": false,
 				"navigationBarBackgroundColor": "#eeeeee"
 			}
 		}, {
-			"path": "pages/summary/summary",
+			"path": "pages/summary/index",
 			"style": {
 				"navigationBarTitleText": "",
 				"enablePullDownRefresh": false
 			}
 		}
 	    ,{
-            "path" : "pages/mine/mine",
+            "path" : "pages/mine/index",
             "style" :                                                                                    
             {
                 "navigationBarTitleText": "",

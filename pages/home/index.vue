@@ -79,7 +79,7 @@
 		// console.log({ hasSession, token })
 		if (!hasSession || !token) {
 			uni.switchTab({
-				url: '/pages/mine/mine'
+				url: '/pages/mine/index'
 			})
 		}
 	})
@@ -87,7 +87,7 @@
 	const continueExercise = () => {
 		const quizType = curQuizType.value;
 		const queryStr = queryString.stringify({ quizType });
-		const url = `/pages/quiz/quiz?${queryStr}`;
+		const url = `/pages/quiz/index?${queryStr}`;
 		console.log('continueExercise', url);
 		uni.navigateTo({ url })
 	}
@@ -100,7 +100,7 @@
 		// console.log('onQuiz evt', evt);
 		const { quiztype } = evt.target.dataset;
 		const queryStr = queryString.stringify({ quizType: quiztype });
-		const url = `/pages/quiz/quiz?${queryStr}`;
+		const url = `/pages/quiz/index?${queryStr}`;
 		// console.log('onQuiz', url);
 		uni.navigateTo({ url })
 	}
@@ -109,7 +109,7 @@
 		console.log('onCms evt', evt);
 		const { quiztype } = evt.target.dataset;
 		const queryStr = queryString.stringify({ quizType: quiztype })
-		const url = `/pages/cms/cms?${queryStr}`;
+		const url = `/pages/cms/index?${queryStr}`;
 		// console.log('onCms', url);
 		uni.navigateTo({ url });
 	}

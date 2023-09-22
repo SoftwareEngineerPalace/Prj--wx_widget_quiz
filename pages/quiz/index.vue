@@ -42,6 +42,7 @@
 	import quizController from '../../common/quizController';
 	import { onLoad, onUnload } from '@dcloudio/uni-app';
 	import { quizNameDic } from '../../common/utils';
+	import queryString from 'query-string'
 
 	// 所有题目
 	const quizList = ref<Array<unknown>>([]);
@@ -49,7 +50,7 @@
 	const quizType : Ref<string> = ref('');
 
 	const showGroupBtns = ref(false);
-	// 当前题目总数据
+	// 当前题目的数据
 	let curQuiz : any = ref({});
 	// 当前4个选项
 	let checkboxList = reactive<{ id : string, selected : boolean }[]>([]);
@@ -120,7 +121,9 @@
 			curQuiz.value = { ...quizController.goNext(), submitted: false };
 			updateQuiz(curQuiz.value);
 		} else {
-			const url = `/pages/summary/summary?${quizType.value}`;
+			console.log('onNext quizType.value', quizType.value);
+			const queryStr = queryString.stringify({ quizType: quizType.value });
+			const url = `/pages/summary/index?${queryStr}`;
 			uni.navigateTo({ url })
 		}
 	}
