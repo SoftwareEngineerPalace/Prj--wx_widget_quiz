@@ -4,7 +4,7 @@
 			{{`一共有 ${quizCount} 道题`}}
 		</view>
 		<view class="row-view">
-			{{`你答了 ${answerTimes} 次，答对了 ${correctTimes} 次`}}
+			{{`你一共作答 ${answerTimes} 道次，答对了 ${correctTimes} 道次`}}
 		</view>
 		<view class="row-view">
 			{{`正确率 ${ correctRate}`}}
@@ -17,7 +17,6 @@
 <script lang="ts" setup>
 	import { Ref, ref, computed } from 'vue';
 	import { onLoad } from '@dcloudio/uni-app';
-	import queryString from 'query-string';
 
 	const quizType : Ref<string> = ref('js');
 

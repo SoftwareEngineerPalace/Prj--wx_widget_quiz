@@ -21,11 +21,18 @@
 		<view class="group-btn" v-if="showGroupBtns">
 			<button type="default" class="btn" v-show="quizController.getCurQuizIndex() > 0"
 				@click="onPrev">上一题</button>
+
 			<button type="primary" v-show="!curQuiz.submitted && quizController.hasNext()" class="btn"
 				@click="onSubmit">提交</button>
+
 			<button type="primary" v-show="curQuiz.submitted && quizController.hasNext() " class="btn"
 				@click="onNext">下一题</button>
-			<button type="default" class="btn" v-show="!quizController.hasNext()" @click="onSubmit">完成</button>
+
+			<button type="default" class="btn" v-show="!curQuiz.submitted && !quizController.hasNext()"
+				@click="onSubmit">提交</button>
+
+			<button type="primary" v-show="curQuiz.submitted && !quizController.hasNext() " class="btn"
+				@click="onNext">进入结算页</button>
 		</view>
 	</view>
 
