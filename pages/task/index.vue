@@ -2,23 +2,23 @@
 	<view class="base">
 
 		<!-- 上部按钮 -->
-		<view class="topBar">
-			<u-textarea class="initime__input" v-model:value="initTimeRaw" placeholder="请输入起始时间" ></<u-textarea>
+		<!-- <view class="topBar">
+			<u-textarea autoHeight class="initime__input" v-model="initTimeRaw" placeholder="请输入起始时间"></<u-textarea>
 			<button class="initime__ok" @click="onConfirmInitTime">确定</button>
 			<button class="btn-now" @click="setNowForStart">设定当前为起始时间</button>
 			<button class="btn-add" @click="addOne">新增</button>
-		</view>
+		</view> -->
 
 		<!-- 拖拽容器 -->
 		<view class="bottom-container">
 			<view class="wrapper" ref="listRef">
 				<view class="container" v-for="(item, index) in list" :key="item.id">
-					<span class="deadline">{{ `${item.deadline}` }}</span>
+					<view class="deadline">{{ `${item.deadline}` }}</view>
 					<u-textarea class="name" :autoSize="{ minRows: 1, maxRows: 6 }" :style="{
               color: colorMap.get(item.priority),
             }" v-model:value="item.name" placeholder="任务" @blur="onBlur">
 					</u-textarea>
-					<u-radio-group v-model:value="item.priority" @change="priorityChanged" class="priority-group">
+					<!-- <u-radio-group v-model:value="item.priority" @change="priorityChanged" class="priority-group">
 						<u-radio :value="3">高</u-radio>
 						<u-radio :value="2">中</u-radio>
 						<u-radio :value="1">低</u-radio>
@@ -30,9 +30,9 @@
 						<u-radio :value="40">40</u-radio>
 						<u-radio :value="60">60</u-radio>
 						<u-radio :value="90">90</u-radio>
-					</u-radio-group>
+					</u-radio-group> -->
 
-					<u-button class="delete" @click="onDelete(index)">删</u-button>
+					<button class="delete" @click="onDelete(index)">删</button>
 				</view>
 			</view>
 		</view>
@@ -40,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-	import { ref, onMounted, toRaw, nextTick } from "vue";
+	import { ref, onMounted, toRaw, nextTick, Ref } from "vue";
 	import dayjs from "dayjs";
 	import { formatTime, generateUUID } from '../../common/utils';
 
@@ -113,7 +113,7 @@
 
 	/** 方法 2 */
 	const initTime = ref(8 * 60 + 30);
-	const initTimeRaw = ref("8:30");
+	const initTimeRaw : Ref<string> = ref("8:30");
 	/** 确认了初始时间 */
 	const onConfirmInitTime = () => {
 		const a = initTimeRaw.value.split(":");
