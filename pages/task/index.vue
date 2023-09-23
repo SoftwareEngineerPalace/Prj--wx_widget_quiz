@@ -18,18 +18,21 @@
               color: colorMap.get(item.priority),
             }" v-model:value="item.name" placeholder="任务" @blur="onBlur">
 					</u-textarea>
-					<u-radio-group v-model="item.priority" @change="priorityChanged" class="priority-group">
-						<u-radio :value="3">高</u-radio>
-						<u-radio :value="2">中</u-radio>
-						<u-radio :value="1">低</u-radio>
+
+					<u-radio-group v-model="item.priority" placement="column" @change="priorityChanged"
+						class="priority-group">
+						<u-radio :key="3" :label="3" :name="3">高</u-radio>
+						<u-radio :key="2" :label="2" :name="2">中</u-radio>
+						<u-radio :key="1" :label="1" :name="1">低</u-radio>
 					</u-radio-group>
-					<u-radio-group v-model="item.duration" @change="onDurationChange" class="duration-group">
-						<u-radio :value="10">10</u-radio>
-						<u-radio :value="20">20</u-radio>
-						<u-radio :value="30">30</u-radio>
-						<u-radio :value="40">40</u-radio>
-						<u-radio :value="60">60</u-radio>
-						<u-radio :value="90">90</u-radio>
+					<u-radio-group v-model="item.duration" placement="column" @change="onDurationChange"
+						class="duration-group">
+						<u-radio :key="10" :name="10" :label="10">10</u-radio>
+						<u-radio :key="20" :name="20" :label="20">20</u-radio>
+						<u-radio :key="30" :name="30" :label="30">30</u-radio>
+						<u-radio :key="40" :name="40" :label="40">40</u-radio>
+						<u-radio :key="60" :name="60" :label="60">60</u-radio>
+						<u-radio :key="90" :name="90" :label="90">90</u-radio>
 					</u-radio-group>
 
 					<button class="delete" @click="onDelete(index)">删</button>
@@ -226,6 +229,7 @@
 			.initime__input {
 				text-align: center;
 				font-size: 14px;
+				width: 50px;
 			}
 
 			.initime__ok {
