@@ -13,20 +13,24 @@
 		<view class="bottom-container">
 			<view class="wrapper" ref="listRef">
 				<view class="container" v-for="(item, index) in list" :key="item.id">
-					<view class="deadline">{{ `${item.deadline}` }}</view>
-					<u-textarea class="name" :autoSize="{ minRows: 1, maxRows: 6 }" :style="{
-              color: colorMap.get(item.priority),
-            }" v-model:value="item.name" placeholder="任务" @blur="onBlur">
+
+					<!-- 截止时间 -->
+					<view class="deadline" :style="{color: colorDic[item.priority]}">{{ `${item.deadline}` }}</view>
+
+					<!-- 任务名字 -->
+					<u-textarea class="name" :style="{color: colorDic[item.priority]}" autoHeight v-model="item.name"
+						placeholder="任务" @blur="onBlur">
 					</u-textarea>
 
-					<u-radio-group v-model="item.priority" placement="column" @change="priorityChanged"
-						class="priority-group">
+					<!-- 选择优先级 -->
+					<u-radio-group v-model="item.priority" @change="priorityChanged" class="priority-group">
 						<u-radio :key="3" :label="3" :name="3">高</u-radio>
 						<u-radio :key="2" :label="2" :name="2">中</u-radio>
 						<u-radio :key="1" :label="1" :name="1">低</u-radio>
 					</u-radio-group>
-					<u-radio-group v-model="item.duration" placement="column" @change="onDurationChange"
-						class="duration-group">
+
+					<!-- 选择工作时长 -->
+					<u-radio-group v-model="item.duration" @change="onDurationChange" class="duration-group">
 						<u-radio :key="10" :name="10" :label="10">10</u-radio>
 						<u-radio :key="20" :name="20" :label="20">20</u-radio>
 						<u-radio :key="30" :name="30" :label="30">30</u-radio>
@@ -35,6 +39,7 @@
 						<u-radio :key="90" :name="90" :label="90">90</u-radio>
 					</u-radio-group>
 
+					<!-- 删除按钮 -->
 					<button class="delete" @click="onDelete(index)">删</button>
 				</view>
 			</view>
@@ -47,11 +52,17 @@
 	import dayjs from "dayjs";
 	import { formatTime, generateUUID } from '../../common/utils';
 
-	const colorMap = new Map(Object.entries({
-		3: "#FF6B6B",
-		2: "#FF9F1C",
-		1: "#4ECDC4",
-	}));
+	const colorMap = new Map([
+		["3", "#FF6B6B"],
+		["2", "#FF9F1C"],
+		["1", "#4ECDC4"]
+	]);
+
+	const colorDic = {
+		"3": "#FF6B6B",
+		"2": "#FF9F1C",
+		"1": "#4ECDC4",
+	}
 
 	const listRef = ref(null);
 	// let hostname = window.location.hostname;
@@ -256,13 +267,13 @@
 				display: flex;
 				flex-direction: column;
 				justify-content: flex-start;
-				align-items: center;
+				align-items: stretch;
 				width: 100vw;
 				padding-right: 10vw;
 				margin-bottom: 15vh;
 
 				.container {
-					width: 90vw;
+					width: 95vw;
 					display: flex;
 					justify-content: space-between;
 					align-items: center;
@@ -280,9 +291,9 @@
 
 					.deadline {
 						margin-left: 10px;
-						font-size: 20px;
 						white-space: nowrap;
 						color: chocolate;
+						font-size: 14px;
 					}
 
 					.name {
@@ -296,6 +307,7 @@
 						text-align: center;
 						width: 150px;
 						white-space: wrap;
+						color: red;
 					}
 
 					.delete {
