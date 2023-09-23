@@ -5,6 +5,7 @@
 			"@ttou/uview-typings/refs"
 		],
 		"noImplicitAny": true,
-		"strictNullChecks": true
+		"strictNullChecks": true,
+		"esModuleInterop": true
 	}
 }

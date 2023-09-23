@@ -8,6 +8,19 @@ const generateUUID = () => {
 	return uuid;
 }
 
+/** 格式化时间 */
+const formatTime = (totalMinutes : number) => {
+	let hours = Math.floor(totalMinutes / 60);
+	if (hours >= 24) {
+		hours = hours % 24;
+	}
+	const houreStr = `${hours > 9 ? hours : "0" + hours}`;
+	const minutes = totalMinutes % 60;
+	if (minutes === 0) return `${houreStr}:00`;
+	if (minutes !== 0)
+		return `${houreStr}:${minutes > 9 ? minutes : "0" + minutes}`;
+};
+
 const showToast = (self : any, message : string) => {
 	(self.$refs.uToast as any).show({
 		type: 'success',
@@ -39,4 +52,4 @@ const checkSession = () => {
 	});
 }
 
-export { generateUUID, showToast, quizNameDic, checkSession, quizTypeArray }
+export { generateUUID, showToast, quizNameDic, checkSession, quizTypeArray, formatTime}

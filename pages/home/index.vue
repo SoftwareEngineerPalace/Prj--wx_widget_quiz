@@ -17,6 +17,7 @@
 
 		<!-- <button class="btn" @click="onQuiz" data-quizType="ts" type="primary">TypeScript 答题</button> -->
 		<!-- <button class="btn" @click="onCms" data-quizType="ts">TypeScript 后台</button> -->
+		<button class="btn" @click="onTask" >任务</button>
 	</view>
 	<u-popup :safeAreaInsetTop='false' :customStyle="{display:'flex', flexDirection:'column', alignItems:'center', 
 	justifyContent:'space-between'}" round='20' :overlay='true' :show="showSelectPopup" mode="top"
@@ -103,6 +104,11 @@
 		const queryStr = queryString.stringify({ quizType: quiztype })
 		const url = `/pages/cms/index?${queryStr}`;
 		// console.log('onCms', url);
+		uni.navigateTo({ url });
+	}
+	
+	const onTask = () =>{
+		const url = `/pages/task/index`;
 		uni.navigateTo({ url });
 	}
 

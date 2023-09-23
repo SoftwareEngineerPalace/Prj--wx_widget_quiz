@@ -38,21 +38,35 @@
 
 <script lang="ts">
 	import { generateUUID, quizNameDic, showToast } from '../../common/utils';
+	interface IQuiz {
+		id : string;
+		title : string;
+		init : boolean;
+		option_a?: string;
+		option_b?: string;
+		option_c?: string;
+		option_d?: string;
+		answer?: string;
+	}
+	interface IData {
+		quizList : IQuiz[];
+		dbName : string;
+	}
 	export default {
-		data() {
+		data() : IData {
 			return {
 				quizList: [],
-				dbName: ''
+				dbName: ""
 			}
 		},
-		async onLoad(evt) {
+		async onLoad(evt : { quizType : string }) {
 			this.dbName = evt.quizType;
 			console.log("onLoad", evt);
-			uni.setNavigationBarTitle({ title: `${quizNameDic[evt.quizType]} 后台` });
+			uni.setNavigationBarTitle({ title: `${quizNameDic.get(evt.quizType)} 后台` });
 			wx.cloud.init({
 				env: "quiz-0gb2aw2vb2850af4"
 			});
-			const data = await this.getAllQuiz(evt.quizType);
+			const data : IQuiz[] = await this.getAllQuiz(evt.quizType);
 			this.quizList.push(...data);
 		},
 		async mounted() {
@@ -73,7 +87,7 @@
 			// 更新一条
 			async onUpdateOne(evt : any) {
 				const id_to_update : string = evt.target.dataset.id;
-				const quiz = this.quizList.find(v => v.id === id_to_update);
+				const quiz = this.quizList.find((v : IQuiz) => v.id === id_to_update);
 				const data = { ...quiz, dbName: this.dbName };
 				console.log('onUpdateOne', data)
 				const rsp : any = await wx.cloud.callFunction({
@@ -88,8 +102,8 @@
 			//
 			async onAddOne(e : any) {
 				const id_to_add : string = e.target.dataset.id;
-				const data = this.quizList.find(v => v.id === id_to_add);
-				const index = this.quizList.findIndex(v => v.id === id_to_add);
+				const data = this.quizList.find((v : IQuiz) => v.id === id_to_add);
+				const index = this.quizList.findIndex((v : IQuiz) => v.id === id_to_add);
 				const rsp : any = await wx.cloud.callFunction({
 					name: 'addQuiz',
 					data: { ...data, init: false, dbName: this.dbName, index }
@@ -97,7 +111,7 @@
 				const result = rsp.result?.errMsg === 'collection.add:ok';
 				if (result) {
 					showToast(this, "新建成功");
-					this.quizList.forEach(v => {
+					this.quizList.forEach((v : IQuiz) => {
 						if (v.id === id_to_add) {
 							v.init = false;
 						}
