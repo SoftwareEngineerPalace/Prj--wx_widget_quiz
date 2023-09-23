@@ -2,12 +2,12 @@
 	<view class="base">
 
 		<!-- 上部按钮 -->
-		<!-- <view class="topBar">
-			<u-textarea autoHeight class="initime__input" v-model="initTimeRaw" placeholder="请输入起始时间"></<u-textarea>
-			<button class="initime__ok" @click="onConfirmInitTime">确定</button>
-			<button class="btn-now" @click="setNowForStart">设定当前为起始时间</button>
-			<button class="btn-add" @click="addOne">新增</button>
-		</view> -->
+		<view class="topBar">
+			<u-textarea autoHeight class="initime__input" v-model="initTimeRaw" placeholder="请输入起始时间" />
+			<button type="default" class="initime__ok" @click="onConfirmInitTime">确定</button>
+			<button type="primary" class="btn-now" @click="setNowForStart">设定当前为起始时间</button>
+			<button type="warn" class="btn-add" @click="addOne">新增</button>
+		</view>
 
 		<!-- 拖拽容器 -->
 		<view class="bottom-container">
@@ -18,19 +18,19 @@
               color: colorMap.get(item.priority),
             }" v-model:value="item.name" placeholder="任务" @blur="onBlur">
 					</u-textarea>
-					<!-- <u-radio-group v-model:value="item.priority" @change="priorityChanged" class="priority-group">
+					<u-radio-group v-model="item.priority" @change="priorityChanged" class="priority-group">
 						<u-radio :value="3">高</u-radio>
 						<u-radio :value="2">中</u-radio>
 						<u-radio :value="1">低</u-radio>
 					</u-radio-group>
-					<u-radio-group v-model:value="item.duration" @change="onDurationChange" class="duration-group">
+					<u-radio-group v-model="item.duration" @change="onDurationChange" class="duration-group">
 						<u-radio :value="10">10</u-radio>
 						<u-radio :value="20">20</u-radio>
 						<u-radio :value="30">30</u-radio>
 						<u-radio :value="40">40</u-radio>
 						<u-radio :value="60">60</u-radio>
 						<u-radio :value="90">90</u-radio>
-					</u-radio-group> -->
+					</u-radio-group>
 
 					<button class="delete" @click="onDelete(index)">删</button>
 				</view>
@@ -54,7 +54,7 @@
 	// let hostname = window.location.hostname;
 
 	const onBlur = () => {
-		window.scrollTo(0, 0);
+		// window.scrollTo(0, 0);
 	}
 
 	onMounted(async () => {
@@ -114,6 +114,7 @@
 	/** 方法 2 */
 	const initTime = ref(8 * 60 + 30);
 	const initTimeRaw : Ref<string> = ref("8:30");
+
 	/** 确认了初始时间 */
 	const onConfirmInitTime = () => {
 		const a = initTimeRaw.value.split(":");
@@ -144,9 +145,8 @@
 		}
 
 		initTime.value = hour * 60 + nextTenMin * 10;
-		initTimeRaw.value = `${hour > 9 ? hour : "0" + hour}:${nextTenMin !== 0 ? nextTenMin * 10 : "00"
-			}`;
-		console.log("setNowForStart");
+		initTimeRaw.value = `${hour > 9 ? hour : "0" + hour}:${nextTenMin !== 0 ? nextTenMin * 10 : "00"}`;
+		console.log("setNowForStart", initTimeRaw.value);
 		update();
 	};
 
@@ -217,26 +217,27 @@
 		.topBar {
 			display: flex;
 			flex-direction: row;
-			justify-content: flex-start;
+			justify-content: space-between;
 			align-items: center;
 			margin: 20px 0 20px 0;
 			flex-grow: 0;
+			font-size: 14px;
 
 			.initime__input {
-				width: 30%;
 				text-align: center;
+				font-size: 14px;
 			}
 
 			.initime__ok {
-				width: 20%;
+				font-size: 14px;
 			}
 
 			.btn-now {
-				align-self: flex-end;
+				font-size: 14px;
 			}
 
 			.btn-add {
-				align-self: center;
+				font-size: 14px;
 			}
 		}
 
