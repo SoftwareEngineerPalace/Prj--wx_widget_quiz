@@ -18,30 +18,40 @@
 					<view class="deadline" :style="{color: colorDic[item.priority]}">{{ `${item.deadline}` }}</view>
 
 					<!-- 任务名字 -->
-					<u-textarea class="name" autoHeight v-model="item.name" placeholder="任务" @blur="onBlur">
+					<u-textarea :customStyle="{marginLeft:'8px', width:'100px'}" class="name" autoHeight
+						v-model="item.name" placeholder="任务" @blur="onBlur">
 					</u-textarea>
 
 					<!-- 选择优先级 -->
-					<u-radio-group size='10px' v-model="item.priority" @change="priorityChanged" class="priority-group">
-						<u-radio :key="3" :label="3" :name="3" shape="square"
-							:customStyle="{marginRight: '8px'}">高</u-radio>
-						<u-radio :key="2" :label="2" :name="2" shape="square"
-							:customStyle="{marginRight: '8px'}">中</u-radio>
-						<u-radio :key=" 1" :label="1" :name="1" shape="square">低</u-radio>
-					</u-radio-group>
+					<view :style="{marginLeft:'8px'}">
+						<u-radio-group :customStyle="{marginLeft:'8px'}" size='10px' v-model="item.priority"
+							@change="priorityChanged" class="priority-group" placement="column">
+							<u-radio labelSize="12px" :key="3" :label="3" :name="3" shape="square"
+								:customStyle="{marginRight: '8px'}">高</u-radio>
+							<u-radio labelSize="12px" :key="2" :label="2" :name="2" shape="square"
+								:customStyle="{marginRight: '8px'}">中</u-radio>
+							<u-radio labelSize="12px" :key=" 1" :label="1" :name="1" shape="square"
+								:customStyle="{marginRight: '8px'}">低</u-radio>
+						</u-radio-group>
+					</view>
 
 					<!-- 选择工作时长 -->
-					<u-radio-group size='10px' v-model="item.duration" @change="onDurationChange" class="duration-group">
-						<u-radio :key="10" :name="10" :label="10" shape="square"
+					<u-radio-group size='10px' v-model="item.duration" @change="onDurationChange"
+						class="duration-group">
+						<u-radio labelSize="12px" :key="10" :name="10" :label="10" shape="square"
 							:customStyle="{marginRight: '4px'}">10</u-radio>
-						<u-radio :key="20" :name="20" :label="20" shape="square"
+						<u-radio labelSize="12px" :key="20" :name="20" :label="20" shape="square"
 							:customStyle="{marginRight: '4px'}">20</u-radio>
-						<u-radio :key="30" :name="30" :label="30" shape="square">30</u-radio>
-						<u-radio :key="40" :name="40" :label="40" shape="square"
+
+						<u-radio labelSize="12px" :key="30" :name="30" :label="30" shape="square"
+							:customStyle="{marginRight: '4px'}">30</u-radio>
+						<u-radio labelSize="12px" :key="40" :name="40" :label="40" shape="square"
 							:customStyle="{marginRight: '4px'}">40</u-radio>
-						<u-radio :key="60" :name="60" :label="60" shape="square"
+
+						<u-radio labelSize="12px" :key="60" :name="60" :label="60" shape="square"
 							:customStyle="{marginRight: '4px'}">60</u-radio>
-						<u-radio :key="90" :name="90" :label="90" shape="square">90</u-radio>
+						<u-radio labelSize="12px" :key="90" :name="90" :label="90" shape="square"
+							:customStyle="{marginRight: '4px'}">90</u-radio>
 					</u-radio-group>
 
 					<!-- 删除按钮 -->
@@ -278,7 +288,7 @@
 				margin-bottom: 15vh;
 
 				.container {
-					width: 95vw;
+					width: 100vw;
 					display: flex;
 					justify-content: space-between;
 					align-items: center;
@@ -287,6 +297,7 @@
 					.priority-group {
 						display: flex;
 						flex-direction: column;
+						margin-left: 30px;
 					}
 
 					.duration-group {
@@ -305,7 +316,7 @@
 						text-align: center;
 						color: white;
 						margin-right: 10px;
-						margin-left: 10px;
+						margin-left: 30px;
 						font-weight: 500;
 						background: #eeeeee;
 						padding: 0;
