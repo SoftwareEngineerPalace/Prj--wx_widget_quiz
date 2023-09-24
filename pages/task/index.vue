@@ -86,11 +86,19 @@
 		// window.scrollTo(0, 0);
 	}
 
+	const getTask = async () => {
+		const rsp : any = await wx.cloud.callFunction({
+			name: 'getTask',
+		});
+		return rsp.result.data;
+	}
+
 	onMounted(async () => {
 		// const raw = await fetch(`http://${hostname}:3000/api/getLife`).then(
 		// 	(response) => response.json()
 		// );
-		const raw = null;
+		const raw = await getTask();
+		console.log('getTask', raw);
 		if (!!raw) {
 			list.value = raw;
 		} else {
@@ -220,15 +228,13 @@
 
 	/** 保存 */
 	const save = async () => {
-		console.log("准备保存的数据", list.value);
-		// const res = await fetch(`${origin}:3000/api/saveLife`, {
-		// 	method: "POST",
-		// 	body: JSON.stringify(list.value),
-		// 	headers: {
-		// 		"Content-Type": "application/json",
-		// 	},
-		// });
-		// console.log("保存接口的返回结果", res);
+		const _list = toRaw(list.value);
+		console.log("准备保存的数据", _list);
+		const rsp : any = await wx.cloud.callFunction({
+			name: 'addTask',
+			data: { list: _list }
+		})
+		console.log('保存数据后的回调', rsp);
 	};
 
 	const list = ref<any>([]);
