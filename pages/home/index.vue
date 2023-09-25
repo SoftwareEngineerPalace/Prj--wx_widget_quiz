@@ -10,14 +10,14 @@
 			<button type="primary" @click="continueExercise">继续练习</button>
 		</view>
 		<!-- <button class="btn" @click="onQuiz" data-quizType="js" type="primary">JavaScript 答题</button> -->
-		<!-- <button class="btn" @click="onCms" data-quizType="js">JavaScript 后台</button> -->
+		<button class="btn" v-if="dbaVisible" @click="onCms" data-quizType="js">JavaScript 后台</button>
 
 		<!-- <button class="btn" @click="onQuiz" data-quizType="es6" type="primary">ECMAScript 6 答题</button> -->
-		<!-- <button class="btn" @click="onCms" data-quizType="es6">ECMAScript 6 后台</button> -->
+		<button class="btn" v-if="dbaVisible" @click="onCms" data-quizType="es6">ECMAScript 6 后台</button>
 
 		<!-- <button class="btn" @click="onQuiz" data-quizType="ts" type="primary">TypeScript 答题</button> -->
-		<!-- <button class="btn" @click="onCms" data-quizType="ts">TypeScript 后台</button> -->
-		<button class="btn-task" @click="onTask">任务</button>
+		<button class="btn" @click="onCms" data-quizType="ts">TypeScript 后台</button>
+		<button class="btn-task" v-if="dbaVisible" @click="onTask">任务</button>
 	</view>
 	<u-popup :safeAreaInsetTop='false' :customStyle="{display:'flex', flexDirection:'column', alignItems:'center', 
 	justifyContent:'space-between'}" round='20' :overlay='true' :show="showSelectPopup" mode="top"
@@ -38,10 +38,14 @@
 
 	const latestQuizIndex : Ref<number> = ref(-1);
 	const quizCount : Ref<number> = ref(0);
+	const userOpenId : Ref<string> = ref('');
 	// 题目类型
 	const curQuizType : Ref<string> = ref('js');
 	// 题目选择器的 show
 	const showSelectPopup : Ref<boolean> = ref(false);
+
+	/** 只有管理员可见 */
+	const dbaVisible = computed(() => userOpenId.value === 'oGJqI61rEAICwpBqGgw_hteePEbY')
 
 	const processDesc = computed(() => {
 		if (quizCount.value) {
@@ -55,11 +59,19 @@
 	onShow(async () => {
 		console.log("home index onShow");
 		updateOnQuizTypeChanged();
+
+		updateUI();
 	})
 
 	onLoad(() => {
 
 	})
+
+	const updateUI = () => {
+		const token = uni.getStorageSync('token');
+		const [user_open_id] = token.split("__");
+		userOpenId.value = user_open_id;
+	}
 
 	/** 题目类型变化后，更新数据 */
 	const updateOnQuizTypeChanged = async () => {
