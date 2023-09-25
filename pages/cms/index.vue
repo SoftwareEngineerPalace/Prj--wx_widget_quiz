@@ -1,6 +1,6 @@
 <template>
 	<view class="first-chapter">
-		<u-form id="form-wrapper" labelPosition="left" :model="quizList" ref="form">
+		<u-form id="form-wrapper" labelPosition="left" ref="form">
 			<view v-for="(quiz, index) in quizList" :key="quiz.id" :data-id="quiz.id" class="quiz">
 				<u-form-item :label="`${index + 1}`" prop="title" label-width="80">
 					<u-textarea autoHeight v-model="quiz.title"></u-textarea>
@@ -21,10 +21,10 @@
 					<u-input v-model="quiz.answer" />
 				</u-form-item>
 				<u-form-item label=" " label-width="80">
-					<button type="primary" style="width: 100%;" class="btn" @click="onAddOne" v-if="quiz?.init"
-						:data-id="quiz?.id">插入数据库</button>
-					<button type="primary" style="width: 100%;" class="btn" @click="onUpdateOne" v-if="!quiz?.init"
-						:data-id="quiz?.id">更新</button>
+					<button type="primary" style="width: 100%;" class="btn" @click="onAddOne" v-show="quiz.init"
+						:data-id="quiz.id">插入数据库</button>
+					<button type="primary" style="width: 100%;" class="btn" @click="onUpdateOne" v-show="!quiz.init"
+						:data-id="quiz.id">更新</button>
 				</u-form-item>
 			</view>
 		</u-form>
@@ -37,21 +37,7 @@
 </template>
 
 <script lang="ts">
-	import { generateUUID, quizNameDic, showToast } from '../../common/utils';
-	interface IQuiz {
-		id : string;
-		title : string;
-		init : boolean;
-		option_a?: string;
-		option_b?: string;
-		option_c?: string;
-		option_d?: string;
-		answer?: string;
-	}
-	interface IData {
-		quizList : IQuiz[];
-		dbName : string;
-	}
+	import { generateUUID, quizNameDic, showToast, IData, IQuiz } from '../../common/utils';
 	export default {
 		data() : IData {
 			return {

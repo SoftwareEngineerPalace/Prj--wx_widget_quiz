@@ -52,4 +52,25 @@ const checkSession = () => {
 	});
 }
 
-export { generateUUID, showToast, quizNameDic, checkSession, quizTypeArray, formatTime}
+interface IQuiz {
+	id : string;
+	title : string;
+	init : boolean;
+	option_a ?: string;
+	option_b ?: string;
+	option_c ?: string;
+	option_d ?: string;
+	answer ?: string;
+}
+interface IData {
+	quizList : IQuiz[];
+	dbName : string;
+}
+interface ICheckbox {
+	id : string;
+	selected : boolean;
+	value : string;
+	isCorrect : boolean;
+}
+
+export { generateUUID, showToast, quizNameDic, checkSession, quizTypeArray, formatTime, IQuiz, IData, ICheckbox }

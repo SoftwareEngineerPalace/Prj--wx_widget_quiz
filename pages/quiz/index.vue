@@ -38,161 +38,137 @@
 
 </template>
 
-<script lang="ts" setup>
-	import {
-		onMounted,
-		reactive,
-		ref,
-		computed,
-		Ref,
-	} from 'vue';
+<script lang="ts">
 	import quizController from '../../common/quizController';
-	import { onLoad, onUnload } from '@dcloudio/uni-app';
-	import { quizNameDic } from '../../common/utils';
-	import queryString from 'query-string'
+	import { ICheckbox, quizNameDic } from '../../common/utils';
+	import queryString from 'query-string';
 
-	interface ICheckbox {
-		id : string;
-		selected : boolean;
-		value : string;
-		isCorrect : boolean;
-	}
-
-	// 所有题目
-	const quizList = ref<Array<unknown>>([]);
-	// 题目类型
-	const quizType : Ref<string> = ref('');
-
-	const showGroupBtns = ref(false);
-	// 当前题目的数据
-	let curQuiz : any = ref({});
-	// 当前4个选项
-	let checkboxList = reactive<ICheckbox[]>([]);
-	// 用户的答案
-	const userAnswer : Ref<string> = ref('')
-
-	const onClickOption = (evt : any) => {
-		// console.log("onClickOption evt", evt);
-		const clicked_id = evt.target.dataset.id;
-		checkboxList.forEach((v : any) => {
-			if (v.id === clicked_id) {
-				v.selected = !v.selected;
+	export default {
+		data() : any {
+			return {
+				quizList: [],// 所有题目
+				quizType: "",// 题目类型
+				showGroupBtns: false,
+				curQuiz: {},// 当前题目的数据
+				checkboxList: [],// 当前4个选项
+				userAnswer: '',// 用户的答案
+				quizController: quizController,
 			}
-		})
-		const _userAnswer = checkboxList.filter(v => v.selected).map(v => v.id).join('');
-		// console.log({ _userAnswer });
-		userAnswer.value = _userAnswer;
-	}
+		},
+		onUnload() {
+			uni.setNavigationBarTitle({ title: '' });
+			quizController.setQuizList([]);
+		},
+		async onLoad(evt : { quizType : string }) {
+			// console.log('onLoad', evt);
+			wx.cloud.init({
+				env: "quiz-0gb2aw2vb2850af4"
+			});
+			this.quizType = evt.quizType;
 
-	const index_str = computed(() => {
-		curQuiz.value
-		const index = quizController.getCurQuizIndex();
-		const count = quizController.getQuizCount();
-		// console.log('index_str index', index);
-		return index !== -1 ? `${(index + 1)}/${count}.  ` : "";
-	})
+			// 设置 bar title
+			const title : string = quizNameDic.get(evt.quizType) as string;
+			// console.log("title", title);
+			uni.setNavigationBarTitle({ title });
 
-	const title_str = computed(() => {
-		return curQuiz.value.title ?? '';
-	})
+			// 加载所有题目
+			const data = await this.getAllQuizs(evt.quizType);
+			this.quizList.push(...data);
+			quizController.setQuizList(data);
 
-	const getAllQuizs = async (dbName : string) => {
-		const rsp : any = await wx.cloud.callFunction({
-			name: 'getAllQuiz',
-			data: { dbName }
-		});
-		return rsp.result.data;
-	}
-
-	const onSubmit = async () => {
-		curQuiz.value.submitted = true;
-		const token = uni.getStorageSync('token');
-		const isCorrect = curQuiz.value.answer === userAnswer.value;
-		const quiz_index = quizController.getCurQuizIndex();
-		const quizCount = quizController.getQuizCount();
-		const data = {
-			quiz_title: curQuiz.value.title, quiz_id: curQuiz.value.id,
-			quizType: quizType.value, token, isCorrect, quiz_index, quiz_count: quizCount
-		};
-		// console.log("onSubmit", data);
-		const rsp : any = await wx.cloud.callFunction({
-			name: 'answer',
-			data
-		});
-		// console.log('答题结果', rsp)
-		return rsp.result.data;
-	}
-
-	const onPrev = () => {
-		curQuiz.value = { ...quizController.goPreview(), submitted: false };
-		updateQuiz(curQuiz.value);
-	}
-
-	const onNext = () => {
-		const nextQuiz = quizController.goNext();
-		// console.log('nextQuiz', nextQuiz);
-		if (nextQuiz !== null) {
-			curQuiz.value = { ...nextQuiz, submitted: false };
-			updateQuiz(curQuiz.value);
-		} else {
-			// console.log('onNext quizType.value', quizType.value);
-			const queryStr = queryString.stringify({ quizType: quizType.value });
-			const url = `/pages/summary/index?${queryStr}`;
-			uni.redirectTo({ url })
+			// 加载做题进度
+			const token = uni.getStorageSync('token');
+			const rsp : any = await wx.cloud.callFunction({
+				name: 'getProcess',
+				data: { token, quiz_type: evt.quizType }
+			});
+			// console.log('已经做了的题目数', rsp.result.latest_quiz_index + 1);
+			quizController.setCurQuizIndex(rsp.result.latest_quiz_index)
+			this.onNext();
+		},
+		computed: {
+			title_str() {
+				return this.curQuiz.title ?? '';
+			},
+			index_str() {
+				this.curQuiz;
+				const index = quizController.getCurQuizIndex();
+				const count = quizController.getQuizCount();
+				// console.log('index_str index', index);
+				return index !== -1 ? `${(index + 1)}/${count}.  ` : "";
+			}
+		},
+		methods: {
+			onClickOption(evt : any) {
+				// console.log("onClickOption evt", evt);
+				const clicked_id = evt.target.dataset.id;
+				this.checkboxList.forEach((v : any) => {
+					if (v.id === clicked_id) {
+						v.selected = !v.selected;
+					}
+				})
+				const _userAnswer = this.checkboxList.filter((v : ICheckbox) => v.selected).map((v : ICheckbox) => v.id).join('');
+				// console.log({ _userAnswer });
+				this.userAnswer = _userAnswer;
+			},
+			async getAllQuizs(dbName : string) {
+				const rsp : any = await wx.cloud.callFunction({
+					name: 'getAllQuiz',
+					data: { dbName }
+				});
+				return rsp.result.data;
+			},
+			async onSubmit() {
+				this.curQuiz.submitted = true;
+				const token = uni.getStorageSync('token');
+				const isCorrect = this.curQuiz.answer === this.userAnswer;
+				const quiz_index = quizController.getCurQuizIndex();
+				const quizCount = quizController.getQuizCount();
+				const data = {
+					quiz_title: this.curQuiz.title, quiz_id: this.curQuiz.id,
+					quizType: this.quizType, token, isCorrect, quiz_index, quiz_count: quizCount
+				};
+				// console.log("onSubmit", data);
+				const rsp : any = await wx.cloud.callFunction({
+					name: 'answer',
+					data
+				});
+				// console.log('答题结果', rsp)
+				return rsp.result.data;
+			},
+			onPrev() {
+				this.curQuiz = { ...quizController.goPreview(), submitted: false };
+				this.updateQuiz(this.curQuiz);
+			},
+			onNext() {
+				const nextQuiz = quizController.goNext();
+				// console.log('nextQuiz', nextQuiz);
+				if (nextQuiz !== null) {
+					this.curQuiz = { ...nextQuiz, submitted: false };
+					this.updateQuiz(this.curQuiz);
+				} else {
+					// console.log('onNext quizType.value', quizType.value);
+					const queryStr = queryString.stringify({ quizType: this.quizType });
+					const url = `/pages/summary/index?${queryStr}`;
+					uni.redirectTo({ url })
+				}
+			},
+			updateQuiz(quiz : any) {
+				const { option_a, option_b, option_c, option_d, answer } = quiz;
+				this.checkboxList = Object.entries({ option_a, option_b, option_c, option_d }).map((v : string[]) => {
+					const id = v[0].charAt(v[0].length - 1).toUpperCase();
+					const option = {
+						id,
+						value: `${id}. ${v[1]}`,
+						selected: false,
+						isCorrect: answer.includes(id),
+					};
+					return option;
+				})
+				this.showGroupBtns = true;
+			}
 		}
 	}
-
-	const updateQuiz = (quiz : any) => {
-		const { option_a, option_b, option_c, option_d, answer } = quiz;
-		checkboxList = Object.entries({ option_a, option_b, option_c, option_d }).map(v => {
-			const id = v[0].charAt(v[0].length - 1).toUpperCase();
-			const option = {
-				id,
-				value: `${id}. ${v[1]}`,
-				selected: false,
-				isCorrect: answer.includes(id),
-			};
-			return reactive(option);
-		})
-		showGroupBtns.value = true;
-	}
-
-	onLoad(async (evt : { quizType : string }) => {
-		// console.log('onLoad', evt);
-		wx.cloud.init({
-			env: "quiz-0gb2aw2vb2850af4"
-		});
-		quizType.value = evt.quizType;
-
-		// 设置 bar title
-		const title : string = quizNameDic.get(evt.quizType) as string;
-		// console.log("title", title);
-		uni.setNavigationBarTitle({ title });
-
-		// 加载所有题目
-		const data = await getAllQuizs(evt.quizType);
-		quizList.value.push(...data);
-		quizController.setQuizList(data);
-
-		// 加载做题进度
-		const token = uni.getStorageSync('token');
-		const rsp : any = await wx.cloud.callFunction({
-			name: 'getProcess',
-			data: { token, quiz_type: evt.quizType }
-		});
-		// console.log('已经做了的题目数', rsp.result.latest_quiz_index + 1);
-		quizController.setCurQuizIndex(rsp.result.latest_quiz_index)
-		onNext();
-	})
-
-	onUnload(() => {
-		uni.setNavigationBarTitle({ title: '' });
-		quizController.setQuizList([]);
-	})
-
-	onMounted(async () => {
-		// console.log("onMounted")
-	})
 </script>
 
 <style lang="scss">

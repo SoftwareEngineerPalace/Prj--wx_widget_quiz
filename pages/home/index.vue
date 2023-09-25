@@ -1,143 +1,136 @@
 <template>
-	<view class="main">
-		<view class="container-title" @click="onClickTitle">
-			<view>{{`当前题库: ${quizNameDic.get(curQuizType)}`}}</view>
-			<view>{{processDesc}}</view>
-		</view>
-		<view class="container-continue">
-			<view>继续</view>
-			<view>从上次中断的地方继续练习</view>
-			<button type="primary" @click="continueExercise">继续练习</button>
-		</view>
-		<!-- <button class="btn" @click="onQuiz" data-quizType="js" type="primary">JavaScript 答题</button> -->
-		<button class="btn" v-if="dbaVisible" @click="onCms" data-quizType="js">JavaScript 后台</button>
+	<view class='base'>
+		<view class="main">
+			<!-- 1 当前题库 -->
+			<view class="container-title" @click="onClickTitle">
+				<view>{{`当前题库: ${quizNameDic.get(curQuizType)}`}}</view>
+				<view>{{processDesc}}</view>
+			</view>
+			<!-- 2 继续 -->
+			<view class="container-continue">
+				<view>继续</view>
+				<view>从上次中断的地方继续练习</view>
+				<button type="primary" @click="continueExercise">继续练习</button>
+			</view>
+			<!-- 3 后台 -->
+			<view class="admin-container" v-if="adminVisible">
+				<button class="btn" @click="onCms" data-quizType="js">JavaScript 后台</button>
+				<button class="btn" @click="onCms" data-quizType="es6">ECMAScript 6 后台</button>
+				<button class="btn" @click="onCms" data-quizType="ts">TypeScript 后台</button>
+				<button class="btn-task" @click="onTask">任务</button>
+			</view>
 
-		<!-- <button class="btn" @click="onQuiz" data-quizType="es6" type="primary">ECMAScript 6 答题</button> -->
-		<button class="btn" v-if="dbaVisible" @click="onCms" data-quizType="es6">ECMAScript 6 后台</button>
-
-		<!-- <button class="btn" @click="onQuiz" data-quizType="ts" type="primary">TypeScript 答题</button> -->
-		<button class="btn" @click="onCms" data-quizType="ts">TypeScript 后台</button>
-		<button class="btn-task" v-if="dbaVisible" @click="onTask">任务</button>
-	</view>
-	<u-popup :safeAreaInsetTop='false' :customStyle="{display:'flex', flexDirection:'column', alignItems:'center', 
+		</view>
+			<u-popup :safeAreaInsetTop='false' :customStyle="{display:'flex', flexDirection:'column', alignItems:'center',
 	justifyContent:'space-between'}" round='20' :overlay='true' :show="showSelectPopup" mode="top"
-		@close="onSelectPopupClose">
-		<view v-for="(item) in quizTypeArray" :data-id="item.value" @click="onSelectQuizType">
-			<text :key="item.value">{{item.label}}</text>
-		</view>
-		<u-line color="#aaaaaa"></u-line>
-		<button @click="closeSelectPop">取消</button>
-	</u-popup>
+			@close="onSelectPopupClose">
+			<view v-for="(item) in quizTypeArray" :data-id="item.value" @click="onSelectQuizType">
+				<text :key="item.value">{{item.label}}</text>
+			</view>
+			<u-line color="#aaaaaa"></u-line>
+			<button @click="closeSelectPop">取消</button>
+		</u-popup>
+	</view>
 </template>
 
-<script setup lang="ts">
-	import { computed, onMounted, Ref, ref } from 'vue';
+<script lang="ts">
+	// import { computed, onMounted, Ref, ref } from 'vue';
+	declare const wx : any;
 	import { checkSession, quizNameDic, quizTypeArray } from '../../common/utils';
 	import queryString from 'query-string';
-	import { onShow, onLoad } from '@dcloudio/uni-app';
-
-	const latestQuizIndex : Ref<number> = ref(-1);
-	const quizCount : Ref<number> = ref(0);
-	const userOpenId : Ref<string> = ref('');
-	// 题目类型
-	const curQuizType : Ref<string> = ref('js');
-	// 题目选择器的 show
-	const showSelectPopup : Ref<boolean> = ref(false);
-
-	/** 只有管理员可见 */
-	const dbaVisible = computed(() => userOpenId.value === 'oGJqI61rEAICwpBqGgw_hteePEbY')
-
-	const processDesc = computed(() => {
-		if (quizCount.value) {
-			return `本题库练习进度 ${latestQuizIndex.value + 1}/${quizCount.value}`;
-		} else {
-			// return '还没开始练习';
-			return `本题库练习进度为 ${latestQuizIndex.value + 1}`;
+	// import { onShow, onLoad } from '@dcloudio/uni-app';
+	export default {
+		data() {
+			return {
+				latestQuizIndex: -1,
+				quizCount: 0,
+				userOpenId: "",
+				curQuizType: 'js',
+				showSelectPopup: false,
+				quizNameDic: quizNameDic,
+				quizTypeArray: quizTypeArray
+			}
+		},
+		onShow() {
+			console.log("home index onShow");
+			this.updateOnQuizTypeChanged();
+			this.updateUI();
+		},
+		async mounted() {
+			const hasSession = await checkSession();
+			const token = uni.getStorageSync('token');
+			if (!hasSession || !token) {
+				uni.switchTab({
+					url: '/pages/mine/index'
+				})
+			}
+		},
+		computed: {
+			adminVisible() { return this.userOpenId === 'oGJqI61rEAICwpBqGgw_hteePEbY' },
+			processDesc() {
+				if (this.quizCount) {
+					return `本题库练习进度 ${this.latestQuizIndex + 1}/${this.quizCount}`;
+				} else {
+					// return '还没开始练习';
+					return `本题库练习进度为 ${this.latestQuizIndex + 1}`;
+				}
+			}
+		},
+		methods: {
+			updateUI() {
+				const token = uni.getStorageSync('token');
+				const [user_open_id] = token.split("__");
+				this.userOpenId = user_open_id;
+			},
+			/** 题目类型变化后，更新数据 */
+			async updateOnQuizTypeChanged() {
+				// 用用户id和题目类型拿进度
+				const token = uni.getStorageSync('token');
+				const rsp : any = await wx.cloud.callFunction({
+					name: 'getProcess',
+					data: { token, quiz_type: this.curQuizType }
+				});
+				// console.log('index updateOnQuizTypeChanged 获得题目进度', rsp.result)
+				const { latest_quiz_index, quiz_count } = rsp.result;
+				this.latestQuizIndex = latest_quiz_index;
+				this.quizCount = quiz_count;
+			},
+			continueExercise() {
+				const quizType = this.curQuizType;
+				const queryStr = queryString.stringify({ quizType });
+				const url = `/pages/quiz/index?${queryStr}`;
+				// console.log('continueExercise', url);
+				uni.navigateTo({ url })
+			},
+			onClickTitle() {
+				this.showSelectPopup = true;
+			},
+			onCms(evt : any) {
+				// console.log('onCms evt', evt);
+				const { quiztype } = evt.target.dataset;
+				const queryStr = queryString.stringify({ quizType: quiztype })
+				const url = `/pages/cms/index?${queryStr}`;
+				// console.log('onCms', url);
+				uni.navigateTo({ url });
+			},
+			onTask() {
+				const url = `/pages/task/index`;
+				uni.navigateTo({ url });
+			},
+			onSelectPopupClose(evt : any) {
+				// console.log('onSelectPopupClose')
+			},
+			closeSelectPop(evt : any) {
+				this.showSelectPopup = false;
+			},
+			onSelectQuizType(evt : any) {
+				// console.log("onSelectQuizType", evt);
+				this.showSelectPopup = false;
+				const quizType = evt.currentTarget.dataset.id;
+				this.curQuizType = quizType;
+				this.updateOnQuizTypeChanged();
+			}
 		}
-	})
-
-	onShow(async () => {
-		console.log("home index onShow");
-		updateOnQuizTypeChanged();
-
-		updateUI();
-	})
-
-	onLoad(() => {
-
-	})
-
-	const updateUI = () => {
-		const token = uni.getStorageSync('token');
-		const [user_open_id] = token.split("__");
-		userOpenId.value = user_open_id;
-	}
-
-	/** 题目类型变化后，更新数据 */
-	const updateOnQuizTypeChanged = async () => {
-		// 用用户id和题目类型拿进度
-		const token = uni.getStorageSync('token');
-		const rsp : any = await wx.cloud.callFunction({
-			name: 'getProcess',
-			data: { token, quiz_type: curQuizType.value }
-		});
-		// console.log('index updateOnQuizTypeChanged 获得题目进度', rsp.result)
-		const { latest_quiz_index, quiz_count } = rsp.result;
-		latestQuizIndex.value = latest_quiz_index;
-		quizCount.value = quiz_count;
-	}
-
-	onMounted(async () => {
-		const hasSession = await checkSession();
-		const token = uni.getStorageSync('token');
-		// console.log('onMounted', { hasSession, token })
-		if (!hasSession || !token) {
-			uni.switchTab({
-				url: '/pages/mine/index'
-			})
-		}
-	})
-
-	const continueExercise = () => {
-		const quizType = curQuizType.value;
-		const queryStr = queryString.stringify({ quizType });
-		const url = `/pages/quiz/index?${queryStr}`;
-		// console.log('continueExercise', url);
-		uni.navigateTo({ url })
-	}
-
-	const onClickTitle = () => {
-		showSelectPopup.value = true;
-	}
-
-	const onCms = (evt : any) => {
-		// console.log('onCms evt', evt);
-		const { quiztype } = evt.target.dataset;
-		const queryStr = queryString.stringify({ quizType: quiztype })
-		const url = `/pages/cms/index?${queryStr}`;
-		// console.log('onCms', url);
-		uni.navigateTo({ url });
-	}
-
-	const onTask = () => {
-		const url = `/pages/task/index`;
-		uni.navigateTo({ url });
-	}
-
-	const onSelectPopupClose = (evt : any) => {
-		// console.log('onSelectPopupClose')
-	}
-
-	const closeSelectPop = (evt : any) => {
-		showSelectPopup.value = false;
-	}
-
-	const onSelectQuizType = (evt : any) => {
-		// console.log("onSelectQuizType", evt);
-		showSelectPopup.value = false;
-		const quizType = evt.currentTarget.dataset.id;
-		curQuizType.value = quizType;
-		updateOnQuizTypeChanged()
 	}
 </script>
 
@@ -154,7 +147,6 @@
 			width: 100%;
 			height: 100vh;
 			background-color: #eeeeee;
-			justify-content: flex-start;
 			align-items: center;
 
 			.container-title {
@@ -163,17 +155,29 @@
 				border-radius: 20rpx;
 				display: flex;
 				flex-direction: column;
+				justify-content: space-between;
 				align-items: center;
+				padding: 30rpx 30rpx 30rpx 30rpx;
 			}
 
 			.container-continue {
 				margin-top: 30rpx;
 				border-radius: 20rpx;
+				justify-content: space-between;
 				width: 90%;
 				background-color: white;
 				display: flex;
 				flex-direction: column;
 				align-items: flex-start;
+				margin-bottom: 30rpx;
+				padding: 30rpx 30rpx 30rpx 30rpx;
+			}
+
+			.admin-container {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: flex-start;
 			}
 
 			.btn-task {
