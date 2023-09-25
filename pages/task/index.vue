@@ -66,22 +66,16 @@
 										:customStyle="{marginRight: '4px'}">30</u-radio>
 								</u-grid-item>
 							</u-grid>
-
-
-
-							<!-- 
-							<u-radio labelSize="12px" :key="40" :name="40" :label="40" shape="square"
-								:customStyle="{marginRight: '4px'}">40</u-radio>
-
-							<u-radio labelSize="12px" :key="60" :name="60" :label="60" shape="square"
-								:customStyle="{marginRight: '4px'}">60</u-radio>
-							<u-radio labelSize="12px" :key="90" :name="90" :label="90" shape="square"
-								:customStyle="{marginRight: '4px'}">90</u-radio> -->
 						</u-radio-group>
 					</view>
 
 					<!-- 删除按钮 -->
-					<button class="delete" @click="onDelete(index)">删</button>
+					<view class="container-action">
+						<button class="btn delete" @click="onDelete(index)">删</button>
+						<button class="btn up" @click="moveUp(index)" v-if="index !== 0">上</button>
+						<button class="btn down" @click="moveDown(index)" v-if="index !== list.length - 1">下</button>
+					</view>
+
 				</view>
 			</view>
 		</view>
@@ -214,7 +208,20 @@
 				console.log("onDelete");
 				this.update();
 			},
-
+			moveUp(index : number) {
+				if (index === 0) return;
+				const temp = this.list[index];
+				this.list[index] = this.list[index - 1];
+				this.list[index - 1] = temp;
+				this.update()
+			},
+			moveDown(index : number) {
+				if (index === this.list.length - 1) return;
+				const temp = this.list[index];
+				this.list[index] = this.list[index + 1];
+				this.list[index + 1] = temp;
+				this.update()
+			},
 			update() {
 				console.log("update");
 				this.list = this.list.sort((a : { priority : number }, b : { priority : number }) => b.priority - a.priority);
@@ -346,6 +353,23 @@
 						width: 150px;
 						white-space: wrap;
 						color: red;
+					}
+
+					.container-action {
+						display: flex;
+						flex-direction: column;
+						justify-content: space-between;
+						align-items: center;
+
+						.btn {
+							width: 25px;
+							flex-shrink: 0;
+							font-size: 10px;
+							text-align: center;
+							letter-spacing: 0;
+							margin-right: 5px;
+							padding: 0;
+						}
 					}
 
 					.delete {
