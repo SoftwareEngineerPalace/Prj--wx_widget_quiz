@@ -3,32 +3,30 @@
 		<view class="main">
 			<!-- 1 当前题库 -->
 			<view class="container-title" @click="onClickTitle">
-				<view>{{`当前题库: ${quizNameDic.get(curQuizType)}`}}</view>
-				<view>{{processDesc}}</view>
+				<view class="container-name">
+					<view class="title">{{`当前题库: ${quizNameDic.get(curQuizType)}`}}</view>
+					<u-icon name="arrow-down-fill" color="#4cd964" size="14"></u-icon>
+				</view>
+				<view class="sub-title">{{processDesc}}</view>
 			</view>
 			<!-- 2 继续 -->
 			<view class="container-continue">
-				<view>继续</view>
-				<view>从上次中断的地方继续练习</view>
-				<button type="primary" @click="continueExercise">继续练习</button>
-			</view>
-			<!-- 3 后台 -->
-			<view class="admin-container" v-if="adminVisible">
-				<button class="btn" @click="onCms" data-quizType="js">JavaScript 后台</button>
-				<button class="btn" @click="onCms" data-quizType="es6">ECMAScript 6 后台</button>
-				<button class="btn" @click="onCms" data-quizType="ts">TypeScript 后台</button>
-				<button class="btn-task" @click="onTask">任务</button>
+				<view class="title">继续</view>
+				<view class="sub-title">从上次中断的地方继续练习</view>
+				<button type="primary" style="font-size: 16px; width: 100%;" @click="continueExercise">继续练习</button>
 			</view>
 
 		</view>
-			<u-popup :safeAreaInsetTop='false' :customStyle="{display:'flex', flexDirection:'column', alignItems:'center',
+		<u-popup :safeAreaInsetTop='false' :safe-area-inset-bottom="false" :customStyle="{display:'flex', flexDirection:'column', alignItems:'center',
 	justifyContent:'space-between'}" round='20' :overlay='true' :show="showSelectPopup" mode="top"
 			@close="onSelectPopupClose">
-			<view v-for="(item) in quizTypeArray" :data-id="item.value" @click="onSelectQuizType">
-				<text :key="item.value">{{item.label}}</text>
+			<view>
+				<view class="choice" v-for="(item) in quizTypeArray" :data-id="item.value" @click="onSelectQuizType">
+					<text :key="item.value">{{item.label}}</text>
+				</view>
 			</view>
-			<u-line color="#aaaaaa"></u-line>
-			<button @click="closeSelectPop">取消</button>
+			<u-line class="line" color="#dddddd"></u-line>
+			<button size="default" style="margin-top: 10px; margin-bottom: 10px; font-size: 12px;" @click="closeSelectPop">取消</button>
 		</u-popup>
 	</view>
 </template>
@@ -105,18 +103,6 @@
 			onClickTitle() {
 				this.showSelectPopup = true;
 			},
-			onCms(evt : any) {
-				// console.log('onCms evt', evt);
-				const { quiztype } = evt.target.dataset;
-				const queryStr = queryString.stringify({ quizType: quiztype })
-				const url = `/pages/cms/index?${queryStr}`;
-				// console.log('onCms', url);
-				uni.navigateTo({ url });
-			},
-			onTask() {
-				const url = `/pages/task/index`;
-				uni.navigateTo({ url });
-			},
 			onSelectPopupClose(evt : any) {
 				// console.log('onSelectPopupClose')
 			},
@@ -139,6 +125,13 @@
 		width: 100vw;
 		height: 100vh;
 		background-color: #eeeeee;
+		
+		.sub-title{
+			font-size: 14px;
+			color: gray;
+			margin-top: 10px;
+			margin-bottom: 10px;
+		}
 
 		.main {
 			display: flex;
@@ -150,21 +143,32 @@
 			align-items: center;
 
 			.container-title {
-				width: 90%;
+				width: 82%;
 				background-color: white;
 				border-radius: 20rpx;
 				display: flex;
 				flex-direction: column;
 				justify-content: space-between;
 				align-items: center;
-				padding: 30rpx 30rpx 30rpx 30rpx;
+				padding: 30rpx 30rpx 0 30rpx;
+
+				.container-name {
+					display: flex;
+					flex-direction: row;
+					justify-content: space-between;
+					align-items: center;
+
+					.title {
+						margin-right: 20rpx;
+					}
+				}
 			}
 
 			.container-continue {
 				margin-top: 30rpx;
 				border-radius: 20rpx;
 				justify-content: space-between;
-				width: 90%;
+				width: 82%;
 				background-color: white;
 				display: flex;
 				flex-direction: column;
@@ -184,5 +188,23 @@
 				margin-top: 30rpx;
 			}
 		}
+	}
+
+	.choice {
+		font-size: 15px;
+		color: #333333;
+		margin-top: 30rpx;
+
+		&:hover {
+			background-color: #dddddd;
+		}
+
+		// &:last-child {
+		// 	margin-bottom: 30rpx;
+		// }
+	}
+
+	.choice:last-child {
+		margin-bottom: 30rpx;
 	}
 </style>

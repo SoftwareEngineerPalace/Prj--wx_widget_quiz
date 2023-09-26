@@ -1,13 +1,23 @@
 <template>
-	<view>
+	<view class="base">
 		{{mineInfo.nickName}}
 		<button @click="getUserInfo()" type="primary" v-if="!loggedIn">点击登录</button>
 		<button @click="logout()" type="warn" v-if="loggedIn">退出登录</button>
+
+		<button @click="adminVisible=!adminVisible">{{adminVisible?'关闭后台':'显示后台'}}</button>
+		<!-- 3 后台 -->
+		<view class="admin-container" v-if="adminVisible">
+			<button class="btn" @click="onCms" data-quizType="js">JavaScript 后台</button>
+			<button class="btn" @click="onCms" data-quizType="es6">ECMAScript 6 后台</button>
+			<button class="btn" @click="onCms" data-quizType="ts">TypeScript 后台</button>
+			<button class="btn-task" @click="onTask">任务</button>
+		</view>
 	</view>
 </template>
 
 <script lang="ts">
 	import { checkSession } from '../../common/utils';
+	import queryString from 'query-string'
 
 	export default {
 		data() {
@@ -15,7 +25,8 @@
 				mineInfo: { nickName: "我的昵称" },
 				loggedIn: false,
 				codeRef: "",
-				loginInfo: {}
+				loginInfo: {},
+				adminVisible: false
 			}
 		},
 		async onMounted() {
@@ -29,6 +40,18 @@
 			console.log('是已登录状态', this.loggedIn);
 		},
 		methods: {
+			onCms(evt : any) {
+				// console.log('onCms evt', evt);
+				const { quiztype } = evt.target.dataset;
+				const queryStr = queryString.stringify({ quizType: quiztype })
+				const url = `/pages/cms/index?${queryStr}`;
+				// console.log('onCms', url);
+				uni.navigateTo({ url });
+			},
+			onTask() {
+				const url = `/pages/task/index`;
+				uni.navigateTo({ url });
+			},
 			async getUserInfo() {
 				uni.showLoading({
 					title: '加载中',
@@ -94,6 +117,11 @@
 	}
 </script>
 
-<style>
-
+<style lang="scss">
+	.base{
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-start;
+		align-items: center;
+	}
 </style>
