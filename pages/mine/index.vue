@@ -1,16 +1,89 @@
 <template>
 	<view class="base">
-		{{mineInfo.nickName}}
-		<button @click="getUserInfo()" type="primary" v-if="!loggedIn">点击登录</button>
-		<button @click="logout()" type="warn" v-if="loggedIn">退出登录</button>
+		<view class="container-up">
+			<view class="personal-info">
+				<view>{{loginInfo.nickName}}</view>
+				<u--image :src="loginInfo.avatarUrl" shape="circle" width="80px" height="80px"></u--image>
+			</view>
+			<u-line class="line" color="#dddddd"></u-line>
+			<view class="common-items">
+				<view class="card">
+					<u-icon name="order" color="#bbbbbb" size="50"></u-icon>
+					<view>错题本</view>
+				</view>
+				<view class="card">
+					<u-icon name="chat-fill" color="#bbbbbb" size="50"></u-icon>
+					<view>评论</view>
+				</view>
+				<view class="card">
+					<u-icon name="star-fill" color="#bbbbbb" size="50"></u-icon>
+					<view>收藏</view>
+				</view>
+			</view>
+		</view>
 
-		<button @click="adminVisible=!adminVisible">{{adminVisible?'关闭后台':'显示后台'}}</button>
-		<!-- 3 后台 -->
-		<view class="admin-container" v-if="adminVisible">
-			<button class="btn" @click="onCms" data-quizType="js">JavaScript 后台</button>
-			<button class="btn" @click="onCms" data-quizType="es6">ECMAScript 6 后台</button>
-			<button class="btn" @click="onCms" data-quizType="ts">TypeScript 后台</button>
-			<button class="btn-task" @click="onTask">任务</button>
+		<view class="container-down">
+			<view class="bar record">
+				<view class="left">
+					<u-icon name="order" color="#bbbbbb" size="50"></u-icon>
+					<view class='label'>我的做题记录</view>
+				</view>
+				<u-icon name="arrow-right" color="#bbbbbb" size="50"></u-icon>
+			</view>
+			<u-line class="line" color="#dddddd"></u-line>
+			<view class="bar praise">
+				<view class="left">
+					<u-icon name="thumb-up-fill" color="#bbbbbb" size="50"></u-icon>
+					<view class='label'>我收到的赞</view>
+				</view>
+				<u-icon name="arrow-right" color="#bbbbbb" size="50"></u-icon>
+			</view>
+			<u-line class="line" color="#dddddd"></u-line>
+			<view class="bar share">
+				<view class="left">
+					<u-icon name="share-fill" color="#bbbbbb" size="50"></u-icon>
+					<view class='label'>分享</view>
+				</view>
+				<u-icon name="arrow-right" color="#bbbbbb" size="50"></u-icon>
+			</view>
+			<u-line class="line" color="#dddddd"></u-line>
+			<view class="bar feedback">
+				<view class='left'>
+					<u-icon name="chat-fill" color="#bbbbbb" size="50"></u-icon>
+					<view class="label">问题反馈</view>
+				</view>
+				<u-icon name="arrow-right" color="#bbbbbb" size="50"></u-icon>
+			</view>
+			<u-line class="line" color="#dddddd"></u-line>
+			<view class="bar setting">
+				<view class="left"> <u-icon name="setting-fill" color="#bbbbbb" size="50"></u-icon>
+					<view class="label">设置</view>
+				</view>
+				<u-icon name="arrow-right" color="#bbbbbb" size="50"></u-icon>
+			</view>
+			<u-line class="line" color="#dddddd"></u-line>
+			<view class="bar about">
+				<view class='left'>
+					<u-icon name="error-circle" color="#bbbbbb" size="50"></u-icon>
+					<view class="label">关于程序</view>
+				</view>
+				<u-icon name="arrow-right" color="#bbbbbb" size="50"></u-icon>
+			</view>
+			<u-line class="line" color="#dddddd"></u-line>
+			<button style="font-size: 14px; marginTop: 20rpx; width:80%" @click="getUserInfo()" type="primary"
+				v-if="!loggedIn">点击登录</button>
+			<button style="font-size: 14px; marginTop: 20rpx; width:80%" @click="logout()" type="warn"
+				v-if="loggedIn">退出登录</button>
+
+			<button style="font-size: 14px; marginTop: 20rpx; marginBottom: 20rpx; width:80%"
+				@click="adminVisible=!adminVisible">{{adminVisible?'关闭后台':'显示后台'}}</button>
+			<!-- 3 后台 -->
+			<view class="admin-container" v-if="adminVisible">
+				<button class="btn" @click="onCms" data-quizType="js">JavaScript 后台</button>
+				<button class="btn" @click="onCms" data-quizType="es6">ECMAScript 6 后台</button>
+				<button class="btn" @click="onCms" data-quizType="ts">TypeScript 后台</button>
+				<button class="btn" @click="onTask">任务</button>
+			</view>
 		</view>
 	</view>
 </template>
@@ -22,10 +95,9 @@
 	export default {
 		data() {
 			return {
-				mineInfo: { nickName: "我的昵称" },
 				loggedIn: false,
 				codeRef: "",
-				loginInfo: {},
+				loginInfo: { nickName: "我的昵称", avatarUrl: '' },
 				adminVisible: false
 			}
 		},
@@ -61,13 +133,13 @@
 					success: async (value) => {
 						const { nickName, avatarUrl } = value.userInfo;
 						this.loginInfo = { nickName, avatarUrl };
+						console.log('loginInfo', this.loginInfo)
 						uni.login({
 							provider: 'weixin',
 							success: async (rsp) => {
 								console.log('uni.login rsp', rsp);
 								const { code } = rsp;
 								this.codeRef = code;
-
 								// 请求登录接口
 								if (rsp.errMsg == 'login:ok') {
 									const data = { code, nickName, avatarUrl };
@@ -118,10 +190,99 @@
 </script>
 
 <style lang="scss">
-	.base{
-		display: flex;
-		flex-direction: column;
-		justify-content: flex-start;
-		align-items: center;
+	page {
+		background-color: #eeeeee;
+
+		.base {
+			display: flex;
+			flex-direction: column;
+			justify-content: flex-start;
+			align-items: center;
+
+			.container-up {
+				margin-top: 20rpx;
+				width: 82%;
+				background-color: white;
+				display: flex;
+				flex-direction: column;
+				justify-content: flex-start;
+				align-items: center;
+				border-radius: 20rpx;
+				padding-top: 20rpx;
+				padding-bottom: 20rpx;
+
+				.personal-info {
+					width: 100%;
+					display: flex;
+					flex-direction: row;
+					justify-content: space-evenly;
+					align-items: center;
+					margin-bottom: 20rpx;
+				}
+
+				.common-items {
+					margin-top: 20rpx;
+					width: 100%;
+					display: flex;
+					flex-direction: row;
+					justify-content: space-evenly;
+					align-items: center;
+
+					.card {
+						display: flex;
+						flex-direction: column;
+						justify-content: flex-start;
+						align-items: center;
+					}
+				}
+			}
+
+			.container-down {
+				margin-top: 20rpx;
+				width: 82%;
+				background-color: white;
+				display: flex;
+				flex-direction: column;
+				justify-content: flex-start;
+				align-items: center;
+				border-radius: 20rpx;
+				padding-bottom: 20rpx;
+
+				.bar {
+					width: 90%;
+					display: flex;
+					flex-direction: row;
+					justify-content: space-between;
+					align-items: center;
+					padding-left: 40rpx;
+					padding-right: 20rpx;
+					padding: 30rpx;
+
+					.left {
+						display: flex;
+						flex-direction: row;
+						justify-content: flex-start;
+						align-items: center;
+
+						.label {
+							margin-left: 20rpx;
+						}
+					}
+				}
+
+				.admin-container {
+					display: flex;
+					flex-direction: column;
+					align-items: center;
+					justify-content: flex-start;
+
+					.btn {
+						margin-bottom: 20rpx;
+						width: 100%;
+						font-size: 14px;
+					}
+				}
+			}
+		}
 	}
 </style>

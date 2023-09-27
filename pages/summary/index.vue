@@ -14,64 +14,55 @@
 
 </template>
 
-<script lang="ts">
-	// import { Ref, ref, computed } from 'vue';
-	// import { onLoad } from '@dcloudio/uni-app';
-	
-	interface IQuizHistory {
-		quiz_count : number;
-		answer_times : number;
-		correct_times : number;
-	}
-	export default {
-		data() {
-			return {
-				quizType: "js",
-				quizCount: 0,
-				answerTimes: 0,
-				correctTimes: 0,
-			}
-		},
-		onLoad(evt : { quizType : string }) {
-			if (evt.hasOwnProperty('quizType')) {
-				this.quizType = evt.quizType;
-				this.getHistory(evt.quizType)
-			}
-		},
-		computed: {
-			correctRate() {
-				const rate = Math.floor((this.correctTimes / this.answerTimes) * 100);
-				return `${rate}%`;
-			}
-		},
-		methods: {
-			async getHistory(quiz_type : string) {
-				// 加载做题历史记录
-				const token = uni.getStorageSync('token');
-				const data = {
-					name: 'getQuizHistory',
-					data: { token, quiz_type }
-				};
-				// console.log('getHistory data', data);
-				const rsp = await wx.cloud.callFunction(data);
-				// console.log("summary getHistory getQuizHistory 加载做题历史记录", rsp);
-				const { quiz_count, answer_times, correct_times } = rsp.result as IQuizHistory;
-				// console.log({ quiz_count, answer_times, correct_times });
-				this.quizCount = quiz_count;
-				this.answerTimes = answer_times;
-				this.correctTimes = correct_times;
-			},
-			async restart() {
-				// const queryStr = queryString.stringify({ quizType: quizType.value });
-				const token = uni.getStorageSync('token');
-				const data = {
-					name: 'resetProcess',
-					data: { token, quiz_type: this.quizType }
-				};
-				await wx.cloud.callFunction(data);
-				uni.navigateBack();
-			}
+<script lang="ts" setup>
+	import { Ref, ref, computed } from 'vue';
+	import { onLoad } from '@dcloudio/uni-app';
+	import { IQuizHistory } from '../../common/utils';
+
+	const quizType = ref("js");
+	const quizCount = ref(0);
+	const answerTimes = ref(0);
+	const correctTimes = ref(0);
+
+	onLoad((evt : { quizType : string }) => {
+		console.log('summary onLoad', evt);
+		if (evt.hasOwnProperty('quizType')) {
+			quizType.value = evt.quizType;
+			getHistory(evt.quizType)
 		}
+	})
+
+	const correctRate = computed(() => {
+		const rate = Math.floor((correctTimes.value / answerTimes.value) * 100);
+		return `${rate}%`;
+	})
+
+	const getHistory = async (quiz_type : string) => {
+		// 加载做题历史记录
+		const token = uni.getStorageSync('token');
+		const data = {
+			name: 'getQuizHistory',
+			data: { token, quiz_type }
+		};
+		console.log('getHistory data', data);
+		const rsp : { result : IQuizHistory } = await wx.cloud.callFunction(data);
+		console.log("summary getHistory getQuizHistory 加载做题历史记录", rsp);
+		const { quiz_count, answer_times, correct_times } = rsp.result;
+		console.log({ quiz_count, answer_times, correct_times });
+		quizCount.value = quiz_count;
+		answerTimes.value = answer_times;
+		correctTimes.value = correct_times;
+	};
+
+	const restart = async () => {
+		// const queryStr = queryString.stringify({ quizType: quizType.value });
+		const token = uni.getStorageSync('token');
+		const data = {
+			name: 'resetProcess',
+			data: { token, quiz_type: quizType.value }
+		};
+		await wx.cloud.callFunction(data);
+		uni.navigateBack();
 	}
 </script>
 

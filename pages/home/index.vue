@@ -5,7 +5,7 @@
 			<view class="container-title" @click="onClickTitle">
 				<view class="container-name">
 					<view class="title">{{`当前题库: ${quizNameDic.get(curQuizType)}`}}</view>
-					<u-icon name="arrow-down-fill" color="#4cd964" size="14"></u-icon>
+					<u-icon class="icon" name="arrow-down-fill" color="#007aff" size="20"></u-icon>
 				</view>
 				<view class="sub-title">{{processDesc}}</view>
 			</view>
@@ -13,111 +13,103 @@
 			<view class="container-continue">
 				<view class="title">继续</view>
 				<view class="sub-title">从上次中断的地方继续练习</view>
-				<button type="primary" style="font-size: 16px; width: 100%;" @click="continueExercise">继续练习</button>
+				<button class="btn" @click="continueExercise">继续练习</button>
 			</view>
-
 		</view>
 		<u-popup :safeAreaInsetTop='false' :safe-area-inset-bottom="false" :customStyle="{display:'flex', flexDirection:'column', alignItems:'center',
-	justifyContent:'space-between'}" round='20' :overlay='true' :show="showSelectPopup" mode="top"
-			@close="onSelectPopupClose">
+	justifyContent:'space-between', paddingLeft:'20px', paddingRight:'20px'}" round='20' :overlay='true'
+			:show="showSelectPopup" mode="top">
 			<view>
 				<view class="choice" v-for="(item) in quizTypeArray" :data-id="item.value" @click="onSelectQuizType">
 					<text :key="item.value">{{item.label}}</text>
 				</view>
 			</view>
 			<u-line class="line" color="#dddddd"></u-line>
-			<button size="default" style="margin-top: 10px; margin-bottom: 10px; font-size: 12px;" @click="closeSelectPop">取消</button>
+			<button size="default" style="margin-top: 10px; margin-bottom: 10px; font-size: 12px; width: 100%;"
+				@click="closeSelectPop">取消</button>
 		</u-popup>
 	</view>
 </template>
 
-<script lang="ts">
-	// import { computed, onMounted, Ref, ref } from 'vue';
+<script lang="ts" setup>
 	declare const wx : any;
+	import { computed, onMounted, Ref, ref } from 'vue';
+
 	import { checkSession, quizNameDic, quizTypeArray } from '../../common/utils';
 	import queryString from 'query-string';
-	// import { onShow, onLoad } from '@dcloudio/uni-app';
-	export default {
-		data() {
-			return {
-				latestQuizIndex: -1,
-				quizCount: 0,
-				userOpenId: "",
-				curQuizType: 'js',
-				showSelectPopup: false,
-				quizNameDic: quizNameDic,
-				quizTypeArray: quizTypeArray
-			}
-		},
-		onShow() {
-			console.log("home index onShow");
-			this.updateOnQuizTypeChanged();
-			this.updateUI();
-		},
-		async mounted() {
-			const hasSession = await checkSession();
-			const token = uni.getStorageSync('token');
-			if (!hasSession || !token) {
-				uni.switchTab({
-					url: '/pages/mine/index'
-				})
-			}
-		},
-		computed: {
-			adminVisible() { return this.userOpenId === 'oGJqI61rEAICwpBqGgw_hteePEbY' },
-			processDesc() {
-				if (this.quizCount) {
-					return `本题库练习进度 ${this.latestQuizIndex + 1}/${this.quizCount}`;
-				} else {
-					// return '还没开始练习';
-					return `本题库练习进度为 ${this.latestQuizIndex + 1}`;
-				}
-			}
-		},
-		methods: {
-			updateUI() {
-				const token = uni.getStorageSync('token');
-				const [user_open_id] = token.split("__");
-				this.userOpenId = user_open_id;
-			},
-			/** 题目类型变化后，更新数据 */
-			async updateOnQuizTypeChanged() {
-				// 用用户id和题目类型拿进度
-				const token = uni.getStorageSync('token');
-				const rsp : any = await wx.cloud.callFunction({
-					name: 'getProcess',
-					data: { token, quiz_type: this.curQuizType }
-				});
-				// console.log('index updateOnQuizTypeChanged 获得题目进度', rsp.result)
-				const { latest_quiz_index, quiz_count } = rsp.result;
-				this.latestQuizIndex = latest_quiz_index;
-				this.quizCount = quiz_count;
-			},
-			continueExercise() {
-				const quizType = this.curQuizType;
-				const queryStr = queryString.stringify({ quizType });
-				const url = `/pages/quiz/index?${queryStr}`;
-				// console.log('continueExercise', url);
-				uni.navigateTo({ url })
-			},
-			onClickTitle() {
-				this.showSelectPopup = true;
-			},
-			onSelectPopupClose(evt : any) {
-				// console.log('onSelectPopupClose')
-			},
-			closeSelectPop(evt : any) {
-				this.showSelectPopup = false;
-			},
-			onSelectQuizType(evt : any) {
-				// console.log("onSelectQuizType", evt);
-				this.showSelectPopup = false;
-				const quizType = evt.currentTarget.dataset.id;
-				this.curQuizType = quizType;
-				this.updateOnQuizTypeChanged();
-			}
+	import { onShow, onLoad } from '@dcloudio/uni-app';
+	const latestQuizIndex = ref(-1);
+	const quizCount : Ref<number> = ref(0);
+	const userOpenId = ref('');
+	const curQuizType = ref('js');
+	const showSelectPopup = ref(false);
+
+	onShow(() => {
+		console.log("home index onShow");
+		updateOnQuizTypeChanged();
+		updateUI();
+	})
+
+	onMounted(async () => {
+		const hasSession = await checkSession();
+		const token = uni.getStorageSync('token');
+		if (!hasSession || !token) {
+			uni.switchTab({
+				url: '/pages/mine/index'
+			})
 		}
-	}
+	})
+
+	const processDesc = computed(() => {
+		if (quizCount.value) {
+			return `练习进度 ${latestQuizIndex.value + 1}/${quizCount.value}`;
+		} else {
+			return `练习进度 ${latestQuizIndex.value + 1}`;
+		}
+	})
+
+	const updateUI = () => {
+		const token = uni.getStorageSync('token');
+		const [user_open_id] = token.split("__");
+		userOpenId.value = user_open_id;
+	};
+
+	/** 题目类型变化后，更新数据 */
+	const updateOnQuizTypeChanged = async () => {
+		// 用用户id和题目类型拿进度
+		const token = uni.getStorageSync('token');
+		const rsp : any = await wx.cloud.callFunction({
+			name: 'getProcess',
+			data: { token, quiz_type: curQuizType.value }
+		});
+		console.log('index updateOnQuizTypeChanged 获得题目进度', rsp.result)
+		const { latest_quiz_index, quiz_count } = rsp.result;
+		latestQuizIndex.value = latest_quiz_index;
+		quizCount.value = quiz_count;
+	};
+
+	const continueExercise = () => {
+		const quizType = curQuizType.value;
+		const queryStr = queryString.stringify({ quizType });
+		const url = `/pages/quiz/index?${queryStr}`;
+		uni.navigateTo({ url })
+	};
+
+	const onClickTitle = () => {
+		showSelectPopup.value = true;
+	};
+
+	const closeSelectPop = (evt : any) => {
+		showSelectPopup.value = false;
+	};
+
+	const onSelectQuizType = (evt : any) => {
+		// console.log("onSelectQuizType", evt);
+		showSelectPopup.value = false;
+		const quizType = evt.currentTarget.dataset.id;
+		curQuizType.value = quizType;
+		updateOnQuizTypeChanged();
+	};
 </script>
 
 <style lang="scss" scoped>
@@ -125,12 +117,23 @@
 		width: 100vw;
 		height: 100vh;
 		background-color: #eeeeee;
-		
-		.sub-title{
-			font-size: 14px;
-			color: gray;
-			margin-top: 10px;
-			margin-bottom: 10px;
+
+		.sub-title {
+			font-size: $uni-font-size-base;
+			color: $uni-text-color-grey;
+			margin-top: $uni-spacing-row-base;
+			margin-bottom: $uni-spacing-row-base;
+		}
+
+		.title {
+			font-size: $uni-font-size-lg;
+		}
+
+		.btn {
+			font-size: $uni-font-size-base;
+			background-color: $uni-color-primary;
+			width: 100%;
+			color: $uni-text-color-inverse;
 		}
 
 		.main {
@@ -182,10 +185,6 @@
 				flex-direction: column;
 				align-items: center;
 				justify-content: flex-start;
-			}
-
-			.btn-task {
-				margin-top: 30rpx;
 			}
 		}
 	}

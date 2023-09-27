@@ -61,11 +61,14 @@ interface IQuiz {
 	option_c ?: string;
 	option_d ?: string;
 	answer ?: string;
+	submitted ?: boolean;
 }
+
 interface IData {
 	quizList : IQuiz[];
 	dbName : string;
 }
+
 interface ICheckbox {
 	id : string;
 	selected : boolean;
@@ -73,4 +76,10 @@ interface ICheckbox {
 	isCorrect : boolean;
 }
 
-export { generateUUID, showToast, quizNameDic, checkSession, quizTypeArray, formatTime, IQuiz, IData, ICheckbox }
+interface IQuizHistory {
+	quiz_count : number;
+	answer_times : number;
+	correct_times : number;
+}
+
+export { IQuizHistory, generateUUID, showToast, quizNameDic, checkSession, quizTypeArray, formatTime, IQuiz, IData, ICheckbox }

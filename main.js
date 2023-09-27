@@ -1,5 +1,5 @@
 import App from './App';
-import uview from '@/uni_modules/uview-ui';
+import uview from '@/uni_modules/uview-plus';
 // declare const wx: any;
 
 // #ifndef VUE3
