@@ -32,88 +32,88 @@
 		<view class="uni-btn-new">
 			<button type="warn" @click="produceOne">新建一题</button>
 		</view>
-		<u-toast ref="uToast"></u-toast>
+		<u-notify message="更新成功" :show="showNotify"></u-notify>
 	</view>
 </template>
 
-<script lang="ts">
-	import { generateUUID, quizNameDic, showToast, IData, IQuiz } from '../../common/utils';
-	export default {
-		data() : IData {
-			return {
-				quizList: [],
-				dbName: ""
-			}
-		},
-		async onLoad(evt : { quizType : string }) {
-			this.dbName = evt.quizType;
-			console.log("onLoad", evt);
-			uni.setNavigationBarTitle({ title: `${quizNameDic.get(evt.quizType)} 后台` });
-			wx.cloud.init({
-				env: "quiz-0gb2aw2vb2850af4"
+<script lang="ts" setup>
+	import { generateUUID, quizNameDic, IQuiz } from '../../common/utils';
+	import { ref, Ref } from 'vue';
+	import { onLoad } from '@dcloudio/uni-app';
+
+	const quizList : Ref<Array<IQuiz>> = ref([]);
+	const dbName = ref('');
+	const showNotify = ref(true);
+
+	onLoad(async (evt : { quizType : string }) => {
+		dbName.value = evt.quizType;
+		console.log("onLoad", evt);
+		uni.setNavigationBarTitle({ title: `${quizNameDic.get(evt.quizType)} 后台` });
+		wx.cloud.init({
+			env: "quiz-0gb2aw2vb2850af4"
+		});
+		const data : IQuiz[] = await getAllQuiz(evt.quizType);
+		quizList.value.push(...data);
+	});
+
+	// 获取全部题目
+	const getAllQuiz = async (dbName : string) => {
+		const rsp : any = await wx.cloud.callFunction({
+			name: 'getAllQuiz',
+			data: { dbName }
+		})
+		return rsp.result.data;
+	};
+
+	// 更新一条
+	const onUpdateOne = async (evt : any) => {
+		const id_to_update : string = evt.target.dataset.id;
+		const quiz = quizList.value.find((v : IQuiz) => v.id === id_to_update);
+		const data = { ...quiz, dbName: dbName.value };
+		console.log('onUpdateOne', data)
+		const rsp : any = await wx.cloud.callFunction({
+			name: 'updateQuiz',
+			data
+		})
+		console.log("onUpdateOne", { rsp });
+		const result = rsp.errMsg === "cloud.callFunction:ok";
+		if (result) {
+			uni.showToast({
+				title: '更新成功',
+				duration: 2000
 			});
-			const data : IQuiz[] = await this.getAllQuiz(evt.quizType);
-			this.quizList.push(...data);
-		},
-		async mounted() {
-			console.log("mounted");
-		},
-		onUnload() {
-			uni.setNavigationBarTitle({ title: '' });
-		},
-		methods: {
-			// 获取全部题目
-			async getAllQuiz(dbName : string) {
-				const rsp : any = await wx.cloud.callFunction({
-					name: 'getAllQuiz',
-					data: { dbName }
-				})
-				return rsp.result.data;
-			},
-			// 更新一条
-			async onUpdateOne(evt : any) {
-				const id_to_update : string = evt.target.dataset.id;
-				const quiz = this.quizList.find((v : IQuiz) => v.id === id_to_update);
-				const data = { ...quiz, dbName: this.dbName };
-				console.log('onUpdateOne', data)
-				const rsp : any = await wx.cloud.callFunction({
-					name: 'updateQuiz',
-					data
-				})
-				const result = rsp.errMsg === "cloud.callFunction:ok";
-				if (result) {
-					showToast(this, "更新成功")
-				}
-			},
-			//
-			async onAddOne(e : any) {
-				const id_to_add : string = e.target.dataset.id;
-				const data = this.quizList.find((v : IQuiz) => v.id === id_to_add);
-				const index = this.quizList.findIndex((v : IQuiz) => v.id === id_to_add);
-				const rsp : any = await wx.cloud.callFunction({
-					name: 'addQuiz',
-					data: { ...data, init: false, dbName: this.dbName, index }
-				})
-				const result = rsp.result?.errMsg === 'collection.add:ok';
-				if (result) {
-					showToast(this, "新建成功");
-					this.quizList.forEach((v : IQuiz) => {
-						if (v.id === id_to_add) {
-							v.init = false;
-						}
-					});
-				}
-			},
-			// 生产一条
-			produceOne() {
-				this.quizList.push({
-					init: true,
-					id: generateUUID(),
-					title: '下面关于的描述中，正确的有哪些'
-				})
-			},
 		}
-	}
+	};
+	//
+	const onAddOne = async (e : any) => {
+		const id_to_add : string = e.target.dataset.id;
+		const data = quizList.value.find((v : IQuiz) => v.id === id_to_add);
+		const index = quizList.value.findIndex((v : IQuiz) => v.id === id_to_add);
+		const rsp : any = await wx.cloud.callFunction({
+			name: 'addQuiz',
+			data: { ...data, init: false, dbName: dbName.value, index }
+		})
+		const result = rsp.result?.errMsg === 'collection.add:ok';
+		if (result) {
+			uni.showToast({
+				title: '新建成功',
+				duration: 2000
+			});
+			quizList.value.forEach((v : IQuiz) => {
+				if (v.id === id_to_add) {
+					v.init = false;
+				}
+			});
+		}
+	};
+	// 生产一条
+	const produceOne = () => {
+		quizList.value.push({
+			init: true,
+			id: generateUUID(),
+			title: '下面关于的描述中，正确的有哪些'
+		})
+	};
 </script>
 
 <style lang="scss">

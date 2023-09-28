@@ -21,8 +21,8 @@ const formatTime = (totalMinutes : number) => {
 		return `${houreStr}:${minutes > 9 ? minutes : "0" + minutes}`;
 };
 
-const showToast = (self : any, message : string) => {
-	(self.$refs.uToast as any).show({
+const showToast = (toast : any, message : string) => {
+	toast.show({
 		type: 'success',
 		icon: false,
 		message,
@@ -82,4 +82,17 @@ interface IQuizHistory {
 	correct_times : number;
 }
 
-export { IQuizHistory, generateUUID, showToast, quizNameDic, checkSession, quizTypeArray, formatTime, IQuiz, IData, ICheckbox }
+interface ITask {
+	id : string;
+	deadline : string;
+	name : string;
+	priority : number;
+	duration : number;
+}
+
+interface IData {
+	list : ITask[];
+	[prop : string] : unknown;
+}
+
+export { ITask, IData, IQuizHistory, generateUUID, showToast, quizNameDic, checkSession, quizTypeArray, formatTime, IQuiz, IData, ICheckbox }

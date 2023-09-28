@@ -83,197 +83,189 @@
 
 			<u-toast ref="uToast"></u-toast>
 		</view>
-		<u-loading-page color="#4cd964" loading-color="#4cd964" icon-size="40" font-size="40" class="loading" bg-color="#bbbbbb00"
-			loading-text="正在执行" :loading="showLoading"></u-loading-page>
+		<u-loading-page color="#4cd964" loading-color="#4cd964" icon-size="40" font-size="40" class="loading"
+			bg-color="#bbbbbb00" loading-text="正在执行" :loading="showLoading"></u-loading-page>
 	</view>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 	import dayjs from "dayjs";
-	import { formatTime, generateUUID, showToast } from '../../common/utils';
+	import { formatTime, generateUUID, ITask } from '../../common/utils';
+	import { ref, Ref, onMounted } from 'vue'
 
-	interface ITask {
-		id : string;
-		deadline : string;
-		name : string;
-		priority : number;
-		duration : number;
-	}
+	const colorDic = ref({
+		"3": "#FF6B6B",
+		"2": "#FF9F1C",
+		"1": "#4ECDC4",
+	});
 
-	interface IData {
-		list : ITask[];
-		[prop : string] : unknown;
-	}
+	const listRef = ref(null);
+	const initTime : Ref<number> = ref(8 * 60 + 30);
+	const initTimeRaw = ref("8:30");
+	const list : Ref<Array<ITask>> = ref([]);
+	const showLoading = ref(false);
 
-	export default {
-		data() : IData {
-			return {
-				colorDic: {
-					"3": "#FF6B6B",
-					"2": "#FF9F1C",
-					"1": "#4ECDC4",
-				},
-				listRef: null,
-				initTime: 8 * 60 + 30,
-				initTimeRaw: "8:30",
-				list: [],
-				showLoading: false,
-			}
-		},
-		mounted() {
-			this.getTask();
-		},
-		methods: {
-			async getTask() {
-				const rsp : any = await wx.cloud.callFunction({
-					name: 'getTask',
+	onMounted(() => {
+		getTask();
+	})
+
+	const getTask = async () => {
+		const rsp : any = await wx.cloud.callFunction({
+			name: 'getTask',
+		});
+		const raw = rsp.result.data;
+		console.log('getTask', raw);
+		if (!!raw) {
+			list.value = raw;
+		} else {
+			list.value = Array(3)
+				.fill(1)
+				.map(() => {
+					return {
+						id: generateUUID(),
+						name: "任务",
+						duration: 10,
+						deadline: "",
+						priority: 1,
+					};
 				});
-				const raw = rsp.result.data;
-				console.log('getTask', raw);
-				if (!!raw) {
-					this.list = raw;
-				} else {
-					this.list = Array(3)
-						.fill(1)
-						.map(() => {
-							return {
-								id: generateUUID(),
-								name: "任务",
-								duration: 10,
-								deadline: "",
-								priority: 1,
-							};
-						});
-					console.log("onMounted");
-					this.update();
-				}
-			},
-			addOne() {
-				this.showLoading = true;
-				const one = {
-					name: "任务",
-					duration: 10,
-					deadline: "",
-					priority: 1,
-					id: generateUUID(),
-				};
-				this.list.push(one);
-				console.log("addOne");
-				this.update();
-			},
-			/** 确认了初始时间 */
-			onConfirmInitTime() {
-				this.showLoading = true;
-				const a = this.initTimeRaw.split(":");
-				const b = this.initTimeRaw.split("：");
-				const times = a.length === 2 ? a : b;
-				const h = parseInt(times[0]);
-				const m = parseInt(times[1]);
-				this.initTime = h * 60 + m;
-				console.log("initTimeRaw");
-				this.update();
-			},
-
-			/** 设置当前为开始 */
-			setNowForStart() {
-				this.showLoading = true;
-				const now = dayjs(); // 获取当前时间
-				let hour = now.hour(); // 获取当前时间的小时部分
-				const minute = now.minute(); // 获取当前时间的分钟部分
-
-				const quotient = Math.floor(minute / 10);
-				const remainder = minute / 10;
-				let nextTenMin = remainder === 0 ? quotient : quotient + 1;
-				if (nextTenMin === 6) {
-					hour++;
-					nextTenMin = 0;
-				}
-				if (hour === 24) {
-					hour = 0;
-				}
-
-				this.initTime = hour * 60 + nextTenMin * 10;
-				this.initTimeRaw = `${hour > 9 ? hour : "0" + hour}:${nextTenMin !== 0 ? nextTenMin * 10 : "00"}`;
-				console.log("setNowForStart", this.initTimeRaw);
-				this.update();
-			},
-
-			/** 优先级更新了 */
-			priorityChanged() {
-				this.showLoading = true;
-				console.log("priorityChanged");
-				this.update();
-			},
-
-			/** 时长更新了 */
-			onDurationChange() {
-				this.showLoading = true;
-				console.log("onDurationChange");
-				this.update();
-			},
-
-			/** 被删除了 */
-			onDelete(index : number) {
-				this.showLoading = true;
-				this.list = this.list.slice(0, index).concat(this.list.slice(index + 1));
-				console.log("onDelete");
-				this.update();
-			},
-			moveUp(index : number) {
-				if (index === 0) return;
-				this.showLoading = true;
-				const temp = this.list[index];
-				this.list[index] = this.list[index - 1];
-				this.list[index - 1] = temp;
-				this.update()
-			},
-			moveDown(index : number) {
-				if (index === this.list.length - 1) return;
-				this.showLoading = true;
-				const temp = this.list[index];
-				this.list[index] = this.list[index + 1];
-				this.list[index + 1] = temp;
-				this.update()
-			},
-			update() {
-				console.log("update");
-				this.list = this.list.sort((a : { priority : number }, b : { priority : number }) => b.priority - a.priority);
-				setTimeout(() => {
-					this.updateDeadline();
-					this.save();
-				}, 300);
-			},
-
-			/** 更新 deadline */
-			updateDeadline() {
-				console.log("updateDeadline");
-				let pre = this.initTime;
-				this.list = this.list.map((cur : any) => {
-					cur.deadline = formatTime(pre + cur.duration);
-					pre += cur.duration;
-					return cur;
-				});
-			},
-
-			/** 保存 */
-			async save() {
-				const _list = this.list;
-				console.log("准备保存的数据", _list);
-				const rsp : any = await wx.cloud.callFunction({
-					name: 'addTask',
-					data: { list: _list }
-				})
-				console.log('保存数据后的回调', rsp);
-				const result = rsp.errMsg === "cloud.callFunction:ok";
-				if (result) {
-					showToast(this, "操作成功");
-					this.showLoading = false;
-				}
-			},
-			onBlur() {
-				console.log('移动到最上面');
-			}
+			console.log("onMounted");
+			update();
 		}
+	};
+
+	const addOne = () => {
+		showLoading.value = true;
+		const one : ITask = {
+			name: "任务",
+			duration: 10,
+			deadline: "",
+			priority: 1,
+			id: generateUUID()
+		};
+		list.value.push(one);
+		console.log("addOne");
+		update();
+	};
+
+	/** 确认了初始时间 */
+	const onConfirmInitTime = () => {
+		showLoading.value = true;
+		const a = initTimeRaw.value.split(":");
+		const b = initTimeRaw.value.split("：");
+		const times = a.length === 2 ? a : b;
+		const h = parseInt(times[0]);
+		const m = parseInt(times[1]);
+		initTime.value = h * 60 + m;
+		console.log("initTimeRaw");
+		update();
+	};
+
+	/** 设置当前为开始 */
+	const setNowForStart = () => {
+		showLoading.value = true;
+		const now = dayjs(); // 获取当前时间
+		let hour = now.hour(); // 获取当前时间的小时部分
+		const minute = now.minute(); // 获取当前时间的分钟部分
+
+		const quotient = Math.floor(minute / 10);
+		const remainder = minute / 10;
+		let nextTenMin = remainder === 0 ? quotient : quotient + 1;
+		if (nextTenMin === 6) {
+			hour++;
+			nextTenMin = 0;
+		}
+		if (hour === 24) {
+			hour = 0;
+		}
+
+		initTime.value = hour * 60 + nextTenMin * 10;
+		initTimeRaw.value = `${hour > 9 ? hour : "0" + hour}:${nextTenMin !== 0 ? nextTenMin * 10 : "00"}`;
+		console.log("setNowForStart", initTimeRaw.value);
+		update();
+	};
+
+	/** 优先级更新了 */
+	const priorityChanged = () => {
+		showLoading.value = true;
+		console.log("priorityChanged");
+		update();
+	};
+
+	/** 时长更新了 */
+	const onDurationChange = () => {
+		showLoading.value = true;
+		console.log("onDurationChange");
+		update();
+	};
+
+	/** 被删除了 */
+	const onDelete = (index : number) => {
+		showLoading.value = true;
+		list.value = list.value.slice(0, index).concat(list.value.slice(index + 1));
+		console.log("onDelete");
+		update();
+	};
+	
+	const moveUp = (index : number) => {
+		if (index === 0) return;
+		showLoading.value = true;
+		const temp = list.value[index];
+		list.value[index] = list.value[index - 1];
+		list.value[index - 1] = temp;
+		update()
+	};
+	
+	const moveDown = (index : number) => {
+		if (index === list.value.length - 1) return;
+		showLoading.value = true;
+		const temp = list.value[index];
+		list.value[index] = list.value[index + 1];
+		list.value[index + 1] = temp;
+		update()
+	};
+	
+	const update = () => {
+		console.log("update");
+		list.value = list.value.sort((a : { priority : number }, b : { priority : number }) => b.priority - a.priority);
+		setTimeout(() => {
+			updateDeadline();
+			save();
+		}, 300);
+	};
+
+	/** 更新 deadline */
+	const updateDeadline = () => {
+		console.log("updateDeadline");
+		let pre = initTime.value;
+		list.value = list.value.map((cur : any) => {
+			cur.deadline = formatTime(pre + cur.duration);
+			pre += cur.duration;
+			return cur;
+		});
+	};
+
+	/** 保存 */
+	const save = async () => {
+		const _list = list.value
+		console.log("准备保存的数据", _list);
+		const rsp : any = await wx.cloud.callFunction({
+			name: 'addTask',
+			data: { list: _list }
+		})
+		console.log('保存数据后的回调', rsp);
+		const result = rsp.errMsg === "cloud.callFunction:ok";
+		if (result) {
+			uni.showToast({
+				title: "更新成功",
+				duration: 1000
+			})
+			showLoading.value = false;
+		}
+	};
+	
+	const onBlur = () => {
+		console.log('移动到最上面');
 	}
 </script>
 
