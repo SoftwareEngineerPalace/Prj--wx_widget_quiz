@@ -1,15 +1,15 @@
 <template>
-	<view class="main">
-		<view class="row-view">
+	<view class="summary-wrapper">
+		<view class="summary__row-view">
 			{{`一共有 ${quizCount} 道题`}}
 		</view>
-		<view class="row-view">
+		<view class="summary__row-view">
 			{{`你一共作答 ${answerTimes} 道次，答对了 ${correctTimes} 道次`}}
 		</view>
-		<view class="row-view">
+		<view class="summary__row-view">
 			{{`正确率 ${ correctRate}`}}
 		</view>
-		<button class='btn-restart' type="primary" @click="restart">重做</button>
+		<button class='btn-primary' @click="restart">重做</button>
 	</view>
 
 </template>
@@ -67,15 +67,15 @@
 </script>
 
 <style lang='scss'>
-	.main {
+	.summary-wrapper {
 		display: flex;
 		flex-direction: column;
 		justify-content: flex-start;
 		align-items: center;
-		padding-top: 40rpx;
+		padding: 30rpx;
 
-		.row-view {
-			margin-bottom: 40rpx;
+		.summary__row-view {
+			margin-bottom: 30rpx;
 		}
 	}
 </style>
