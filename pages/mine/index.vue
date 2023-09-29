@@ -1,88 +1,43 @@
 <template>
-	<view class="base">
-		<view class="container-up">
-			<view class="personal-info">
+	<view class="mine-wrapper padding30">
+		<view class="card mb30">
+			<view class="hbox mb30" style="justify-content: space-evenly;">
 				<view>{{loginInfo.nickName}}</view>
 				<u--image :src="loginInfo.avatarUrl" shape="circle" width="80px" height="80px"></u--image>
 			</view>
+
 			<u-line class="line" color="#dddddd"></u-line>
-			<view class="common-items">
-				<view class="card">
-					<u-icon name="order" color="#bbbbbb" size="50"></u-icon>
-					<view>错题本</view>
-				</view>
-				<view class="card">
-					<u-icon name="chat-fill" color="#bbbbbb" size="50"></u-icon>
-					<view>评论</view>
-				</view>
-				<view class="card">
-					<u-icon name="star-fill" color="#bbbbbb" size="50"></u-icon>
-					<view>收藏</view>
+
+			<view class="hbox" style="padding-top: 30rpx; justify-content: space-evenly;">
+				<view class="vbox" v-for="(item) in commonUseSettings" :key="item.id">
+					<u-icon :name="item.icon" color="#bbbbbb" size="50"></u-icon>
+					<view>{{item.label}}</view>
 				</view>
 			</view>
 		</view>
 
-		<view class="container-down">
-			<view class="bar record">
-				<view class="left">
-					<u-icon name="order" color="#bbbbbb" size="50"></u-icon>
-					<view class='label'>我的做题记录</view>
+		<view class="card">
+			<view class="hbox" style="padding:20rpx; justify-content: space-between; border-bottom: 1px solid #eeeeee;"
+				v-for="(item) in notCommonUseSettings">
+				<view class="hbox">
+					<u-icon custom-style="margin-right:30rpx" :name="item.icon" color="#bbbbbb" size="50"></u-icon>
+					<view class='label'>{{ item.label }}</view>
 				</view>
-				<u-icon name="arrow-right" color="#bbbbbb" size="50"></u-icon>
+				<u-icon name="arrow-right" color="#bbbbbb" size="40"></u-icon>
 			</view>
-			<u-line class="line" color="#dddddd"></u-line>
-			<view class="bar praise">
-				<view class="left">
-					<u-icon name="thumb-up-fill" color="#bbbbbb" size="50"></u-icon>
-					<view class='label'>我收到的赞</view>
-				</view>
-				<u-icon name="arrow-right" color="#bbbbbb" size="50"></u-icon>
-			</view>
-			<u-line class="line" color="#dddddd"></u-line>
-			<view class="bar share">
-				<view class="left">
-					<u-icon name="share-fill" color="#bbbbbb" size="50"></u-icon>
-					<view class='label'>分享</view>
-				</view>
-				<u-icon name="arrow-right" color="#bbbbbb" size="50"></u-icon>
-			</view>
-			<u-line class="line" color="#dddddd"></u-line>
-			<view class="bar feedback">
-				<view class='left'>
-					<u-icon name="chat-fill" color="#bbbbbb" size="50"></u-icon>
-					<view class="label">问题反馈</view>
-				</view>
-				<u-icon name="arrow-right" color="#bbbbbb" size="50"></u-icon>
-			</view>
-			<u-line class="line" color="#dddddd"></u-line>
-			<view class="bar setting">
-				<view class="left"> <u-icon name="setting-fill" color="#bbbbbb" size="50"></u-icon>
-					<view class="label">设置</view>
-				</view>
-				<u-icon name="arrow-right" color="#bbbbbb" size="50"></u-icon>
-			</view>
-			<u-line class="line" color="#dddddd"></u-line>
-			<view class="bar about">
-				<view class='left'>
-					<u-icon name="error-circle" color="#bbbbbb" size="50"></u-icon>
-					<view class="label">关于程序</view>
-				</view>
-				<u-icon name="arrow-right" color="#bbbbbb" size="50"></u-icon>
-			</view>
-			<u-line class="line" color="#dddddd"></u-line>
-			<button style="font-size: 14px; marginTop: 20rpx; width:80%" @click="getUserInfo()" type="primary"
-				v-if="!loggedIn">点击登录</button>
-			<button style="font-size: 14px; marginTop: 20rpx; width:80%" @click="logout()" type="warn"
-				v-if="loggedIn">退出登录</button>
 
-			<button style="font-size: 14px; marginTop: 20rpx; marginBottom: 20rpx; width:80%"
-				@click="adminVisible=!adminVisible">{{adminVisible?'关闭后台':'显示后台'}}</button>
+			<button class="btn-primary mb20 mt20" @click="getUserInfo()" v-if="!loggedIn">点击登录</button>
+
+			<button class="btn-primary mb20 mt20" @click="logout()" v-if="loggedIn">退出登录</button>
+
+			<button class="btn-primary mb20" @click="adminVisible=!adminVisible">{{adminVisible?'关闭后台':'显示后台'}}</button>
+
 			<!-- 3 后台 -->
-			<view class="admin-container" v-if="adminVisible">
-				<button class="btn" @click="onCms" data-quizType="js">JavaScript 后台</button>
-				<button class="btn" @click="onCms" data-quizType="es6">ECMAScript 6 后台</button>
-				<button class="btn" @click="onCms" data-quizType="ts">TypeScript 后台</button>
-				<button class="btn" @click="onTask">任务</button>
+			<view class="mine__admin" v-if="adminVisible">
+				<button class="btn-primary mb20" @click="onCms" data-quizType="js">JavaScript 后台</button>
+				<button class="btn-primary mb20" @click="onCms" data-quizType="es6">ECMAScript 6 后台</button>
+				<button class="btn-primary mb20" @click="onCms" data-quizType="ts">TypeScript 后台</button>
+				<button class="btn-primary mb20" @click="onTask">任务</button>
 			</view>
 		</view>
 	</view>
@@ -97,6 +52,24 @@
 	const codeRef = ref("");
 	const loginInfo = ref({ nickName: "我的昵称", avatarUrl: '' });
 	const adminVisible = ref(false);
+
+	interface ISettings {
+		label : string;
+		icon : string;
+		id : string;
+	}
+	const commonUseSettings = ref<Array<ISettings>>([
+		{ id: 'wrongbook', 'label': '错题本', 'icon': 'order' },
+		{ id: 'comment', 'label': '评论', 'icon': 'chat-fill' },
+		{ id: 'favorite', 'label': '收藏', 'icon': 'star-fill' }])
+
+	const notCommonUseSettings = ref<Array<ISettings>>([
+		{ id: 'wrongbook', 'label': '我的做题记录', 'icon': 'order' },
+		{ id: 'comment', 'label': '我收到的赞', 'icon': 'thumb-up-fill' },
+		{ id: 'wrongbook', 'label': '分享', 'icon': 'share-fill' },
+		{ id: 'comment', 'label': '问题反馈', 'icon': 'chat-fill' },
+		{ id: 'wrongbook', 'label': '设置', 'icon': 'setting-fill' },
+		{ id: 'favorite', 'label': '关于程序', 'icon': 'error-circle' }])
 
 	onMounted(async () => {
 		wx.cloud.init({
@@ -186,98 +159,29 @@
 	}
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 	page {
-		background-color: #eeeeee;
+		width: 100vw;
+		height: 100vh;
 
-		.base {
+		.mine-wrapper {
 			display: flex;
 			flex-direction: column;
 			justify-content: flex-start;
 			align-items: center;
+			background-color: $uni-bg-color-grey;
 
-			.container-up {
-				margin-top: 20rpx;
-				width: 82%;
-				background-color: white;
+			.mine__admin {
+				width: 100%;
 				display: flex;
 				flex-direction: column;
-				justify-content: flex-start;
 				align-items: center;
-				border-radius: 20rpx;
-				padding-top: 20rpx;
-				padding-bottom: 20rpx;
+				justify-content: flex-start;
 
-				.personal-info {
-					width: 100%;
-					display: flex;
-					flex-direction: row;
-					justify-content: space-evenly;
-					align-items: center;
+				.btn {
 					margin-bottom: 20rpx;
-				}
-
-				.common-items {
-					margin-top: 20rpx;
 					width: 100%;
-					display: flex;
-					flex-direction: row;
-					justify-content: space-evenly;
-					align-items: center;
-
-					.card {
-						display: flex;
-						flex-direction: column;
-						justify-content: flex-start;
-						align-items: center;
-					}
-				}
-			}
-
-			.container-down {
-				margin-top: 20rpx;
-				width: 82%;
-				background-color: white;
-				display: flex;
-				flex-direction: column;
-				justify-content: flex-start;
-				align-items: center;
-				border-radius: 20rpx;
-				padding-bottom: 20rpx;
-
-				.bar {
-					width: 90%;
-					display: flex;
-					flex-direction: row;
-					justify-content: space-between;
-					align-items: center;
-					padding-left: 40rpx;
-					padding-right: 20rpx;
-					padding: 30rpx;
-
-					.left {
-						display: flex;
-						flex-direction: row;
-						justify-content: flex-start;
-						align-items: center;
-
-						.label {
-							margin-left: 20rpx;
-						}
-					}
-				}
-
-				.admin-container {
-					display: flex;
-					flex-direction: column;
-					align-items: center;
-					justify-content: flex-start;
-
-					.btn {
-						margin-bottom: 20rpx;
-						width: 100%;
-						font-size: 14px;
-					}
+					font-size: 14px;
 				}
 			}
 		}

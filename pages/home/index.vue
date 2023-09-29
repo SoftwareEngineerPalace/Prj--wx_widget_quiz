@@ -1,34 +1,33 @@
 <template>
-	<view class='base'>
-		<view class="main">
-			<!-- 1 当前题库 -->
-			<view class="container-title" @click="onClickTitle">
-				<view class="container-name">
-					<view class="title">{{`当前题库: ${quizNameDic.get(curQuizType)}`}}</view>
-					<u-icon class="icon" name="arrow-down-fill" color="#007aff" size="20"></u-icon>
+	<view class='home-wrapper'>
+		<!-- 1 当前题库 -->
+		<view class="card mb30" @click="onClickTitle">
+			<view class="hbox mb20" style="justify-content: center;">
+				<view class="text-primary" style="margin-right: 20rpx;">{{`当前题库: ${quizNameDic.get(curQuizType)}`}}
 				</view>
-				<view class="sub-title">{{processDesc}}</view>
+				<u-icon class="icon" name="arrow-down-fill" color="#5ab8b3" size="25"></u-icon>
 			</view>
-			<!-- 2 继续 -->
-			<view class="container-continue">
-				<view class="title">继续</view>
-				<view class="sub-title">从上次中断的地方继续练习</view>
-				<button class="btn" @click="continueExercise">继续练习</button>
+			<view class="text-sub">{{processDesc}}</view>
+		</view>
+
+		<!-- 2 继续 -->
+		<view class="card">
+			<view class="text-primary mb20 align-self-flex-start">继续</view>
+			<view class="text-sub mb20 align-self-flex-start">从上次中断的地方继续练习</view>
+			<button class="btn-primary" @click="continueExercise">继续练习</button>
+		</view>
+	</view>
+	<u-popup :safeAreaInsetTop='false' :safe-area-inset-bottom="false" :customStyle="{display:'flex', flexDirection:'column', alignItems:'center',
+	justifyContent:'space-between', paddingLeft:'60rpx', paddingRight:'60rpx'}" round='20' :overlay='true'
+		:show="showSelectPopup" mode="top" :close-on-click-overlay='true'>
+		<view>
+			<view class="choice" v-for="(item) in quizTypeArray" :data-id="item.value" @click="onSelectQuizType">
+				<text :key="item.value">{{item.label}}</text>
 			</view>
 		</view>
-		<u-popup :safeAreaInsetTop='false' :safe-area-inset-bottom="false" :customStyle="{display:'flex', flexDirection:'column', alignItems:'center',
-	justifyContent:'space-between', paddingLeft:'20px', paddingRight:'20px'}" round='20' :overlay='true'
-			:show="showSelectPopup" mode="top">
-			<view>
-				<view class="choice" v-for="(item) in quizTypeArray" :data-id="item.value" @click="onSelectQuizType">
-					<text :key="item.value">{{item.label}}</text>
-				</view>
-			</view>
-			<u-line class="line" color="#dddddd"></u-line>
-			<button size="default" style="margin-top: 10px; margin-bottom: 10px; font-size: 12px; width: 100%;"
-				@click="closeSelectPop">取消</button>
-		</u-popup>
-	</view>
+		<button class="btn-sub" style="margin-top: 10px; margin-bottom: 10px; width: 100%;"
+			@click="closeSelectPop">取消</button>
+	</u-popup>
 </template>
 
 <script lang="ts" setup>
@@ -116,94 +115,21 @@
 	page {
 		width: 100vw;
 		height: 100vh;
-		background-color: #eeeeee;
 
-		.sub-title {
-			font-size: $uni-font-size-base;
-			color: $uni-text-color-grey;
-			margin-top: $uni-spacing-row-base;
-			margin-bottom: $uni-spacing-row-base;
-		}
-
-		.title {
-			font-size: $uni-font-size-lg;
-		}
-
-		.btn {
-			font-size: $uni-font-size-base;
-			background-color: $uni-color-primary;
-			width: 100%;
-			color: $uni-text-color-inverse;
-		}
-
-		.main {
+		.home-wrapper {
+			width: 100vw;
 			display: flex;
 			flex-direction: column;
-			padding-top: 30rpx;
-			width: 100%;
+			padding: 30rpx;
 			height: 100vh;
-			background-color: #eeeeee;
+			background-color: $uni-bg-color-grey;
 			align-items: center;
-
-			.container-title {
-				width: 82%;
-				background-color: white;
-				border-radius: 20rpx;
-				display: flex;
-				flex-direction: column;
-				justify-content: space-between;
-				align-items: center;
-				padding: 30rpx 30rpx 0 30rpx;
-
-				.container-name {
-					display: flex;
-					flex-direction: row;
-					justify-content: space-between;
-					align-items: center;
-
-					.title {
-						margin-right: 20rpx;
-					}
-				}
-			}
-
-			.container-continue {
-				margin-top: 30rpx;
-				border-radius: 20rpx;
-				justify-content: space-between;
-				width: 82%;
-				background-color: white;
-				display: flex;
-				flex-direction: column;
-				align-items: flex-start;
-				margin-bottom: 30rpx;
-				padding: 30rpx 30rpx 30rpx 30rpx;
-			}
-
-			.admin-container {
-				display: flex;
-				flex-direction: column;
-				align-items: center;
-				justify-content: flex-start;
-			}
 		}
 	}
 
 	.choice {
-		font-size: 15px;
+		font-size: $uni-font-size-lg;
 		color: #333333;
 		margin-top: 30rpx;
-
-		&:hover {
-			background-color: #dddddd;
-		}
-
-		// &:last-child {
-		// 	margin-bottom: 30rpx;
-		// }
-	}
-
-	.choice:last-child {
-		margin-bottom: 30rpx;
 	}
 </style>
