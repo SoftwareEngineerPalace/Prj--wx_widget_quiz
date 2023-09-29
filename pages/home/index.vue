@@ -12,8 +12,8 @@
 
 		<!-- 2 继续 -->
 		<view class="card">
-			<view class="text-primary mb20 align-self-flex-start">继续</view>
-			<view class="text-sub mb20 align-self-flex-start">从上次中断的地方继续练习</view>
+			<view class="text-primary mb20" style="align-self: flex-start;">继续</view>
+			<view class="text-sub mb20" style="align-self: flex-start;">从上次中断的地方继续练习</view>
 			<button class="btn-primary" @click="continueExercise">继续练习</button>
 		</view>
 	</view>
