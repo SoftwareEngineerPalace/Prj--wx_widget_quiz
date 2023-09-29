@@ -1,16 +1,16 @@
 <template>
-	<view class="quiz">
+	<view class="quiz-wrapper padding30">
 
 		<!-- 题目 -->
-		<view class="group-title">
+		<view class="quiz__group-title mb20">
 			<text :size="`35rpx`" class="index">{{index_str}}</text>
 			<text>{{`&nbsp;&nbsp;`}}</text>
 			<text :size="`35rpx`" class="title">{{title_str}}</text>
 		</view>
 
 		<!-- 4 个选项 -->
-		<text class="option" style="flex: none;" :size="`35rpx`" v-for="(option) in checkboxList" :key="option.id"
-			autoHeight v-bind:class="{ option: true, 
+		<text class="quiz__option mb20" style="flex: none;" :size="`35rpx`" v-for="(option) in checkboxList"
+			:key="option.id" autoHeight v-bind:class="{ option: true, 
 			selected: option.selected, 
 			isCorrect: curQuiz.submitted && option.isCorrect, 
 			isWrong: curQuiz.submitted && option.selected && !option.isCorrect}" :data-id="option.id" @click="onClickOption">
@@ -18,32 +18,30 @@
 		</text>
 
 		<!-- 控制进度按钮 -->
-		<view class="group-btn" v-if="showGroupBtns">
-			<button type="default" class="btn" v-show="quizController.getCurQuizIndex() > 0"
-				@click="onPrev">上一题</button>
+		<view class="quiz__group-btn mb30" v-if="showGroupBtns">
+			<button class="btn-sub mr30" v-text="'上一题'" v-show="quizController.getCurQuizIndex() > 0" @click="onPrev"></button>
 
-			<button type="primary" v-show="!curQuiz.submitted && quizController.hasNext()" class="btn"
-				@click="onSubmit">提交</button>
+			<button class="btn-primary" v-text="'提交'" v-show="!curQuiz.submitted && quizController.hasNext()"
+				@click="onSubmit"></button>
 
-			<button type="primary" v-show="curQuiz.submitted && quizController.hasNext() " class="btn"
-				@click="onNext">下一题</button>
+			<button class="btn-sub" v-text="'下一题'" v-show="curQuiz.submitted && quizController.hasNext() " @click="onNext"></button>
 
-			<button type="default" class="btn" v-show="!curQuiz.submitted && !quizController.hasNext()"
-				@click="onSubmit">提交</button>
+			<button class="btn-sub" v-text="'提交'" v-show="!curQuiz.submitted && !quizController.hasNext()"
+				@click="onSubmit"></button>
 
-			<button type="primary" v-show="curQuiz.submitted && !quizController.hasNext() " class="btn"
-				@click="onNext">进入结算页</button>
+			<button class="btn-primary" v-text="'进入结算页'" v-show="curQuiz.submitted && !quizController.hasNext() "
+				@click="onNext"></button>
 		</view>
 	</view>
 
 </template>
 
 <script lang="ts" setup>
-	import { ref, computed, onMounted, Ref } from 'vue';
+	import { ref, computed, Ref } from 'vue';
 	import quizController from '../../common/quizController';
 	import { ICheckbox, IQuiz, quizNameDic } from '../../common/utils';
 	import queryString from 'query-string';
-	import { onShow, onLoad, onUnload } from '@dcloudio/uni-app';
+	import { onLoad, onUnload } from '@dcloudio/uni-app';
 
 	const quizList : Ref<Array<IQuiz>> = ref([]);// 所有题目
 	const quizType = ref("")// 题目类型
@@ -169,21 +167,22 @@
 	}
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 	page {
 		width: 100vw;
 		height: 100vh;
 		background-color: #eeeeee;
 
-		.quiz {
-			width: 100%;
+		.quiz-wrapper {
+			width: 100vw;
+			height: 100vh;
 			display: flex;
 			flex-direction: column;
 			justify-content: flex-start;
+			background-color: $uni-bg-color-grey;
 
-			.group-title {
+			.quiz__group-title {
 				font-size: 35rpx;
-				margin: 0 30rpx 30rpx 30rpx;
 				display: flex;
 				justify-content: flex-start;
 
@@ -195,9 +194,8 @@
 				.title {}
 			}
 
-			.option {
+			.quiz__option {
 				font-size: 35rpx;
-				margin: 0 30rpx 30rpx 30rpx;
 				background-color: white;
 				border-radius: 20rpx;
 				padding: 20rpx;
@@ -209,7 +207,7 @@
 				}
 
 				&.isCorrect {
-					background-color: #1aad19;
+					background-color: $uni-theme-primary;
 					color: white;
 				}
 
@@ -219,10 +217,10 @@
 				}
 			}
 
-			.group-btn {
+			.quiz__group-btn {
 				display: flex;
-				position: fixed;
-				bottom: 0;
+				// position: fixed;
+				// bottom: 0;
 				width: 100%;
 				flex-direction: row;
 

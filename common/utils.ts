@@ -95,4 +95,4 @@ interface IData {
 	[prop : string] : unknown;
 }
 
-export { ITask, IData, IQuizHistory, generateUUID, showToast, quizNameDic, checkSession, quizTypeArray, formatTime, IQuiz, IData, ICheckbox }
+export { ITask, IQuizHistory, generateUUID, showToast, quizNameDic, checkSession, quizTypeArray, formatTime, IQuiz, IData, ICheckbox }
