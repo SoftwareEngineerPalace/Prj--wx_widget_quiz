@@ -11,11 +11,20 @@
 		</view>
 
 		<!-- 2 继续 -->
-		<view class="card">
+		<view class="card mb30">
 			<view class="text-primary mb20" style="align-self: flex-start;">继续</view>
 			<view class="text-sub mb20" style="align-self: flex-start;">从上次中断的地方继续练习</view>
 			<button class="btn-primary" @click="continueExercise">继续练习</button>
 		</view>
+
+		<!-- 3 回顾练习 -->
+		<view class="card">
+			<view class="text-primary mb20" style="align-self: flex-start;">回顾练习</view>
+			<view class="text-sub mb20" style="align-self: flex-start;">练习错题本 / 收藏夹中的题目</view>
+			<button class="btn-primary mb20" @click="startErrCollection">错题练习</button>
+			<button class="btn-primary" @click="startFavQuiz" :disabled="true">收藏夹练习</button>
+		</view>
+
 	</view>
 	<u-popup :safeAreaInsetTop='false' :safe-area-inset-bottom="false" :customStyle="{display:'flex', flexDirection:'column', alignItems:'center',
 	justifyContent:'space-between', paddingLeft:'60rpx', paddingRight:'60rpx'}" round='20' :overlay='true'
@@ -34,9 +43,10 @@
 	declare const wx : any;
 	import { computed, onMounted, Ref, ref } from 'vue';
 
-	import { checkSession, quizNameDic, quizTypeArray } from '../../common/utils';
+	import { checkSession, quizNameDic, quizTypeArray, IQuiz } from '../../common/utils';
 	import queryString from 'query-string';
 	import { onShow, onLoad } from '@dcloudio/uni-app';
+
 	const latestQuizIndex = ref(-1);
 	const quizCount : Ref<number> = ref(0);
 	const userOpenId = ref('');
@@ -61,9 +71,9 @@
 
 	const processDesc = computed(() => {
 		if (quizCount.value) {
-			return `练习进度 ${latestQuizIndex.value + 1}/${quizCount.value}`;
+			return `练习进度 ${latestQuizIndex.value}/${quizCount.value}`;
 		} else {
-			return `练习进度 ${latestQuizIndex.value + 1}`;
+			return `练习进度 ${latestQuizIndex.value}`;
 		}
 	})
 
@@ -82,16 +92,9 @@
 			data: { token, quiz_type: curQuizType.value }
 		});
 		console.log('index updateOnQuizTypeChanged 获得题目进度', rsp.result)
-		const { latest_quiz_index, quiz_count } = rsp.result;
-		latestQuizIndex.value = latest_quiz_index;
+		const { latest_quiz_sn, quiz_count } = rsp.result;
+		latestQuizIndex.value = latest_quiz_sn;
 		quizCount.value = quiz_count;
-	};
-
-	const continueExercise = () => {
-		const quizType = curQuizType.value;
-		const queryStr = queryString.stringify({ quizType });
-		const url = `/pages/quiz/index?${queryStr}`;
-		uni.navigateTo({ url })
 	};
 
 	const onClickTitle = () => {
@@ -109,6 +112,49 @@
 		curQuizType.value = quizType;
 		updateOnQuizTypeChanged();
 	};
+
+	const getAllQuizs = async (dbName : string) => {
+		const rsp : any = await wx.cloud.callFunction({
+			name: 'getAllQuiz',
+			data: { dbName }
+		});
+		return rsp.result.data;
+	};
+
+	/** 继续练习 */
+	const continueExercise = async () => {
+		// 1 题目类型
+		const quizType = curQuizType.value;
+
+		// 2 题目数据
+		const data : IQuiz[] = await getAllQuizs(quizType);
+
+		// 3 最后一个题目序号
+		const token = uni.getStorageSync('token');
+		const rsp : any = await wx.cloud.callFunction({
+			name: 'getProcess',
+			data: { token, quiz_type: quizType }
+		});
+		const latest_quiz_index = rsp.result.latest_quiz_sn - 1;
+
+		// 传给下一页的数据
+		console.log('continueExercise', { quizType, quizList: data, latest_quiz_index })
+		const queryStr = queryString.stringify({ quizType, quizList: JSON.stringify(data), latest_quiz_index });
+
+		const url = `/pages/quiz/index?${queryStr}`;
+		uni.navigateTo({ url })
+	};
+
+	/** 错题本 */
+	const startErrCollection = () => {
+		// 根据 quizType userId latest_anwer 获取题目
+
+	}
+
+	/** 收藏夹做题 */
+	const startFavQuiz = () => {
+
+	}
 </script>
 
 <style lang="scss" scoped>

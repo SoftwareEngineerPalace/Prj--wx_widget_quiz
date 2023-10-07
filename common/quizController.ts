@@ -7,6 +7,10 @@ class QuizController {
 	public getCurQuizIndex() {
 		return this._curQuizIndex;
 	}
+	
+	public getCurQuizSN(){
+		return this._quizList[this._curQuizIndex].sn;
+	}
 
 	public getQuizCount() {
 		return this._quizCount;

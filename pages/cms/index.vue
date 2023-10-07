@@ -69,7 +69,8 @@
 	const onUpdateOne = async (evt : any) => {
 		const id_to_update : string = evt.target.dataset.id;
 		const quiz = quizList.value.find((v : IQuiz) => v.id === id_to_update);
-		const data = { ...quiz, dbName: dbName.value };
+		const sn = quizList.value.findIndex((v : IQuiz) => v.id === id_to_update);
+		const data = { ...quiz, dbName: dbName.value, sn: sn + 1 };
 		console.log('onUpdateOne', data)
 		const rsp : any = await wx.cloud.callFunction({
 			name: 'updateQuiz',
