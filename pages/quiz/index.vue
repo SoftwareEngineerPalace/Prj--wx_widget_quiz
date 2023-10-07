@@ -31,7 +31,11 @@
 			<button class="btn-sub" v-text="'提交'" v-show="!curQuiz.submitted && !quizController.hasNext()"
 				@click="onSubmit"></button>
 
-			<button class="btn-primary" v-text="'进入结算页'" v-show="curQuiz.submitted && !quizController.hasNext() "
+			<button class="btn-primary" v-text="'进入结算页'"
+				v-show="curExerciseType === ExerciseType.Common && curQuiz.submitted && !quizController.hasNext() "
+				@click="onNext"></button>
+			<button class="btn-primary" v-text="'回到首页'"
+				v-show="curExerciseType === ExerciseType.ErrCollection && curQuiz.submitted && !quizController.hasNext() "
 				@click="onNext"></button>
 		</view>
 	</view>
@@ -142,8 +146,7 @@
 			name: 'answer',
 			data
 		});
-		// console.log('答题结果', rsp)
-		return rsp.result.data;
+		console.log('答题结果', rsp)
 	};
 
 	const onPrev = () => {
@@ -154,14 +157,22 @@
 	const onNext = () => {
 		const nextQuiz = quizController.goNext();
 		console.log('nextQuiz', nextQuiz);
-		if (nextQuiz !== null) {
-			curQuiz.value = { ...nextQuiz, submitted: false };
-			updateQuiz(curQuiz.value);
-		} else {
+		if (!nextQuiz && curExerciseType.value === ExerciseType.Common) {
 			console.log('onNext redirectTo quizType.value', quizType.value);
 			const queryStr = queryString.stringify({ quizType: quizType.value });
 			const url = `/pages/summary/index?${queryStr}`;
 			uni.redirectTo({ url })
+			return;
+		}
+
+		if (!nextQuiz && curExerciseType.value === ExerciseType.ErrCollection) {
+			uni.navigateBack();
+			return;
+		}
+
+		if (nextQuiz !== null) {
+			curQuiz.value = { ...nextQuiz, submitted: false };
+			updateQuiz(curQuiz.value);
 		}
 	};
 
