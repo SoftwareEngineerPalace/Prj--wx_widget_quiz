@@ -46,6 +46,7 @@
 	import { onLoad, onUnload } from '@dcloudio/uni-app';
 
 	const quizType = ref("")// 题目类型
+	const curExerciseType = ref("") // 做题类型
 	const showGroupBtns = ref(false);
 	const curQuiz = ref({} as IQuiz);// 当前题目的数据
 	const checkboxList = ref([]);// 当前4个选项
@@ -55,16 +56,20 @@
 	onLoad(async (evt : { quizType : string, exerciseType : string, latest_quiz_index : string }) => {
 		console.log('quiz onLoad', evt);
 		const { latest_quiz_index, exerciseType } = evt;
+		curExerciseType.value = exerciseType;
+		// console.log('0')
 		wx.cloud.init({
 			env: "quiz-0gb2aw2vb2850af4"
 		});
-
+		// console.log('1')
 		// 1 设置类型
 		quizType.value = evt.quizType;
+		// console.log('2')
 
 		// 2 设置 bar title
 		const title : string = quizNameDic.get(evt.quizType) as string;
 		uni.setNavigationBarTitle({ title });
+		// console.log('3')
 
 		// 3 加载所有题目
 		let list : IQuiz[] = [];
@@ -91,10 +96,17 @@
 
 	const index_str = computed(() => {
 		curQuiz.value;
-		const index = quizController.getCurQuizIndex();
+		const sn = quizController.getCurQuizSN();
 		const count = quizController.getQuizCount();
-		console.log('index_str', { index, count });
-		return index !== -1 ? `${(index + 1)}/${count}.  ` : "";
+		console.log('quiz index_str', { sn, count, curExerciseType: curExerciseType.value });
+		if (sn < 1 || count < 1) {
+			return '';
+		}
+		if (curExerciseType.value === ExerciseType.Common) {
+			return sn !== 0 ? `${sn}/${count}.  ` : "";
+		} else if (curExerciseType.value === ExerciseType.ErrCollection) {
+			return sn !== 0 ? `${sn}. ` : "";
+		}
 	})
 
 	const onClickOption = (evt : any) => {
@@ -117,8 +129,13 @@
 		const quiz_sn = quizController.getCurQuizSN();
 		const quizCount = quizController.getQuizCount();
 		const data = {
-			quiz_title: curQuiz.value.title, quiz_id: curQuiz.value.id,
-			quizType: quizType.value, token, isCorrect, quiz_sn, quiz_count: quizCount
+			quiz_title: curQuiz.value.title,
+			quiz_id: curQuiz.value.id,
+			quizType: quizType.value,
+			token, isCorrect,
+			quiz_sn,
+			quiz_count: quizCount,
+			exerciseType: curExerciseType.value
 		};
 		// console.log("onSubmit", data);
 		const rsp : any = await wx.cloud.callFunction({
@@ -171,11 +188,15 @@
 		return rsp.result.data;
 	};
 
-	const getErrorCollectonQuiz = async (dbName : string) => {
+	const getErrorCollectonQuiz = async (quiz_type : string) => {
+		const token = uni.getStorageSync('token');
+		const data = { quiz_type, token };
+		console.log("getErrorCollectonQuiz", { data });
 		const rsp : any = await wx.cloud.callFunction({
 			name: 'getErrorCollectonQuiz',
-			data: { dbName }
+			data
 		});
+		// console.log("getErrorCollectonQuiz rsp", rsp);
 		return rsp.result.data;
 	}
 </script>

@@ -9,7 +9,9 @@ class QuizController {
 	}
 	
 	public getCurQuizSN(){
-		return this._quizList[this._curQuizIndex].sn;
+		console.log("quizController getCurQuizSN this._curQuizIndex=", this._curQuizIndex);
+		console.log("quizController getCurQuizSN this._quizList=", this._quizList.length);
+		return this._quizList?.[this._curQuizIndex]?.sn || ''; // 空字符串表示没有取到数据
 	}
 
 	public getQuizCount() {
