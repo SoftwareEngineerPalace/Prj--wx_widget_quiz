@@ -95,4 +95,10 @@ interface IData {
 	[prop : string] : unknown;
 }
 
-export { ITask, IQuizHistory, generateUUID, showToast, quizNameDic, checkSession, quizTypeArray, formatTime, IQuiz, IData, ICheckbox }
+enum ExerciseType {
+	Common = 'Common',
+	ErrCollection = 'ErrCollection',
+	Fav = 'Fav'
+}
+
+export { ExerciseType, ITask, IQuizHistory, generateUUID, showToast, quizNameDic, checkSession, quizTypeArray, formatTime, IQuiz, IData, ICheckbox }

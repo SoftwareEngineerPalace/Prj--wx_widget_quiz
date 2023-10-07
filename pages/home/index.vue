@@ -30,7 +30,8 @@
 	justifyContent:'space-between', paddingLeft:'60rpx', paddingRight:'60rpx'}" round='20' :overlay='true'
 		:show="showSelectPopup" mode="top" :close-on-click-overlay='true'>
 		<view>
-			<view class="choice" v-for="(item) in quizTypeArray" :data-id="item.value" @click="onSelectQuizType">
+			<view class="choice" v-for="(item) in quizTypeArray" :data-id="item.value" @click="onSelectQuizType"
+				:key="item.value">
 				<text :key="item.value">{{item.label}}</text>
 			</view>
 		</view>
@@ -40,21 +41,22 @@
 </template>
 
 <script lang="ts" setup>
-	declare const wx : any;
-	import { computed, onMounted, Ref, ref } from 'vue';
+	import { ExerciseType } from '../../common/utils';
 
-	import { checkSession, quizNameDic, quizTypeArray, IQuiz } from '../../common/utils';
+	import { computed, onMounted, ref } from 'vue';
+
+	import { checkSession, quizNameDic, quizTypeArray } from '../../common/utils';
 	import queryString from 'query-string';
-	import { onShow, onLoad } from '@dcloudio/uni-app';
+	import { onShow } from '@dcloudio/uni-app';
 
-	const latestQuizIndex = ref(-1);
-	const quizCount : Ref<number> = ref(0);
+
+	const latestQuizIndex = ref(0);
+	const quizCount = ref(0);
 	const userOpenId = ref('');
 	const curQuizType = ref('js');
 	const showSelectPopup = ref(false);
 
 	onShow(() => {
-		console.log("home index onShow");
 		updateOnQuizTypeChanged();
 		updateUI();
 	})
@@ -113,23 +115,12 @@
 		updateOnQuizTypeChanged();
 	};
 
-	const getAllQuizs = async (dbName : string) => {
-		const rsp : any = await wx.cloud.callFunction({
-			name: 'getAllQuiz',
-			data: { dbName }
-		});
-		return rsp.result.data;
-	};
-
 	/** 继续练习 */
 	const continueExercise = async () => {
 		// 1 题目类型
 		const quizType = curQuizType.value;
 
-		// 2 题目数据
-		const data : IQuiz[] = await getAllQuizs(quizType);
-
-		// 3 最后一个题目序号
+		// 2 最后一个题目序号
 		const token = uni.getStorageSync('token');
 		const rsp : any = await wx.cloud.callFunction({
 			name: 'getProcess',
@@ -138,8 +129,8 @@
 		const latest_quiz_index = rsp.result.latest_quiz_sn - 1;
 
 		// 传给下一页的数据
-		console.log('continueExercise', { quizType, quizList: data, latest_quiz_index })
-		const queryStr = queryString.stringify({ quizType, quizList: JSON.stringify(data), latest_quiz_index });
+		console.log('continueExercise', { quizType, latest_quiz_index })
+		const queryStr = queryString.stringify({ quizType, exerciseType: ExerciseType.Common, latest_quiz_index });
 
 		const url = `/pages/quiz/index?${queryStr}`;
 		uni.navigateTo({ url })
@@ -147,8 +138,18 @@
 
 	/** 错题本 */
 	const startErrCollection = () => {
-		// 根据 quizType userId latest_anwer 获取题目
+		// 1 题目类型
+		const quizType = curQuizType.value;
 
+		// 2 最后一个题目序号
+		const latest_quiz_index = -1;
+
+		// 传给下一页的数据
+		console.log('continueExercise', { quizType, latest_quiz_index })
+		const queryStr = queryString.stringify({ quizType, exerciseType: ExerciseType.ErrCollection, latest_quiz_index });
+
+		const url = `/pages/quiz/index?${queryStr}`;
+		uni.navigateTo({ url })
 	}
 
 	/** 收藏夹做题 */

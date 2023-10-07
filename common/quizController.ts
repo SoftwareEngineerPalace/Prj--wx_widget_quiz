@@ -37,6 +37,7 @@ class QuizController {
 	}
 
 	setCurQuizIndex = (index : number) => {
+		console.log("quizController setCurQuizIndex index", index);
 		this._curQuizIndex = index;
 	}
 
@@ -47,9 +48,8 @@ class QuizController {
 	goNext = () => {
 		if (this._curQuizIndex < this._quizCount - 1) {
 			this._curQuizIndex += 1;
-			// console.log('goNext', this._curQuizIndex, this._quizList[this._curQuizIndex])
+			console.log("quizController goNext this._curQuizIndex", this._curQuizIndex);
 			return this._quizList[this._curQuizIndex];
-			// return this._quizList[this._quizCount - 1];
 		} else {
 			return null;
 		}

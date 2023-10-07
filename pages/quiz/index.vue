@@ -39,25 +39,26 @@
 </template>
 
 <script lang="ts" setup>
-	import { ref, computed, Ref } from 'vue';
+	import { ref, computed } from 'vue';
 	import quizController from '../../common/quizController';
-	import { ICheckbox, IQuiz, quizNameDic } from '../../common/utils';
+	import { ICheckbox, IQuiz, quizNameDic, ExerciseType } from '../../common/utils';
 	import queryString from 'query-string';
 	import { onLoad, onUnload } from '@dcloudio/uni-app';
 
 	const quizType = ref("")// 题目类型
 	const showGroupBtns = ref(false);
-	const curQuiz : Ref<IQuiz> = ref({} as IQuiz);// 当前题目的数据
-	const checkboxList : Ref<Array<ICheckbox>> = ref([]);// 当前4个选项
+	const curQuiz = ref({} as IQuiz);// 当前题目的数据
+	const checkboxList = ref([]);// 当前4个选项
 	const userAnswer = ref('');// 用户的答案
-	const quizList : Ref<Array<IQuiz>> = ref([]);
+	const quizList = ref([]);
 
-	onLoad(async (evt : { quizType : string, quizList : string, latest_quiz_index : number }) => {
+	onLoad(async (evt : { quizType : string, exerciseType : string, latest_quiz_index : string }) => {
 		console.log('quiz onLoad', evt);
-		const { latest_quiz_index } = evt;
+		const { latest_quiz_index, exerciseType } = evt;
 		wx.cloud.init({
 			env: "quiz-0gb2aw2vb2850af4"
 		});
+
 		// 1 设置类型
 		quizType.value = evt.quizType;
 
@@ -66,12 +67,18 @@
 		uni.setNavigationBarTitle({ title });
 
 		// 3 加载所有题目
-		const data : IQuiz[] = JSON.parse(evt.quizList);
-		quizList.value.push(...data);
-		quizController.setQuizList(data);
+		let list : IQuiz[] = [];
+		if (exerciseType === ExerciseType.Common) {
+			list = await getAllQuizs(evt.quizType);
+		} else if (exerciseType === ExerciseType.ErrCollection) {
+			list = await getErrorCollectonQuiz(evt.quizType);
+		}
+		console.log("quiz onLoad 加载到的题目的数目", list.length);
+		quizList.value.push(...list);
+		quizController.setQuizList(list);
 
 		// 加载做题进度
-		quizController.setCurQuizIndex(latest_quiz_index + 1)
+		quizController.setCurQuizIndex(parseInt(latest_quiz_index));
 
 		onNext();
 	});
@@ -129,7 +136,7 @@
 
 	const onNext = () => {
 		const nextQuiz = quizController.goNext();
-		// console.log('nextQuiz', nextQuiz);
+		console.log('nextQuiz', nextQuiz);
 		if (nextQuiz !== null) {
 			curQuiz.value = { ...nextQuiz, submitted: false };
 			updateQuiz(curQuiz.value);
@@ -154,6 +161,22 @@
 			return option;
 		})
 		showGroupBtns.value = true;
+	}
+
+	const getAllQuizs = async (dbName : string) => {
+		const rsp : any = await wx.cloud.callFunction({
+			name: 'getAllQuiz',
+			data: { dbName }
+		});
+		return rsp.result.data;
+	};
+
+	const getErrorCollectonQuiz = async (dbName : string) => {
+		const rsp : any = await wx.cloud.callFunction({
+			name: 'getErrorCollectonQuiz',
+			data: { dbName }
+		});
+		return rsp.result.data;
 	}
 </script>
 
