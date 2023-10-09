@@ -22,7 +22,7 @@
 			<view class="text-primary mb20" style="align-self: flex-start;">回顾练习</view>
 			<view class="text-sub mb20" style="align-self: flex-start;">练习错题本 / 收藏夹中的题目</view>
 			<button class="btn-primary mb20" @click="startErrCollection">错题练习</button>
-			<button class="btn-primary" @click="startFavQuiz" :disabled="true">收藏夹练习</button>
+			<button class="btn-primary" @click="startFavQuiz">收藏夹练习</button>
 		</view>
 
 	</view>
@@ -48,7 +48,7 @@
 	import { checkSession, quizNameDic, quizTypeArray } from '../../common/utils';
 	import queryString from 'query-string';
 	import { onShow } from '@dcloudio/uni-app';
-
+	import { getAllQuizs, getErrorCollectonQuiz } from '../../service';
 
 	const latestQuizIndex = ref(0);
 	const quizCount = ref(0);
@@ -120,6 +120,16 @@
 		// 1 题目类型
 		const quizType = curQuizType.value;
 
+		const list = await getAllQuizs(quizType);
+		console.log("continueExercise 加载到的题目的数目", list.length);
+		if (list.length === 0) {
+			uni.showToast({
+				title: "还没有题目",
+				duration: 1000
+			})
+			return;
+		}
+
 		// 2 最后一个题目序号
 		const token = uni.getStorageSync('token');
 		const rsp : any = await wx.cloud.callFunction({
@@ -137,9 +147,19 @@
 	};
 
 	/** 错题本 */
-	const startErrCollection = () => {
+	const startErrCollection = async () => {
 		// 1 题目类型
 		const quizType = curQuizType.value;
+
+		const list = await getErrorCollectonQuiz(quizType);
+		console.log('startErrCollection', { list });
+		if (list.length === 0) {
+			uni.showToast({
+				title: "还没有错题",
+				duration: 1000
+			})
+			return;
+		}
 
 		// 2 最后一个题目序号
 		const latest_quiz_index = -1;
@@ -154,7 +174,10 @@
 
 	/** 收藏夹做题 */
 	const startFavQuiz = () => {
-
+		uni.showToast({
+			title: "功能没开放",
+			duration: 1000
+		})
 	}
 </script>
 

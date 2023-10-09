@@ -48,6 +48,7 @@
 	import { ICheckbox, IQuiz, quizNameDic, ExerciseType } from '../../common/utils';
 	import queryString from 'query-string';
 	import { onLoad, onUnload } from '@dcloudio/uni-app';
+import { getAllQuizs, getErrorCollectonQuiz } from '../../service';
 
 	const quizType = ref("")// 题目类型
 	const curExerciseType = ref("") // 做题类型
@@ -68,12 +69,10 @@
 		// console.log('1')
 		// 1 设置类型
 		quizType.value = evt.quizType;
-		// console.log('2')
 
 		// 2 设置 bar title
 		const title : string = quizNameDic.get(evt.quizType) as string;
 		uni.setNavigationBarTitle({ title });
-		// console.log('3')
 
 		// 3 加载所有题目
 		let list : IQuiz[] = [];
@@ -83,13 +82,23 @@
 			list = await getErrorCollectonQuiz(evt.quizType);
 		}
 		console.log("quiz onLoad 加载到的题目的数目", list.length);
+		if (list.length === 0) {
+			uni.showToast({
+				title: "没有题目",
+				duration: 1000
+			})
+			setTimeout(() => {
+				uni.navigateBack();
+			}, 1000)
+			return;
+		}
 		quizList.value.push(...list);
 		quizController.setQuizList(list);
 
 		// 加载做题进度
 		quizController.setCurQuizIndex(parseInt(latest_quiz_index));
 
-		onNext();
+		// onNext();
 	});
 
 	onUnload(() => {
@@ -189,26 +198,6 @@
 			return option;
 		})
 		showGroupBtns.value = true;
-	}
-
-	const getAllQuizs = async (dbName : string) => {
-		const rsp : any = await wx.cloud.callFunction({
-			name: 'getAllQuiz',
-			data: { dbName }
-		});
-		return rsp.result.data;
-	};
-
-	const getErrorCollectonQuiz = async (quiz_type : string) => {
-		const token = uni.getStorageSync('token');
-		const data = { quiz_type, token };
-		console.log("getErrorCollectonQuiz", { data });
-		const rsp : any = await wx.cloud.callFunction({
-			name: 'getErrorCollectonQuiz',
-			data
-		});
-		// console.log("getErrorCollectonQuiz rsp", rsp);
-		return rsp.result.data;
 	}
 </script>
 

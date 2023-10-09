@@ -58,12 +58,12 @@
 		icon : string;
 		id : string;
 	}
-	const commonUseSettings = ref<Array<ISettings>>([
+	const commonUseSettings = ref([
 		{ id: 'wrongbook', 'label': '错题本', 'icon': 'order' },
 		{ id: 'comment', 'label': '评论', 'icon': 'chat-fill' },
 		{ id: 'favorite', 'label': '收藏', 'icon': 'star-fill' }])
 
-	const notCommonUseSettings = ref<Array<ISettings>>([
+	const notCommonUseSettings = ref([
 		{ id: 'wrongbook', 'label': '我的做题记录', 'icon': 'order' },
 		{ id: 'comment', 'label': '我收到的赞', 'icon': 'thumb-up-fill' },
 		{ id: 'wrongbook', 'label': '分享', 'icon': 'share-fill' },
