@@ -190,7 +190,7 @@
 
 	const onPrev = () => {
 		curQuiz.value = { ...quizController.goPreview(), submitted: false };
-		updateQuiz(curQuiz.value);
+		upadteQuiz(curQuiz.value);
 	};
 
 	const onNext = () => {
@@ -211,12 +211,21 @@
 
 		if (nextQuiz !== null) {
 			curQuiz.value = { ...nextQuiz, submitted: false };
-			updateQuiz(curQuiz.value);
+			upadteQuiz(curQuiz.value);
+
 		}
 	};
 
+	/** 更新题目选项和和评论区 */
+	const upadteQuiz = (quiz : any) => {
+		updateOptions(quiz);
+		if (!!quiz?.first_comment_id) {
+			upadteComment(quiz?.first_comment_id)
+		}
+	}
+
 	/** 刷新当前题目选项 */
-	const updateQuiz = (quiz : any) => {
+	const updateOptions = (quiz : any) => {
 		const { option_a, option_b, option_c, option_d, answer } = quiz;
 		checkboxList.value = Object.entries({ option_a, option_b, option_c, option_d }).map((v : string[]) => {
 			const id = v[0].charAt(v[0].length - 1).toUpperCase();
@@ -229,6 +238,16 @@
 			return option;
 		})
 		showGroupBtns.value = true;
+	}
+
+	/** 更新评论区 */
+	const upadteComment = async (first_comment_id : string) => {
+		console.log("upadteComment", first_comment_id)
+		const rsp : any = await wx.cloud.callFunction({
+			name: 'getComment',
+			data: { id: first_comment_id }
+		});
+		console.log("quiz getComment", rsp)
 	}
 
 	// 下面是关于评论的
@@ -268,16 +287,19 @@
 			time: new Date().toLocaleDateString(),
 			likeCount: 0,
 
+			commenter_id: openid,
 			nickName,
 			avatarUrl
 		}
 		// 1 更新
 		commentList.value.push(comment);
 
-		// 2 评论放入数据库
+		// 2 把评论放入数据库
+		const data = { ...comment, commenter_id: openid };
+		console.log("把评论放入数据库", data);
 		await wx.cloud.callFunction({
 			name: 'addComment',
-			data: { ...comment, commenter_id: openid }
+			data
 		})
 
 		// 3 如果是第 1 个评论，则绑到 quiz 上

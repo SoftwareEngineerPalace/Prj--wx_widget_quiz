@@ -109,10 +109,10 @@ interface IComment {
 	right_child_id : string;
 	rTag : number;
 
-	commenter_open_id : string;
-	nickName:string;
-	avatarUrl:string;
-	
+	commenter_id : string;
+	nickName : string;
+	avatarUrl : string;
+
 	content : string;
 
 	likeCount : number;

@@ -18,7 +18,7 @@
 
 		<view class="card">
 			<view class="hbox" style="padding:20rpx; justify-content: space-between; border-bottom: 1px solid #eeeeee;"
-				v-for="(item) in notCommonUseSettings">
+				v-for="(item) in notCommonUseSettings" :key="item.id">
 				<view class="hbox">
 					<u-icon custom-style="margin-right:30rpx" :name="item.icon" color="#bbbbbb" size="50"></u-icon>
 					<view class='label'>{{ item.label }}</view>
@@ -59,12 +59,12 @@
 		{ id: 'favorite', 'label': '收藏', 'icon': 'star-fill' }])
 
 	const notCommonUseSettings = ref([
-		{ id: 'wrongbook', 'label': '我的做题记录', 'icon': 'order' },
-		{ id: 'comment', 'label': '我收到的赞', 'icon': 'thumb-up-fill' },
-		{ id: 'wrongbook', 'label': '分享', 'icon': 'share-fill' },
-		{ id: 'comment', 'label': '问题反馈', 'icon': 'chat-fill' },
-		{ id: 'wrongbook', 'label': '设置', 'icon': 'setting-fill' },
-		{ id: 'favorite', 'label': '关于程序', 'icon': 'error-circle' }])
+		{ id: 'history', 'label': '我的做题记录', 'icon': 'order' },
+		{ id: 'like', 'label': '我收到的赞', 'icon': 'thumb-up-fill' },
+		{ id: 'share', 'label': '分享', 'icon': 'share-fill' },
+		{ id: 'feedback', 'label': '问题反馈', 'icon': 'chat-fill' },
+		{ id: 'settings', 'label': '设置', 'icon': 'setting-fill' },
+		{ id: 'about', 'label': '关于程序', 'icon': 'error-circle' }])
 
 	onMounted(async () => {
 		wx.cloud.init({
