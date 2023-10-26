@@ -280,18 +280,26 @@
 			name: 'addComment',
 			data: { ...comment }
 		})
-		console.log('评论放入数据库的回调', rsp);
+		// console.log('评论放入数据库的回调', rsp);
 
 		// 3 如果是第 1 个评论，则绑到 quiz 上
 		if (!curQuiz.value.first_comment_id) {
 			const data = { ...curQuiz.value, first_comment_id: comment.id, dbName: quizType.value };
 			console.log('要更新的题目数据', data)
-			const rsp : any = await wx.cloud.callFunction({
+			const rsp_updateQuiz : any = await wx.cloud.callFunction({
 				name: 'updateQuiz',
 				data
 			})
-			console.log("onUpdateOne", { rsp });
+			// console.log("onUpdateOne", { rsp_updateQuiz });
 		}
+
+		// 4 如果数据库里没有这个评论人，则把这个评论人放到数据库里
+		const commenter = { id: openid, commenter_name: nickName, avatar_url: avatarUrl };
+		const rsp_addCommenter : any = await wx.cloud.callFunction({
+			name: 'addCommenter',
+			data: { ...commenter }
+		})
+		// console.log('评论放入数据库的回调', rsp_addCommenter);
 	}
 </script>
 
