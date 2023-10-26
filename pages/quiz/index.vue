@@ -248,33 +248,49 @@
 
 	}
 
-	const onConfirmComment = () => {
+	const onConfirmComment = async () => {
 		const commentValue : string = comment_value.value;
 		comment_value.value = '';
 		showCommentPopup.value = false;
 
 		const { nickName, avatarUrl, openid } = (getApp().globalData as any).loginInfo as ICommenter;
 
+		// 创建第 1 个评论的数据，评论和评论员数据放一起，就不遵循数据库的第三范式了
+		const comment : IComment = {
+			id: generateUUID(),
+			parent_id: "",
+			lTag: 0,
+			left_child_id: '',
+			rTag: 0,
+			right_child_id: '',
+
+			content: commentValue,
+			time: new Date().toLocaleDateString(),
+			likeCount: 0,
+
+			commenter_open_id: openid,
+			nickName,
+			avatarUrl
+		}
+		// 1 更新
+		commentList.value.push(comment);
+
+		// 2 评论放入数据库
+		const rsp : any = await wx.cloud.callFunction({
+			name: 'addComment',
+			data: { ...comment }
+		})
+		console.log('评论放入数据库的回调', rsp);
+
+		// 3 如果是第 1 个评论，则绑到 quiz 上
 		if (!curQuiz.value.first_comment_id) {
-			// 创建第1个评论的数据，评论和评论员数据放一起，就不遵循数据库的第三范式了
-			const comment : IComment = {
-				id: generateUUID(),
-				parent_id: "",
-				lTag: 0,
-				left_child_id: '',
-				rTag: 0,
-				right_child_id: '',
-
-				content: commentValue,
-				time: new Date().toLocaleDateString(),
-				likeCount: 0,
-
-				commenter_open_id: openid,
-				nickName,
-				avatarUrl
-			}
-			// console.log('add comment', comment);
-			commentList.value.push(comment);
+			const data = { ...curQuiz.value, first_comment_id: comment.id, dbName: quizType.value };
+			console.log('要更新的题目数据', data)
+			const rsp : any = await wx.cloud.callFunction({
+				name: 'updateQuiz',
+				data
+			})
+			console.log("onUpdateOne", { rsp });
 		}
 	}
 </script>

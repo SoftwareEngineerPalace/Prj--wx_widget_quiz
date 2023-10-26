@@ -34,7 +34,7 @@
 	// TODO 不想用 onMounted
 	onMounted(async () => {
 		const { vo } = props;
-		console.log('onMounted vo', vo);
+		// console.log('onMounted vo', vo);
 		originalLikeCount.value = vo.likeCount;
 		state_likeCount.value = vo.likeCount;
 	})
