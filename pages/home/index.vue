@@ -125,7 +125,7 @@
 		const quizType = curQuizType.value;
 
 		const list = await getAllQuizs(quizType);
-		console.log("continueExercise 加载到的题目的数目", list[2]);
+		// console.log("continueExercise 加载到的题目的数目", list[2]);
 		if (list.length === 0) {
 			uni.showToast({
 				title: "还没有题目",

@@ -216,7 +216,10 @@
 
 	/** 更新题目选项和和评论区 */
 	const upadteQuiz = (quiz : any) => {
+		// console.log('upadteQuiz', quiz);
 		updateOptions(quiz);
+
+		commentList.value = [];
 		if (!!quiz?.first_comment_id) {
 			upadteComment(quiz?.first_comment_id)
 		}
@@ -240,13 +243,13 @@
 
 	/** 更新评论区 */
 	const upadteComment = async (first_comment_id : string) => {
-		console.log("upadteComment", first_comment_id)
+		// console.log("upadteComment", first_comment_id)
 		const rsp : any = await wx.cloud.callFunction({
 			name: 'getComment',
 			data: { id: first_comment_id }
 		});
 		const first_comment = rsp.result.list.find((v : any) => v.id === first_comment_id);
-		console.log('要渲染的第一个评论', first_comment);
+		// console.log('要渲染的第一个评论', first_comment);
 		commentList.value.push(first_comment);
 	}
 
@@ -272,7 +275,7 @@
 		comment_value.value = '';
 		showCommentPopup.value = false;
 
-		const { nickName: commenter_name, avatarUrl:avatar_url, openid: commenter_id } = (getApp().globalData as any).loginInfo as ICommenter;
+		const { nickName: commenter_name, avatarUrl: avatar_url, openid: commenter_id } = (getApp().globalData as any).loginInfo as ICommenter;
 
 		// 创建第 1 个评论的数据，评论和评论员数据放一起，就不遵循数据库的第三范式了
 		const comment : IComment = {
@@ -296,7 +299,7 @@
 
 		// 2 把评论放入数据库
 		const data = { ...comment, commenter_id };
-		console.log("把评论放入数据库", data);
+		// console.log("把评论放入数据库", data);
 		await wx.cloud.callFunction({
 			name: 'addComment',
 			data
@@ -305,7 +308,7 @@
 		// 3 如果是第 1 个评论，则绑到 quiz 上
 		if (!curQuiz.value.first_comment_id) {
 			const data = { ...curQuiz.value, first_comment_id: comment.id, dbName: quizType.value };
-			console.log('要更新的题目数据', data)
+			// console.log('要更新的题目数据', data)
 			await wx.cloud.callFunction({
 				name: 'updateQuiz',
 				data
@@ -313,7 +316,7 @@
 		}
 
 		// 4 如果数据库里没有这个评论人，则把这个评论人放到数据库里
-		const commenter = { id: openid, commenter_name: nickName, avatar_url: avatarUrl };
+		const commenter = { id: openid, commenter_name, avatar_url };
 		await wx.cloud.callFunction({
 			name: 'addCommenter',
 			data: { ...commenter }
