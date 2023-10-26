@@ -54,8 +54,7 @@
 					<u-icon name="edit-pen-fill" color="#5ab8b3" size="40"></u-icon>
 				</view>
 			</view>
-			<!-- 不明白为什么这里有 style="width: 100%;" :avatarUrl="c.avatarUrl"
-				:commenterName="c.nickName" :time="c.time" :likeCount="c.likeCount" :content="c.content"-->
+			<!-- 不明白为什么这里有 style="width: 100%;" -->
 			<comment v-for="(c) in commentList" style="width: 100%;" :key="c.id" :vo="c">
 
 			</comment>
@@ -212,7 +211,6 @@
 		if (nextQuiz !== null) {
 			curQuiz.value = { ...nextQuiz, submitted: false };
 			upadteQuiz(curQuiz.value);
-
 		}
 	};
 
@@ -247,7 +245,9 @@
 			name: 'getComment',
 			data: { id: first_comment_id }
 		});
-		console.log("quiz getComment", rsp)
+		const first_comment = rsp.result.list.find((v : any) => v.id === first_comment_id);
+		console.log('要渲染的第一个评论', first_comment);
+		commentList.value.push(first_comment);
 	}
 
 	// 下面是关于评论的
@@ -272,7 +272,7 @@
 		comment_value.value = '';
 		showCommentPopup.value = false;
 
-		const { nickName, avatarUrl, openid } = (getApp().globalData as any).loginInfo as ICommenter;
+		const { nickName: commenter_name, avatarUrl:avatar_url, openid: commenter_id } = (getApp().globalData as any).loginInfo as ICommenter;
 
 		// 创建第 1 个评论的数据，评论和评论员数据放一起，就不遵循数据库的第三范式了
 		const comment : IComment = {
@@ -287,15 +287,15 @@
 			time: new Date().toLocaleDateString(),
 			likeCount: 0,
 
-			commenter_id: openid,
-			nickName,
-			avatarUrl
+			commenter_id,
+			commenter_name,
+			avatar_url
 		}
 		// 1 更新
 		commentList.value.push(comment);
 
 		// 2 把评论放入数据库
-		const data = { ...comment, commenter_id: openid };
+		const data = { ...comment, commenter_id };
 		console.log("把评论放入数据库", data);
 		await wx.cloud.callFunction({
 			name: 'addComment',

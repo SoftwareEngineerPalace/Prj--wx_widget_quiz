@@ -110,8 +110,8 @@ interface IComment {
 	rTag : number;
 
 	commenter_id : string;
-	nickName : string;
-	avatarUrl : string;
+	commenter_name : string;
+	avatar_url : string;
 
 	content : string;
 

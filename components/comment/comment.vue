@@ -1,12 +1,12 @@
 <template>
 	<view class="comment hbox mt20" style="align-items: flex-start;">
 		<!-- 0 左头像 -->
-		<u-image :show-loading="true" mode="widthFix" shape="circle" :src="vo.avatarUrl" width="30px"
+		<u-image :show-loading="true" mode="widthFix" shape="circle" :src="vo.avatar_url" width="30px"
 			height="30px"></u-image>
 		<!-- 1 vbox -->
 		<view class="vbox" style="align-items: flex-start; margin-left: 20rpx; flex-grow: 1;">
 			<!-- 1.0 名字 -->
-			<view class="comment__commenter-name mb10">{{ vo.nickName }}</view>
+			<view class="comment__commenter-name mb10">{{ vo.commenter_name }}</view>
 			<!-- 1.1 内容 -->
 			<view class="comment__content mb10">{{vo.content}}</view>
 			<!-- 1.2 时间和赞的 hbox -->
