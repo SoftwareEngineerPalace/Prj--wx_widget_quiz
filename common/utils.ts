@@ -101,4 +101,50 @@ enum ExerciseType {
 	Fav = 'Fav'
 }
 
-export { ExerciseType, ITask, IQuizHistory, generateUUID, showToast, quizNameDic, checkSession, quizTypeArray, formatTime, IQuiz, IData, ICheckbox }
+interface IComment {
+	id : string;
+	parent_id : string;
+	left_child_id : string;
+	lTag : number;
+	right_child_id : string;
+	rTag : number;
+
+	commenter_open_id : string;
+	nickName:string;
+	avatarUrl:string;
+	
+	content : string;
+
+	likeCount : number;
+	time : string;
+}
+
+interface ISettings {
+	label : string;
+	icon : string;
+	id : string;
+}
+
+interface ICommenter {
+	nickName : string;
+	avatarUrl : string;
+	openid : string;
+}
+
+export {
+	ICommenter,
+	ISettings,
+	IComment,
+	ExerciseType,
+	ITask,
+	IQuizHistory,
+	generateUUID,
+	showToast,
+	quizNameDic,
+	checkSession,
+	quizTypeArray,
+	formatTime,
+	IQuiz,
+	IData,
+	ICheckbox
+}

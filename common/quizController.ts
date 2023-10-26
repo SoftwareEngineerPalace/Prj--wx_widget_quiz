@@ -9,8 +9,8 @@ class QuizController {
 	}
 	
 	public getCurQuizSN(){
-		console.log("quizController getCurQuizSN this._curQuizIndex=", this._curQuizIndex);
-		console.log("quizController getCurQuizSN this._quizList=", this._quizList.length);
+		// console.log("quizController getCurQuizSN this._curQuizIndex=", this._curQuizIndex);
+		// console.log("quizController getCurQuizSN this._quizList=", this._quizList.length);
 		return this._quizList?.[this._curQuizIndex]?.sn || ''; // 空字符串表示没有取到数据
 	}
 
@@ -39,7 +39,7 @@ class QuizController {
 	}
 
 	setCurQuizIndex = (index : number) => {
-		console.log("quizController setCurQuizIndex index", index);
+		// console.log("quizController setCurQuizIndex index", index);
 		this._curQuizIndex = index;
 	}
 
@@ -50,7 +50,6 @@ class QuizController {
 	goNext = () => {
 		if (this._curQuizIndex < this._quizCount - 1) {
 			this._curQuizIndex += 1;
-			console.log("quizController goNext this._curQuizIndex", this._curQuizIndex);
 			return this._quizList[this._curQuizIndex];
 		} else {
 			return null;

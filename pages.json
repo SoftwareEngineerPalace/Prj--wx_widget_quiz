@@ -20,7 +20,7 @@
 		{
 			"path": "pages/home/index",
 			"style": {
-				"navigationBarTitleText": "阮一峰教程配套练习题",
+				"navigationBarTitleText": "前端练习题",
 				"enablePullDownRefresh": false,
 				"navigationBarBackgroundColor": "#eeeeee"
 			}

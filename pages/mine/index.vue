@@ -50,14 +50,9 @@
 	import { ref, onMounted } from 'vue';
 	const loggedIn = ref(false);
 	const codeRef = ref("");
-	const loginInfo = ref({ nickName: "我的昵称", avatarUrl: '' });
+	const loginInfo = ref({ nickName: "我的昵称", avatarUrl: '', openid: '' });
 	const adminVisible = ref(false);
 
-	interface ISettings {
-		label : string;
-		icon : string;
-		id : string;
-	}
 	const commonUseSettings = ref([
 		{ id: 'wrongbook', 'label': '错题本', 'icon': 'order' },
 		{ id: 'comment', 'label': '评论', 'icon': 'chat-fill' },
@@ -79,7 +74,7 @@
 		const hasSession = await checkSession();
 		const token = uni.getStorageSync('token');
 		loggedIn.value = hasSession as boolean && !!token;
-		console.log('是已登录状态', loggedIn);
+		// console.log('是已登录状态', loggedIn);
 	})
 
 	const onCms = (evt : any) => {
@@ -103,31 +98,38 @@
 		uni.getUserProfile({
 			desc: '登录后可同步数据',
 			success: async (value) => {
+
+				// 第一步 获取到昵称和头像
 				const { nickName, avatarUrl } = value.userInfo;
 				loginInfo.value = { nickName, avatarUrl };
-				console.log('loginInfo', loginInfo)
+				// console.log('loginInfo', loginInfo)
 				uni.login({
 					provider: 'weixin',
-					success: async (rsp) => {
-						console.log('uni.login rsp', rsp);
+					success: async (rsp : any) => {
+
+						// 第二步 登录微信获取 code
+						// console.log('uni.login rsp', rsp);
 						const { code } = rsp;
 						codeRef.value = code;
-						// 请求登录接口
-						if (rsp.errMsg == 'login:ok') {
-							const data = { code, nickName, avatarUrl };
-							console.log("applet call login", data)
-							const rsp : any = await wx.cloud.callFunction({
-								name: 'login',
-								data
-							});
-							console.log("applet call login callback", rsp)
-							if (rsp.result.status === 200) {
-								console.log('uni.setStorageSync', rsp.result.token);
-								uni.setStorageSync('token', rsp.result.token)
-								loggedIn.value = true;
-							}
-						}
-					},
+						if (rsp.errMsg !== 'login:ok') return;
+
+						// 第三步 用 code 获取 token 和 user_openid
+						const data = { code, nickName, avatarUrl };
+						// console.log("applet call login", data)
+						const rsp_login : any = await wx.cloud.callFunction({
+							name: 'login',
+							data
+						});
+						// console.log("applet call login callback", rsp_login)
+						const { token, openid } = rsp_login.result;
+						if (rsp_login.result.status !== 200) return;
+						uni.setStorageSync('token', token)
+						loggedIn.value = true;
+						loginInfo.value = { ...loginInfo.value, openid };
+
+						// 把用户的 openid、 头像、昵称存到 globalData
+						(getApp().globalData as any).loginInfo = loginInfo.value;
+					}
 				});
 			},
 			fail: () => {
@@ -152,7 +154,7 @@
 					loginInfo.value = { nickName: "", avatarUrl: '' };
 					loggedIn.value = false;
 				} else if (res.cancel) {
-					console.log('用户点击取消');
+					// console.log('用户点击取消');
 				}
 			}
 		});

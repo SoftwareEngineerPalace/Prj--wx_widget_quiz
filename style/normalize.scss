@@ -2,6 +2,7 @@
 
 .text-primary {
 	font-size: $uni-font-size-lg;
+	white-space: nowrap;
 }
 
 .text-sub {
@@ -56,6 +57,11 @@
 .mb20 {
 	margin-bottom: 20rpx;
 }
+
+.mb10 {
+	margin-bottom: 10rpx;
+}
+
 
 .mr30 {
 	margin-right: 30rpx;

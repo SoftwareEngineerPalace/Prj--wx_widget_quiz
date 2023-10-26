@@ -18,13 +18,16 @@
 		</view>
 
 		<!-- 3 回顾练习 -->
-		<view class="card">
+		<view class="card mb30">
 			<view class="text-primary mb20" style="align-self: flex-start;">回顾练习</view>
 			<view class="text-sub mb20" style="align-self: flex-start;">练习错题本 / 收藏夹中的题目</view>
 			<button class="btn-primary mb20" @click="startErrCollection">错题练习</button>
 			<button class="btn-primary" @click="startFavQuiz">收藏夹练习</button>
 		</view>
 
+		<!-- <view class="card">
+			<video :src="videoUrl"></video>
+		</view> -->
 	</view>
 	<u-popup :safeAreaInsetTop='false' :safe-area-inset-bottom="false" :customStyle="{display:'flex', flexDirection:'column', alignItems:'center',
 	justifyContent:'space-between', paddingLeft:'60rpx', paddingRight:'60rpx'}" round='20' :overlay='true'
@@ -64,6 +67,7 @@
 	onMounted(async () => {
 		const hasSession = await checkSession();
 		const token = uni.getStorageSync('token');
+		// console.log('home onMounted', { hasSession, token })
 		if (!hasSession || !token) {
 			uni.switchTab({
 				url: '/pages/mine/index'
@@ -93,7 +97,7 @@
 			name: 'getProcess',
 			data: { token, quiz_type: curQuizType.value }
 		});
-		console.log('index updateOnQuizTypeChanged 获得题目进度', rsp.result)
+		// console.log('index updateOnQuizTypeChanged 获得题目进度', rsp.result)
 		const { latest_quiz_sn, quiz_count } = rsp.result;
 		latestQuizIndex.value = latest_quiz_sn;
 		quizCount.value = quiz_count;
@@ -121,7 +125,7 @@
 		const quizType = curQuizType.value;
 
 		const list = await getAllQuizs(quizType);
-		console.log("continueExercise 加载到的题目的数目", list.length);
+		// console.log("continueExercise 加载到的题目的数目", list.length);
 		if (list.length === 0) {
 			uni.showToast({
 				title: "还没有题目",
@@ -139,7 +143,7 @@
 		const latest_quiz_index = rsp.result.latest_quiz_sn - 1;
 
 		// 传给下一页的数据
-		console.log('continueExercise', { quizType, latest_quiz_index })
+		// console.log('continueExercise', { quizType, latest_quiz_index })
 		const queryStr = queryString.stringify({ quizType, exerciseType: ExerciseType.Common, latest_quiz_index });
 
 		const url = `/pages/quiz/index?${queryStr}`;
@@ -152,7 +156,7 @@
 		const quizType = curQuizType.value;
 
 		const list = await getErrorCollectonQuiz(quizType);
-		console.log('startErrCollection', { list });
+		// console.log('startErrCollection', { list });
 		if (list.length === 0) {
 			uni.showToast({
 				title: "还没有错题",
@@ -165,7 +169,7 @@
 		const latest_quiz_index = -1;
 
 		// 传给下一页的数据
-		console.log('continueExercise', { quizType, latest_quiz_index })
+		// console.log('continueExercise', { quizType, latest_quiz_index })
 		const queryStr = queryString.stringify({ quizType, exerciseType: ExerciseType.ErrCollection, latest_quiz_index });
 
 		const url = `/pages/quiz/index?${queryStr}`;
