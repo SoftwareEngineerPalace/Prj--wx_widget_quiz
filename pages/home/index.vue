@@ -71,10 +71,10 @@
 		const token = uni.getStorageSync('token');
 		console.log('home onMounted', { hasSession, token })
 		if (!hasSession || !token) {
-			uni.hideTabBar();
 			uni.switchTab({
 				url: '/pages/mine/index'
 			})
+			uni.hideTabBar();
 		} else {
 			// 如果已登录，就去数据库取用户数据
 			const id = token.split("__")[0];

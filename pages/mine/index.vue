@@ -104,6 +104,7 @@
 		loginInfo.value = rsp;
 		loggedIn.value = true;
 		(getApp().globalData as any).loginInfo = rsp;
+		uni.showTabBar();
 	}
 
 	const logout = () => {
@@ -114,6 +115,7 @@
 					uni.removeStorageSync('token');
 					loginInfo.value = loginInfo_default;
 					loggedIn.value = false;
+					uni.hideTabBar();
 					(getApp().globalData as any).loginInfo = loginInfo.value;
 				} else if (res.cancel) {
 					// console.log('用户点击取消');
