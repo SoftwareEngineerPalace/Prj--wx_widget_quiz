@@ -1,3 +1,5 @@
+import { IQuiz } from "./utils";
+
 class QuizController {
 
 	_curQuizIndex : number = -1;
@@ -7,8 +9,9 @@ class QuizController {
 	public getCurQuizIndex() {
 		return this._curQuizIndex;
 	}
-	
-	public getCurQuizSN(){
+
+	/** sn 是题目编码 从1开始 是固定的*/
+	public getCurQuizSN() {
 		// console.log("quizController getCurQuizSN this._curQuizIndex=", this._curQuizIndex);
 		// console.log("quizController getCurQuizSN this._quizList=", this._quizList.length);
 		return this._quizList?.[this._curQuizIndex]?.sn || ''; // 空字符串表示没有取到数据
@@ -36,6 +39,13 @@ class QuizController {
 		this._quizList = list.concat();
 		this._quizCount = list.length;
 		this._curQuizIndex = -1;
+	}
+
+	/** 更新题目的 first_comment_id by sn */
+	updateQuizFirstCommentIdByQuizSN = (sn : number, first_comment_id : string) => {
+		const quiz : IQuiz = this._quizList.find((quiz : IQuiz) => quiz.sn === sn);
+		Object.assign(quiz, { first_comment_id });
+		console.log("updateQuizFirstCommentIdByQuizSN 后", this._quizList)
 	}
 
 	setCurQuizIndex = (index : number) => {

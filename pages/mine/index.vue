@@ -1,7 +1,7 @@
 <template>
 	<view class="mine-wrapper padding30">
 		<view class="card mb30">
-			<view class="hbox mb30" style="justify-content: space-evenly;">
+			<view class="hbox mb30" style="justify-content: space-evenly;" @click="login">
 				<view>{{loginInfo.nickName}}</view>
 				<u--image :src="loginInfo.avatarUrl" shape="circle" width="80px" height="80px"></u--image>
 			</view>
@@ -26,9 +26,9 @@
 				<u-icon name="arrow-right" color="#bbbbbb" size="40"></u-icon>
 			</view>
 
-			<button class="btn-primary mb20 mt20" @click="getUserInfo()" v-if="!loggedIn">点击登录</button>
+			<button class="btn-primary mb20 mt20" @click="login" v-if="!loggedIn">点击登录</button>
 
-			<button class="btn-primary mb20 mt20" @click="logout()" v-if="loggedIn">退出登录</button>
+			<button class="btn-primary mb20 mt20" @click="logout" v-if="loggedIn">退出登录</button>
 
 			<button class="btn-primary mb20" @click="adminVisible=!adminVisible">{{adminVisible?'关闭后台':'显示后台'}}</button>
 
@@ -44,13 +44,18 @@
 </template>
 
 <script lang="ts" setup>
+	// uni.getUserProfile 获取昵称 头像
+	// uni.login 获取 weixin 获取 code
+	// 调用后台的 login，用 code 获取 token 和 openid
+
 	import { checkSession } from '../../common/utils';
+	import { startLogin, getProfile } from '../../common/loginUtils';
 	import queryString from 'query-string';
 
 	import { ref, onMounted } from 'vue';
 	const loggedIn = ref(false);
-	const codeRef = ref("");
-	const loginInfo = ref({ nickName: "我的昵称", avatarUrl: '', openid: '' });
+	const loginInfo_default = { nickName: "点击登录", avatarUrl: '', openid: '' };
+	const loginInfo = ref(loginInfo_default);
 	const adminVisible = ref(false);
 
 	const commonUseSettings = ref([
@@ -67,14 +72,15 @@
 		{ id: 'about', 'label': '关于程序', 'icon': 'error-circle' }])
 
 	onMounted(async () => {
-		wx.cloud.init({
-			env: "quiz-0gb2aw2vb2850af4"
-		});
-
+		// 1 登录状态
 		const hasSession = await checkSession();
 		const token = uni.getStorageSync('token');
 		loggedIn.value = hasSession as boolean && !!token;
-		// console.log('是已登录状态', loggedIn);
+
+		// 2 个人信息
+		if (loggedIn.value) {
+			loginInfo.value = (getApp().globalData as any).loginInfo;
+		}
 	})
 
 	const onCms = (evt : any) => {
@@ -91,68 +97,24 @@
 		uni.navigateTo({ url });
 	};
 
-	const getUserInfo = async () => {
-		uni.showLoading({
-			title: '加载中',
-		});
-		uni.getUserProfile({
-			desc: '登录后可同步数据',
-			success: async (value) => {
+	const login = async () => {
+		if (loggedIn.value) return;
+		const rsp = await startLogin();
+		// console.log('login', rsp);
+		loginInfo.value = rsp;
+		loggedIn.value = true;
+		(getApp().globalData as any).loginInfo = rsp;
+	}
 
-				// 第一步 获取到昵称和头像
-				const { nickName, avatarUrl } = value.userInfo;
-				loginInfo.value = { nickName, avatarUrl };
-				// console.log('loginInfo', loginInfo)
-				uni.login({
-					provider: 'weixin',
-					success: async (rsp : any) => {
-
-						// 第二步 登录微信获取 code
-						// console.log('uni.login rsp', rsp);
-						const { code } = rsp;
-						codeRef.value = code;
-						if (rsp.errMsg !== 'login:ok') return;
-
-						// 第三步 用 code 获取 token 和 user_openid
-						const data = { code, nickName, avatarUrl };
-						// console.log("applet call login", data)
-						const rsp_login : any = await wx.cloud.callFunction({
-							name: 'login',
-							data
-						});
-						// console.log("applet call login callback", rsp_login)
-						const { token, openid } = rsp_login.result;
-						if (rsp_login.result.status !== 200) return;
-						uni.setStorageSync('token', token)
-						loggedIn.value = true;
-						loginInfo.value = { ...loginInfo.value, openid };
-
-						// 把用户的 openid、 头像、昵称存到 globalData
-						(getApp().globalData as any).loginInfo = loginInfo.value;
-					}
-				});
-			},
-			fail: () => {
-				uni.showToast({
-					title: '授权已取消',
-					icon: 'error',
-					mask: true,
-				});
-			},
-			complete: () => {
-				// 隐藏loading
-				uni.hideLoading();
-			},
-		});
-	};
 	const logout = () => {
 		uni.showModal({
 			title: '确定要退出登录吗？',
 			success: function (res) {
 				if (res.confirm) {
-					uni.removeStorageSync('token')
-					loginInfo.value = { nickName: "", avatarUrl: '' };
+					uni.removeStorageSync('token');
+					loginInfo.value = loginInfo_default;
 					loggedIn.value = false;
+					(getApp().globalData as any).loginInfo = loginInfo.value;
 				} else if (res.cancel) {
 					// console.log('用户点击取消');
 				}

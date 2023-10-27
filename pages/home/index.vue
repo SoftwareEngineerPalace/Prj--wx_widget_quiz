@@ -50,7 +50,7 @@
 
 	import { checkSession, quizNameDic, quizTypeArray } from '../../common/utils';
 	import queryString from 'query-string';
-	import { onShow } from '@dcloudio/uni-app';
+	import { onShow, onInit } from '@dcloudio/uni-app';
 	import { getAllQuizs, getErrorCollectonQuiz } from '../../service';
 
 	const latestQuizIndex = ref(0);
@@ -62,16 +62,28 @@
 	onShow(() => {
 		updateOnQuizTypeChanged();
 		updateUI();
+		console.log('home onShow');
 	})
 
+	// 这里不要用 onMounted
 	onMounted(async () => {
 		const hasSession = await checkSession();
 		const token = uni.getStorageSync('token');
-		// console.log('home onMounted', { hasSession, token })
+		console.log('home onMounted', { hasSession, token })
 		if (!hasSession || !token) {
+			uni.hideTabBar();
 			uni.switchTab({
 				url: '/pages/mine/index'
 			})
+		} else {
+			// 如果已登录，就去数据库取用户数据
+			const id = token.split("__")[0];
+			const rsp = await wx.cloud.callFunction({
+				name: 'getCommenter',
+				data: { id }
+			});
+			const { id: openid, commenter_name: nickName, avatar_url: avatarUrl } = rsp.result.data[0];
+			(getApp().globalData as any).loginInfo = { openid, nickName, avatarUrl }; // 存到这里有什么用
 		}
 	})
 

@@ -189,7 +189,7 @@
 
 	const onPrev = () => {
 		curQuiz.value = { ...quizController.goPreview(), submitted: false };
-		upadteQuiz(curQuiz.value);
+		updateQuiz(curQuiz.value);
 	};
 
 	const onNext = () => {
@@ -210,12 +210,12 @@
 
 		if (nextQuiz !== null) {
 			curQuiz.value = { ...nextQuiz, submitted: false };
-			upadteQuiz(curQuiz.value);
+			updateQuiz(curQuiz.value);
 		}
 	};
 
-	/** 更新题目选项和和评论区 */
-	const upadteQuiz = (quiz : any) => {
+	/** 更新题目选项和评论区 */
+	const updateQuiz = (quiz : any) => {
 		// console.log('upadteQuiz', quiz);
 		updateOptions(quiz);
 
@@ -276,9 +276,9 @@
 
 		const { nickName: commenter_name, avatarUrl: avatar_url, openid: commenter_id } = (getApp().globalData as any).loginInfo as ICommenter;
 
-		// 创建第 1 个评论的数据，评论和评论员数据放一起，就不遵循数据库的第三范式了
+		const comment_id = generateUUID();
 		const comment : IComment = {
-			id: generateUUID(),
+			id: comment_id,
 			parent_id: "",
 			lTag: 0,
 			left_child_id: '',
@@ -293,25 +293,31 @@
 			commenter_name,
 			avatar_url
 		}
-		// 1 更新
+		// 1 更新 UI
+		console.log("把评论放入 UI", comment);
 		commentList.value.push(comment);
 
 		// 2 把评论放入数据库
 		const data = { ...comment, commenter_id };
-		// console.log("把评论放入数据库", data);
+		console.log("把评论放入数据库", data);
 		await wx.cloud.callFunction({
 			name: 'addComment',
 			data
 		})
 
 		// 3 如果是第 1 个评论，则绑到 quiz 上
+		console.log('curQuiz.value.first_comment_id', curQuiz.value.first_comment_id);
 		if (!curQuiz.value.first_comment_id) {
+			console.log('3 如果是第 1 个评论，则绑到 quiz 上')
+			// 3.1 数据库数据
 			const data = { ...curQuiz.value, first_comment_id: comment.id, dbName: quizType.value };
-			// console.log('要更新的题目数据', data)
+			console.log('要更新的题目数据', data)
 			await wx.cloud.callFunction({
 				name: 'updateQuiz',
 				data
 			})
+			// 3.2 内存数据
+			quizController.updateQuizFirstCommentIdByQuizSN(curQuiz.value.sn, comment.id);
 		}
 
 		// 4 如果数据库里没有这个评论人，则把这个评论人放到数据库里

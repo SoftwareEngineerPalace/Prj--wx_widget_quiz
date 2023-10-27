@@ -91,7 +91,7 @@
 <script lang="ts" setup>
 	import dayjs from "dayjs";
 	import { formatTime, generateUUID, ITask } from '../../common/utils';
-	import { ref, Ref, onMounted } from 'vue'
+	import { ref, onMounted, Ref, toRaw } from 'vue'
 
 	const colorDic = ref({
 		"3": "#FF6B6B",
@@ -102,7 +102,7 @@
 	const listRef = ref(null);
 	const initTime : Ref<number> = ref(8 * 60 + 30);
 	const initTimeRaw = ref("8:30");
-	const list : Ref<Array<ITask>> = ref([]);
+	const list = ref([]);
 	const showLoading = ref(false);
 
 	onMounted(() => {
@@ -117,6 +117,7 @@
 		console.log('getTask', raw);
 		if (!!raw) {
 			list.value = raw;
+			console.log("getTask init", toRaw(list.value));
 		} else {
 			list.value = Array(3)
 				.fill(1)
@@ -135,6 +136,7 @@
 	};
 
 	const addOne = () => {
+		console.log("addOne start", toRaw(list.value));
 		showLoading.value = true;
 		const one : ITask = {
 			name: "任务",
@@ -144,7 +146,7 @@
 			id: generateUUID()
 		};
 		list.value.push(one);
-		console.log("addOne");
+		console.log("addOne", toRaw(list.value));
 		update();
 	};
 
@@ -202,11 +204,12 @@
 	/** 被删除了 */
 	const onDelete = (index : number) => {
 		showLoading.value = true;
-		list.value = list.value.slice(0, index).concat(list.value.slice(index + 1));
+		const _list = toRaw(list.value);
+		list.value = _list.slice(0, index).concat(_list.slice(index + 1));
 		console.log("onDelete");
 		update();
 	};
-	
+
 	const moveUp = (index : number) => {
 		if (index === 0) return;
 		showLoading.value = true;
@@ -215,7 +218,7 @@
 		list.value[index - 1] = temp;
 		update()
 	};
-	
+
 	const moveDown = (index : number) => {
 		if (index === list.value.length - 1) return;
 		showLoading.value = true;
@@ -224,10 +227,10 @@
 		list.value[index + 1] = temp;
 		update()
 	};
-	
+
 	const update = () => {
 		console.log("update");
-		list.value = list.value.sort((a : { priority : number }, b : { priority : number }) => b.priority - a.priority);
+		list.value = toRaw(list.value).sort((a : { priority : number }, b : { priority : number }) => b.priority - a.priority);
 		setTimeout(() => {
 			updateDeadline();
 			save();
@@ -236,18 +239,19 @@
 
 	/** 更新 deadline */
 	const updateDeadline = () => {
-		console.log("updateDeadline");
+		console.log("updateDeadline start");
 		let pre = initTime.value;
-		list.value = list.value.map((cur : any) => {
+		list.value = toRaw(list.value).map((cur : any) => {
 			cur.deadline = formatTime(pre + cur.duration);
 			pre += cur.duration;
 			return cur;
 		});
+		console.log("updateDeadline", toRaw(list.value));
 	};
 
 	/** 保存 */
 	const save = async () => {
-		const _list = list.value
+		const _list = toRaw(list.value);
 		console.log("准备保存的数据", _list);
 		const rsp : any = await wx.cloud.callFunction({
 			name: 'addTask',
@@ -263,7 +267,7 @@
 			showLoading.value = false;
 		}
 	};
-	
+
 	const onBlur = () => {
 		console.log('移动到最上面');
 	}
