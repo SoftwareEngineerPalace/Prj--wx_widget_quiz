@@ -107,6 +107,9 @@ enum ExerciseType {
 
 interface IComment {
 	id : string;
+
+	quiz_id ?: string;
+
 	parent_id : string;
 	left_child_id : string;
 	lTag : number;
@@ -121,6 +124,8 @@ interface IComment {
 
 	likeCount : number;
 	time : string;
+
+	first_comment_id : string;
 }
 
 interface ISettings {

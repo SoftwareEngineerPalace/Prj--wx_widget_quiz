@@ -281,52 +281,63 @@
 
 	const onConfirmComment = async (e) => {
 		console.log('onConfirmComment', e);
-		// 清空 popup
+		// 1 清空 popup
 		const commentValue : string = comment_value.value;
 		comment_value.value = '';
 		showCommentPopup.value = false;
 
-		// 评论人信息
-		const { commenter_name, avatar_url, id } = (getApp().globalData as any).loginInfo as ICommenter;
+		// 2 评论人信息
+		const { commenter_name, avatar_url, id: commenter_id } = (getApp().globalData as any).loginInfo as ICommenter;
 
-		// 更新 UI
-		const comment_id = generateUUID();
+		// 3 更新 UI
 		const comment : IComment = {
-			id: comment_id,
+			id: generateUUID(),
+
+			content: commentValue,
+			time: new Date().toLocaleDateString(),
+			likeCount: 0,
+
+			commenter_id,
+			commenter_name,
+			avatar_url
+		}
+		commentList.value.push(comment);
+
+		const data = {
+			...comment,
+
 			parent_id: "",
 			lTag: 0,
 			left_child_id: '',
 			rTag: 0,
 			right_child_id: '',
 
-			content: commentValue,
-			time: new Date().toLocaleDateString(),
-			likeCount: 0,
-
-			commenter_id: id,
-			commenter_name,
-			avatar_url
-		}
-		commentList.value.push(comment);
-
-		// 把评论放入数据库
-		const data = { ...comment };
-		await wx.cloud.callFunction({
+			quiz_id: curQuiz.value.id,
+			first_comment_id: curQuiz?.value?.first_comment_id
+		};
+		console.log('4 把 comment 放到 comment 数据库', data)
+		const rsp_addComment = await wx.cloud.callFunction({
 			name: 'addComment',
 			data
 		})
+		console.log('rsp_addComment', rsp_addComment);
 
-		// 如果是第 1 个评论，则绑到 quiz 上
+		// 5 更新 quiz 的 first_comment_id
 		if (!curQuiz.value.first_comment_id) {
-			// 绑到数据库数据
-			const data = { ...curQuiz.value, first_comment_id: comment.id, dbName: quizType.value };
+			// 5.1 如果是第 1 个评论， 把 first_comment_id 绑到题目数据库数据
+			const data = {
+				...curQuiz.value,
+				first_comment_id: comment.id,
+				dbName: quizType.value
+			};
 			// console.log('要更新的题目数据', data)
 			await wx.cloud.callFunction({
 				name: 'updateQuiz',
 				data
 			})
-			// 绑到内存数据
+			// 5.2 把 first_comment_id 绑到内存数据
 			quizController.updateQuizFirstCommentIdByQuizSN(curQuiz.value.sn, comment.id);
+			curQuiz.value.first_comment_id = comment.id;
 		}
 	}
 </script>
