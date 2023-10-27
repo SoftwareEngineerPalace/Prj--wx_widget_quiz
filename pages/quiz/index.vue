@@ -243,14 +243,13 @@
 
 	/** 更新评论区 */
 	const upadteComment = async (first_comment_id : string) => {
-		// console.log("upadteComment", first_comment_id)
+		console.log("获取评论前", first_comment_id)
 		const rsp : any = await wx.cloud.callFunction({
 			name: 'getComment',
 			data: { id: first_comment_id }
 		});
-		const first_comment = rsp.result.list.find((v : any) => v.id === first_comment_id);
-		// console.log('要渲染的第一个评论', first_comment);
-		commentList.value.push(first_comment);
+		console.log('获取到的评论', rsp);
+		commentList.value.push(rsp.result[0]);
 	}
 
 	// 下面是关于评论的
@@ -316,7 +315,7 @@
 		}
 
 		// 4 如果数据库里没有这个评论人，则把这个评论人放到数据库里
-		const commenter = { id: openid, commenter_name, avatar_url };
+		const commenter = { id: commenter_id, commenter_name, avatar_url };
 		await wx.cloud.callFunction({
 			name: 'addCommenter',
 			data: { ...commenter }
