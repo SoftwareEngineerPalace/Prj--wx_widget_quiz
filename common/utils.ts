@@ -130,9 +130,9 @@ interface ISettings {
 }
 
 interface ICommenter {
-	nickName : string;
-	avatarUrl : string;
-	openid : string;
+	commenter_name : string;
+	avatar_url : string;
+	id : string;
 }
 
 export {

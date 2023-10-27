@@ -62,7 +62,7 @@
 	onShow(() => {
 		updateOnQuizTypeChanged();
 		updateUI();
-		console.log('home onShow');
+		// console.log('home onShow');
 	})
 
 	// 这里不要用 onMounted
@@ -82,8 +82,8 @@
 				name: 'getCommenter',
 				data: { id }
 			});
-			const { id: openid, commenter_name: nickName, avatar_url: avatarUrl } = rsp.result.data[0];
-			(getApp().globalData as any).loginInfo = { openid, nickName, avatarUrl }; // 存到这里有什么用
+			if( rsp.result.data.length === 0 ) return ;
+			(getApp().globalData as any).loginInfo = rsp.result.data[0];// 存到这里有什么用
 		}
 	})
 

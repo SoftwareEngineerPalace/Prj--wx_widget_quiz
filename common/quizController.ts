@@ -45,7 +45,7 @@ class QuizController {
 	updateQuizFirstCommentIdByQuizSN = (sn : number, first_comment_id : string) => {
 		const quiz : IQuiz = this._quizList.find((quiz : IQuiz) => quiz.sn === sn);
 		Object.assign(quiz, { first_comment_id });
-		console.log("updateQuizFirstCommentIdByQuizSN 后", this._quizList)
+		// console.log("updateQuizFirstCommentIdByQuizSN 后", this._quizList)
 	}
 
 	setCurQuizIndex = (index : number) => {

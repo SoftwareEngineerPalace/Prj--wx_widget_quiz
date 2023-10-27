@@ -89,7 +89,7 @@
 	const checkboxList = ref([]);    // 当前4个选项
 	const userAnswer = ref('');      // 用户的答案
 	const quizList = ref([]);
-	const _1stDepthCommentCount = ref("评论数")
+	const _1stDepthCommentCount = ref(0)
 
 	onLoad(async (evt : { quizType : string, exerciseType : string, latest_quiz_index : string }) => {
 		// console.log('quiz onLoad', evt);
@@ -243,12 +243,12 @@
 
 	/** 更新评论区 */
 	const upadteComment = async (first_comment_id : string) => {
-		console.log("获取评论前", first_comment_id)
+		// console.log("获取评论前", first_comment_id)
 		const rsp : any = await wx.cloud.callFunction({
 			name: 'getComment',
 			data: { id: first_comment_id }
 		});
-		console.log('获取到的评论', rsp);
+		// console.log('获取到的评论', rsp);
 		commentList.value.push(rsp.result[0]);
 	}
 
@@ -274,7 +274,7 @@
 		comment_value.value = '';
 		showCommentPopup.value = false;
 
-		const { nickName: commenter_name, avatarUrl: avatar_url, openid: commenter_id } = (getApp().globalData as any).loginInfo as ICommenter;
+		const { commenter_name, avatar_url, id } = (getApp().globalData as any).loginInfo as ICommenter;
 
 		const comment_id = generateUUID();
 		const comment : IComment = {
@@ -289,29 +289,29 @@
 			time: new Date().toLocaleDateString(),
 			likeCount: 0,
 
-			commenter_id,
+			commenter_id: id,
 			commenter_name,
 			avatar_url
 		}
 		// 1 更新 UI
-		console.log("把评论放入 UI", comment);
+		// console.log("把评论放入 UI", comment);
 		commentList.value.push(comment);
 
 		// 2 把评论放入数据库
-		const data = { ...comment, commenter_id };
-		console.log("把评论放入数据库", data);
+		const data = { ...comment };
+		// console.log("把评论放入数据库", data);
 		await wx.cloud.callFunction({
 			name: 'addComment',
 			data
 		})
 
 		// 3 如果是第 1 个评论，则绑到 quiz 上
-		console.log('curQuiz.value.first_comment_id', curQuiz.value.first_comment_id);
+		// console.log('curQuiz.value.first_comment_id', curQuiz.value.first_comment_id);
 		if (!curQuiz.value.first_comment_id) {
-			console.log('3 如果是第 1 个评论，则绑到 quiz 上')
+			// console.log('3 如果是第 1 个评论，则绑到 quiz 上')
 			// 3.1 数据库数据
 			const data = { ...curQuiz.value, first_comment_id: comment.id, dbName: quizType.value };
-			console.log('要更新的题目数据', data)
+			// console.log('要更新的题目数据', data)
 			await wx.cloud.callFunction({
 				name: 'updateQuiz',
 				data
@@ -321,9 +321,9 @@
 		}
 
 		// 4 如果数据库里没有这个评论人，则把这个评论人放到数据库里
-		const commenter = { id: commenter_id, commenter_name, avatar_url };
+		const commenter = { id, commenter_name, avatar_url };
 		await wx.cloud.callFunction({
-			name: 'addCommenter',
+			name: 'addOrUpdateCommenter',
 			data: { ...commenter }
 		})
 	}

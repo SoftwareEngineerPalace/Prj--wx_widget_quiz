@@ -25,7 +25,7 @@
 	const correctTimes = ref(0);
 
 	onLoad((evt : { quizType : string }) => {
-		console.log('summary onLoad', evt);
+		// console.log('summary onLoad', evt);
 		if (evt.hasOwnProperty('quizType')) {
 			quizType.value = evt.quizType;
 			getHistory(evt.quizType)
@@ -44,9 +44,9 @@
 			name: 'getQuizHistory',
 			data: { token, quiz_type }
 		};
-		console.log('getHistory data', data);
+		// console.log('getHistory data', data);
 		const rsp : { result : IQuizHistory } = await wx.cloud.callFunction(data);
-		console.log("summary getHistory getQuizHistory 加载做题历史记录", rsp);
+		// console.log("summary getHistory getQuizHistory 加载做题历史记录", rsp);
 		const { quiz_count, answer_times, correct_times } = rsp.result;
 		console.log({ quiz_count, answer_times, correct_times });
 		quizCount.value = quiz_count;

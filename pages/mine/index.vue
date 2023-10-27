@@ -1,12 +1,15 @@
 <template>
 	<view class="mine-wrapper padding30">
 		<view class="card mb30">
-			<view class="hbox mb30" style="justify-content: space-evenly;" @click="login">
-				<view>{{loginInfo.nickName}}</view>
-				<u--image :src="loginInfo.avatarUrl" shape="circle" width="80px" height="80px"></u--image>
+			<view v-if="loggedIn" class="hbox mb30" style="justify-content: center;" @click="login">
+				<input type="nickname" class="mine__name weui-input" :placeholder="loginInfo.commenter_name"
+					@blur="onNameBlur" />
+				<button class="mine__avatar" open-type="chooseAvatar" @chooseavatar="onChooseAvatar">
+					<u--image :src="loginInfo.avatar_url" shape="circle" width="80px" height="80px"></u--image>
+				</button>
 			</view>
 
-			<u-line class="line" color="#dddddd"></u-line>
+			<u-line v-if="loggedIn" class="line" color="#dddddd"></u-line>
 
 			<view class="hbox" style="padding-top: 30rpx; justify-content: space-evenly;">
 				<view class="vbox" v-for="(item) in commonUseSettings" :key="item.id">
@@ -48,13 +51,14 @@
 	// uni.login 获取 weixin 获取 code
 	// 调用后台的 login，用 code 获取 token 和 openid
 
-	import { checkSession } from '../../common/utils';
-	import { startLogin, getProfile } from '../../common/loginUtils';
+	import { checkSession, ICommenter } from '../../common/utils';
+	import { getOpenId, getProfile } from '../../common/loginUtils';
+	import { loginInfo_default } from '../../common/common';
 	import queryString from 'query-string';
 
 	import { ref, onMounted } from 'vue';
 	const loggedIn = ref(false);
-	const loginInfo_default = { nickName: "点击登录", avatarUrl: '', openid: '' };
+
 	const loginInfo = ref(loginInfo_default);
 	const adminVisible = ref(false);
 
@@ -83,6 +87,19 @@
 		}
 	})
 
+	const onChooseAvatar = (e) => {
+		console.log('onChooseAvatar');
+		const { avatarUrl } = e.detail;
+		loginInfo.value = { ...loginInfo.value, avatar_url: avatarUrl };
+		addOrUpdateCommenter(loginInfo.value);
+	}
+
+	const onNameBlur = (e) => {
+		// console.log("onNameBlur", e);
+		loginInfo.value = { ...loginInfo.value, commenter_name: e.detail.value };
+		addOrUpdateCommenter(loginInfo.value);
+	}
+
 	const onCms = (evt : any) => {
 		// console.log('onCms evt', evt);
 		const { quiztype } = evt.target.dataset;
@@ -97,14 +114,22 @@
 		uni.navigateTo({ url });
 	};
 
+	const addOrUpdateCommenter = async (data : any) => {
+		await wx.cloud.callFunction({
+			name: 'addOrUpdateCommenter',
+			data
+		})
+	}
+
 	const login = async () => {
 		if (loggedIn.value) return;
-		const rsp = await startLogin();
-		// console.log('login', rsp);
-		loginInfo.value = rsp;
+		const rsp = await getOpenId();
+		console.log('login', rsp);
+		loginInfo.value = { ...loginInfo.value, ...rsp }
 		loggedIn.value = true;
 		(getApp().globalData as any).loginInfo = rsp;
 		uni.showTabBar();
+		addOrUpdateCommenter(loginInfo.value)
 	}
 
 	const logout = () => {
@@ -136,6 +161,21 @@
 			justify-content: flex-start;
 			align-items: center;
 			background-color: $uni-bg-color-grey;
+
+			.mine__name {
+				width: 190rpx;
+			}
+
+			.mine__avatar {
+				border: none;
+				background: white;
+				padding: 0;
+				margin: 0;
+
+				&::after {
+					border: none;
+				}
+			}
 
 			.mine__admin {
 				width: 100%;

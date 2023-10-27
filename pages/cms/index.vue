@@ -47,7 +47,7 @@
 
 	onLoad(async (evt : { quizType : string }) => {
 		dbName.value = evt.quizType;
-		console.log("onLoad", evt);
+		// console.log("onLoad", evt);
 		uni.setNavigationBarTitle({ title: `${quizNameDic.get(evt.quizType)} 后台` });
 		wx.cloud.init({
 			env: "quiz-0gb2aw2vb2850af4"
@@ -71,12 +71,12 @@
 		const quiz = quizList.value.find((v : IQuiz) => v.id === id_to_update);
 		const sn = quizList.value.findIndex((v : IQuiz) => v.id === id_to_update);
 		const data = { ...quiz, dbName: dbName.value, sn: sn + 1 };
-		console.log('onUpdateOne', data)
+		// console.log('onUpdateOne', data)
 		const rsp : any = await wx.cloud.callFunction({
 			name: 'updateQuiz',
 			data
 		})
-		console.log("onUpdateOne", { rsp });
+		// console.log("onUpdateOne", { rsp });
 		const result = rsp.errMsg === "cloud.callFunction:ok";
 		if (result) {
 			uni.showToast({
