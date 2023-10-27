@@ -55,16 +55,17 @@
 				</view>
 			</view>
 			<!-- 不明白为什么这里有 style="width: 100%;" -->
-			<comment v-for="(c) in commentList" style="width: 100%;" :key="c.id" :vo="c">
+			<comment v-for="(c) in commentList" style="width: 100%;" :key="c.id" :vo="c" @reply="onReplyComment">
 
 			</comment>
 		</view>
 
+		<!-- 以后抽取出一个组件 -->
 		<u-popup :show="showCommentPopup" mode="bottom" @close="onCommentPopupClose" @open="onCommentPopupOpen">
 			<view class="card">
 				<view class="hbox">
 					<u-textarea v-model="comment_value" :auto-height="true" class="text-primary mr30"
-						placeholder="请输入"></u-textarea>
+						:placeholder="`${!commentToReply?.commenter_name?'发表评论...':'回复给:' + commentToReply?.commenter_name}`"></u-textarea>
 					&nbsp;
 					<u-icon name="arrow-upward" color="#5ab8b3" size="40" @click="onConfirmComment"></u-icon>
 				</view>
@@ -243,12 +244,12 @@
 
 	/** 更新评论区 */
 	const upadteComment = async (first_comment_id : string) => {
-		// console.log("获取评论前", first_comment_id)
+		console.log("获取评论前", first_comment_id)
 		const rsp : any = await wx.cloud.callFunction({
 			name: 'getComment',
 			data: { id: first_comment_id }
 		});
-		// console.log('获取到的评论', rsp);
+		console.log('获取到的评论', rsp);
 		commentList.value.push(rsp.result[0]);
 	}
 
@@ -258,6 +259,7 @@
 	const commentList = ref([]);
 
 	const onComment = () => {
+		commentToReply.value = null;
 		showCommentPopup.value = true;
 	}
 
@@ -269,13 +271,25 @@
 
 	}
 
-	const onConfirmComment = async () => {
+	/** 要回复的评论 vo */
+	const commentToReply = ref(null);
+	const onReplyComment = async (comment_vo) => {
+		console.log('onReplyComment', comment_vo);
+		commentToReply.value = comment_vo;
+		showCommentPopup.value = true;
+	}
+
+	const onConfirmComment = async (e) => {
+		console.log('onConfirmComment', e);
+		// 清空 popup
 		const commentValue : string = comment_value.value;
 		comment_value.value = '';
 		showCommentPopup.value = false;
 
+		// 评论人信息
 		const { commenter_name, avatar_url, id } = (getApp().globalData as any).loginInfo as ICommenter;
 
+		// 更新 UI
 		const comment_id = generateUUID();
 		const comment : IComment = {
 			id: comment_id,
@@ -293,39 +307,27 @@
 			commenter_name,
 			avatar_url
 		}
-		// 1 更新 UI
-		// console.log("把评论放入 UI", comment);
 		commentList.value.push(comment);
 
-		// 2 把评论放入数据库
+		// 把评论放入数据库
 		const data = { ...comment };
-		// console.log("把评论放入数据库", data);
 		await wx.cloud.callFunction({
 			name: 'addComment',
 			data
 		})
 
-		// 3 如果是第 1 个评论，则绑到 quiz 上
-		// console.log('curQuiz.value.first_comment_id', curQuiz.value.first_comment_id);
+		// 如果是第 1 个评论，则绑到 quiz 上
 		if (!curQuiz.value.first_comment_id) {
-			// console.log('3 如果是第 1 个评论，则绑到 quiz 上')
-			// 3.1 数据库数据
+			// 绑到数据库数据
 			const data = { ...curQuiz.value, first_comment_id: comment.id, dbName: quizType.value };
 			// console.log('要更新的题目数据', data)
 			await wx.cloud.callFunction({
 				name: 'updateQuiz',
 				data
 			})
-			// 3.2 内存数据
+			// 绑到内存数据
 			quizController.updateQuizFirstCommentIdByQuizSN(curQuiz.value.sn, comment.id);
 		}
-
-		// 4 如果数据库里没有这个评论人，则把这个评论人放到数据库里
-		const commenter = { id, commenter_name, avatar_url };
-		await wx.cloud.callFunction({
-			name: 'addOrUpdateCommenter',
-			data: { ...commenter }
-		})
 	}
 </script>
 

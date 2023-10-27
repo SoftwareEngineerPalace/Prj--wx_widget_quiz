@@ -8,7 +8,7 @@
 			<!-- 1.0 名字 -->
 			<view class="comment__commenter-name mb10">{{ vo.commenter_name }}</view>
 			<!-- 1.1 内容 -->
-			<view class="comment__content mb10">{{vo.content}}</view>
+			<view class="comment__content mb10" @click="onReply">{{vo.content}}</view>
 			<!-- 1.2 时间和赞的 hbox -->
 			<view class="hbox text-sub" style="justify-content: space-between;">
 				<!-- 1.2.1 时间 -->
@@ -28,8 +28,10 @@
 <script lang="ts" setup>
 	import { defineProps, ref, onMounted, computed } from 'vue';
 	const props = defineProps(['vo']);
+	const emits = defineEmits(['reply']);
 	const originalLikeCount = ref(0);
 	const state_likeCount = ref(0);
+	const comment_id = ref('');
 
 	// TODO 不想用 onMounted
 	onMounted(async () => {
@@ -37,6 +39,7 @@
 		// console.log('onMounted vo', vo);
 		originalLikeCount.value = vo.likeCount;
 		state_likeCount.value = vo.likeCount;
+		comment_id.value = vo.id;
 	})
 
 	const likeIsOrigin = computed(() => state_likeCount.value === originalLikeCount.value);
@@ -44,6 +47,10 @@
 	const onLike = () => {
 		state_likeCount.value = likeIsOrigin.value
 			? originalLikeCount.value + 1 : originalLikeCount.value;
+	}
+
+	const onReply = () => {
+		emits('reply', props.vo );
 	}
 </script>
 
