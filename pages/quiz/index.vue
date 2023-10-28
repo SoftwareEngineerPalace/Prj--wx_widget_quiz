@@ -260,6 +260,7 @@
 			}
 		})
 		commentList.value = list;
+		_1stDepthCommentCount.value = list.length;
 	}
 
 	// 下面是关于评论的
