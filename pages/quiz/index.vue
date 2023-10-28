@@ -246,11 +246,11 @@
 	const upadteComment = async (first_comment_id : string) => {
 		// console.log("获取评论前", first_comment_id)
 		const rsp : any = await wx.cloud.callFunction({
-			name: 'getComment',
-			data: { id: first_comment_id }
+			name: 'getComments',
+			data: { first_comment_id }
 		});
-		// console.log('获取到的评论', rsp);
-		commentList.value.push(rsp.result[0]);
+		console.log('upadteComment 获取到的评论', rsp);
+		commentList.value = rsp.result;
 	}
 
 	// 下面是关于评论的
