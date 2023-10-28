@@ -78,7 +78,8 @@
 	import comment from "../../components/comment/comment.vue";
 	import { ref, computed } from 'vue';
 	import quizController from '../../common/quizController';
-	import { ICheckbox, IQuiz, quizNameDic, ExerciseType, IComment, generateUUID, ICommenter } from '../../common/utils';
+	import { generateUUID } from '../../common/utils';
+	import { ICheckbox, IQuiz, quizNameDic, ExerciseType, IComment, ICommenter } from '../../common/common';
 	import queryString from 'query-string';
 	import { onLoad, onUnload } from '@dcloudio/uni-app';
 	import { getAllQuizs, getErrorCollectonQuiz } from '../../service';
@@ -222,9 +223,8 @@
 		updateOptions(quiz);
 
 		commentList.value = [];
-		if (!!quiz?.first_comment_id) {
-			upadteComment(quiz?.first_comment_id)
-		}
+		
+		upadteComment(quiz?.value.id)
 	}
 
 	/** 刷新当前题目选项 */
@@ -248,11 +248,8 @@
 		// console.log("获取评论前", first_comment_id)
 		const rsp : any = await wx.cloud.callFunction({
 			name: 'getComments',
-			data: { first_comment_id }
+			data: { quiz_id }
 		});
-		// const list = _.cloneDeep(rsp.result);
-		// const children = _.cloneDeep(rsp.result);
-		// list[0].children = children;
 		console.log('upadteComment 获取到的评论', rsp);
 		commentList.value = rsp.result;
 	}
@@ -291,7 +288,7 @@
 		showCommentPopup.value = false;
 
 		// 2 评论人信息
-		const { commenter_name, avatar_url, id: commenter_id } = (getApp().globalData as any).loginInfo as ICommenter;
+		const { commenter_name, commenter_url, commenter_id } = (getApp().globalData as any).loginInfo as ICommenter;
 
 		// 3 更新 UI
 		const comment : IComment = {
@@ -303,14 +300,13 @@
 
 			commenter_id,
 			commenter_name,
-			avatar_url
+			commenter_url
 		}
 		commentList.value.push(comment);
 
 		const data = {
 			...comment,
-
-			parent_id: "",
+			parent_id: commentToReply?.value?.id,
 			lTag: 0,
 			left_child_id: '',
 			rTag: 0,

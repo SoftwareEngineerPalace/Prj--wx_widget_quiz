@@ -44,11 +44,10 @@
 </template>
 
 <script lang="ts" setup>
-	import { ExerciseType } from '../../common/utils';
-
+	import { ExerciseType, quizNameDic, quizTypeArray } from '../../common/common';
 	import { computed, onMounted, ref } from 'vue';
 
-	import { checkSession, quizNameDic, quizTypeArray } from '../../common/utils';
+	import { checkSession } from '../../common/utils';
 	import queryString from 'query-string';
 	import { onShow, onInit } from '@dcloudio/uni-app';
 	import { getAllQuizs, getErrorCollectonQuiz } from '../../service';
@@ -82,7 +81,7 @@
 				name: 'getCommenter',
 				data: { id }
 			});
-			if( rsp.result.data.length === 0 ) return ;
+			if (rsp.result.data.length === 0) return;
 			(getApp().globalData as any).loginInfo = rsp.result.data[0];// 存到这里有什么用
 		}
 	})

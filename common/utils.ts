@@ -29,15 +29,6 @@ const showToast = (toast : any, message : string) => {
 	});
 }
 
-const quizNameDic : Map<string, string> = new Map([
-	['js', "JavaScript"],
-	['es6', "ECMAScript 6"],
-	['ts', "TypeScript"]]
-)
-
-const quizTypeArray = [{ value: 'js', label: "JavaScript" },
-{ value: 'es6', label: "ECMAScript 6" },
-{ value: 'ts', label: "TypeScript" }]
 
 const checkSession = () => {
 	return new Promise((resolve : Function) => {
@@ -52,108 +43,48 @@ const checkSession = () => {
 	});
 }
 
-interface IQuiz {
-	id : string;
-	title : string;
-	init : boolean;
-	option_a ?: string;
-	option_b ?: string;
-	option_c ?: string;
-	option_d ?: string;
-	answer ?: string;
-	submitted ?: boolean;
-	/** 题目的编号 从 1 开始 是固定的 */
-	sn ?: number;
-	/** 第 1 个评论的 id */
-	first_comment_id ?: string;
-}
+const getOpenId = () => {
+	return new Promise((resolved) => {
+		uni.showLoading({
+			title: '加载中',
+		});
+		uni.login({
+			provider: 'weixin',
+			success: async (rsp : any) => {
+				// 第二步 登录微信获取 code
+				// console.log('uni.login rsp', rsp);
+				const { code } = rsp;
+				// console.log("uni.login", { code });
+				if (rsp.errMsg !== 'login:ok') return;
 
-interface IData {
-	quizList : IQuiz[];
-	dbName : string;
-}
+				// 第三步 用 code 获取 token 和 user_openid
+				const data = { code };
+				// console.log("applet call login", data)
+				const rsp_login : any = await wx.cloud.callFunction({
+					name: 'login',
+					data
+				});
+				// console.log("applet call login callback", rsp_login)
+				const { token, openid } = rsp_login.result;
+				if (rsp_login.result.status !== 200) return;
+				uni.setStorageSync('token', token);
 
-interface ICheckbox {
-	id : string;
-	selected : boolean;
-	value : string;
-	isCorrect : boolean;
-}
+				// 第四步 用户数据存入数据库
 
-interface IQuizHistory {
-	quiz_count : number;
-	answer_times : number;
-	correct_times : number;
-}
-
-interface ITask {
-	id : string;
-	deadline : string;
-	name : string;
-	priority : number;
-	duration : number;
-}
-
-interface IData {
-	list : ITask[];
-	[prop : string] : unknown;
-}
-
-enum ExerciseType {
-	Common = 'Common',
-	ErrCollection = 'ErrCollection',
-	Fav = 'Fav'
-}
-
-interface IComment {
-	id : string;
-
-	quiz_id ?: string;
-
-	parent_id : string;
-	left_child_id : string;
-	lTag : number;
-	right_child_id : string;
-	rTag : number;
-
-	commenter_id : string;
-	commenter_name : string;
-	avatar_url : string;
-
-	content : string;
-
-	likeCount : number;
-	time : string;
-
-	first_comment_id : string;
-}
-
-interface ISettings {
-	label : string;
-	icon : string;
-	id : string;
-}
-
-interface ICommenter {
-	commenter_name : string;
-	avatar_url : string;
-	id : string;
-}
+				resolved({ id: openid });
+				uni.hideLoading()
+			}
+		});
+	})
+};
 
 export {
-	ICommenter,
-	ISettings,
-	IComment,
+	getOpenId,
 	ExerciseType,
-	ITask,
-	IQuizHistory,
 	generateUUID,
 	showToast,
 	quizNameDic,
 	checkSession,
 	quizTypeArray,
 	formatTime,
-	IQuiz,
-	IData,
-	ICheckbox
 }

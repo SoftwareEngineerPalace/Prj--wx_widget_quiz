@@ -1,7 +1,7 @@
 <template>
 	<view class="comment hbox mt20" style="align-items: flex-start;">
 		<!-- 0 左头像 -->
-		<u-image :show-loading="true" mode="widthFix" shape="circle" :src="vo.avatar_url" width="30px"
+		<u-image :show-loading="true" mode="widthFix" shape="circle" :src="vo.commenter_url" width="30px"
 			height="30px"></u-image>
 		<!-- 1 vbox -->
 		<view class="vbox" style="align-items: flex-start; margin-left: 20rpx; flex-grow: 1;">

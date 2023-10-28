@@ -37,7 +37,8 @@
 </template>
 
 <script lang="ts" setup>
-	import { generateUUID, quizNameDic, IQuiz } from '../../common/utils';
+	import { generateUUID } from '../../common/utils';
+	import { quizNameDic, IQuiz } from '../../common/common';
 	import { ref, Ref } from 'vue';
 	import { onLoad } from '@dcloudio/uni-app';
 
