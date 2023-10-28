@@ -68,8 +68,8 @@ interface IComment {
 
 	likeCount : number;
 	time : string;
-
-	comment_list : string[];
+	/** 只用于 UI 对应的数据上 */
+	comment_list : IComment[];
 }
 
 interface ISettings {

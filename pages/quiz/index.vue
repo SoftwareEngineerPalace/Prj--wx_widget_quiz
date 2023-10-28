@@ -76,9 +76,9 @@
 
 <script lang="ts" setup>
 	import comment from "../../components/comment/comment.vue";
-	import { ref, computed } from 'vue';
+	import { ref, computed, toRaw } from 'vue';
 	import quizController from '../../common/quizController';
-	import { generateUUID } from '../../common/utils';
+	import { generateUUID, findComment } from '../../common/utils';
 	import { ICheckbox, IQuiz, quizNameDic, ExerciseType, IComment, ICommenter } from '../../common/common';
 	import queryString from 'query-string';
 	import { onLoad, onUnload } from '@dcloudio/uni-app';
@@ -300,10 +300,11 @@
 		const { name: commenter_name, url: commenter_url, id: commenter_id } = (getApp().globalData as any).loginInfo as ICommenter;
 
 		// 3 更新 UI
+		const parent_id = commentToReply.value?.id;
 		const comment : IComment = {
 			id: generateUUID(),
 			quiz_id: curQuiz.value.id,
-			parent_id: commentToReply.value?.id,
+			parent_id,
 
 			content: commentValue,
 			time: new Date().toLocaleDateString(),
@@ -311,11 +312,26 @@
 
 			commenter_id,
 			commenter_name,
-			commenter_url
+			commenter_url,
+			comment_list: [],
 		}
-		commentList.value.push(comment);
+		if (!parent_id) {
+			// 放到第一层
+			commentList.value.push(comment);
+		} else {
+			// 放进树里
+			let list = toRaw(commentList.value);
+			console.log('list', list);
+			console.log('parent_id', parent_id);
+			const parent : IComment = findComment(list, parent_id);
+			parent.comment_list = !parent?.comment_list || parent?.comment_list.length === 0 ? [] : parent.comment_list
+			parent.comment_list.push(comment);
+			list = toRaw(commentList.value);
+			console.log('list', list);
+		}
 
-		// console.log('4 把 comment 放到 comment 数据库', data)
+		console.log('4 把 comment 放到 comment 数据库', comment);
+		return;
 		const rsp_addComment = await wx.cloud.callFunction({
 			name: 'addComment',
 			data: comment

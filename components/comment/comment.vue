@@ -22,7 +22,7 @@
 				</view>
 			</view>
 
-			<comment v-for="(sub_comment) in vo.children" style="width: 100%;" :key="sub_comment.id" :vo="sub_comment"></comment>
+			<comment v-for="(sub_comment) in vo.comment_list" style="width: 100%;" :key="sub_comment.id" :vo="sub_comment"></comment>
 		</view>
 	</view>
 </template>

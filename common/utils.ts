@@ -1,3 +1,5 @@
+import { IComment } from "./common";
+
 const generateUUID = () => {
 	let d = new Date().getTime();
 	const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
@@ -78,7 +80,29 @@ const getOpenId = () => {
 	})
 };
 
+const findComment = (comments : IComment[], targetId : string) => {
+	for (let i = 0, len = comments.length; i < len; i++) {
+		return preOrder(comments[i], targetId);
+	}
+}
+
+const preOrder = (comment : IComment, targetId : string) => {
+	if (!comment) {
+		return null;
+	}
+	console.log('comment.id === targetId', comment.id === targetId)
+	if (comment.id === targetId) {
+		return comment;
+	}
+	console.log('preOrder', comment)
+	let len = comment.comment_list.length;
+	for (let i = 0; i < len; i++) {
+		return preOrder(comment.comment_list[i], targetId);
+	}
+}
+
 export {
+	findComment,
 	getOpenId,
 	ExerciseType,
 	generateUUID,
