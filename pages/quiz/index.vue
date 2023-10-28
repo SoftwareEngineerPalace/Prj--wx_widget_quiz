@@ -223,8 +223,8 @@
 		updateOptions(quiz);
 
 		commentList.value = [];
-		
-		upadteComment(quiz?.value.id)
+
+		// upadteComment(quiz?.value.id)
 	}
 
 	/** 刷新当前题目选项 */
@@ -244,7 +244,7 @@
 	}
 
 	/** 更新评论区 */
-	const upadteComment = async (first_comment_id : string) => {
+	const upadteComment = async (quiz_id : string) => {
 		// console.log("获取评论前", first_comment_id)
 		const rsp : any = await wx.cloud.callFunction({
 			name: 'getComments',
@@ -288,11 +288,13 @@
 		showCommentPopup.value = false;
 
 		// 2 评论人信息
-		const { commenter_name, commenter_url, commenter_id } = (getApp().globalData as any).loginInfo as ICommenter;
+		const { name: commenter_name, url: commenter_url, id: commenter_id } = (getApp().globalData as any).loginInfo as ICommenter;
 
 		// 3 更新 UI
 		const comment : IComment = {
 			id: generateUUID(),
+			quiz_id: curQuiz.value.id,
+			parent_id: commentToReply.value?.id,
 
 			content: commentValue,
 			time: new Date().toLocaleDateString(),
@@ -303,42 +305,13 @@
 			commenter_url
 		}
 		commentList.value.push(comment);
-
-		const data = {
-			...comment,
-			parent_id: commentToReply?.value?.id,
-			lTag: 0,
-			left_child_id: '',
-			rTag: 0,
-			right_child_id: '',
-
-			quiz_id: curQuiz.value.id,
-			first_comment_id: curQuiz?.value?.first_comment_id
-		};
+		return;
 		// console.log('4 把 comment 放到 comment 数据库', data)
 		const rsp_addComment = await wx.cloud.callFunction({
 			name: 'addComment',
-			data
+			data:comment
 		})
 		// console.log('rsp_addComment', rsp_addComment);
-
-		// 5 更新 quiz 的 first_comment_id
-		if (!curQuiz.value.first_comment_id) {
-			// 5.1 如果是第 1 个评论， 把 first_comment_id 绑到题目数据库数据
-			const data = {
-				...curQuiz.value,
-				first_comment_id: comment.id,
-				dbName: quizType.value
-			};
-			// console.log('要更新的题目数据', data)
-			await wx.cloud.callFunction({
-				name: 'updateQuiz',
-				data
-			})
-			// 5.2 把 first_comment_id 绑到内存数据
-			quizController.updateQuizFirstCommentIdByQuizSN(curQuiz.value.sn, comment.id);
-			curQuiz.value.first_comment_id = comment.id;
-		}
 	}
 </script>
 

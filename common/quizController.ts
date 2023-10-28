@@ -41,13 +41,6 @@ class QuizController {
 		this._curQuizIndex = -1;
 	}
 
-	/** 更新题目的 first_comment_id by sn */
-	updateQuizFirstCommentIdByQuizSN = (sn : number, first_comment_id : string) => {
-		const quiz : IQuiz = this._quizList.find((quiz : IQuiz) => quiz.sn === sn);
-		Object.assign(quiz, { first_comment_id });
-		// console.log("updateQuizFirstCommentIdByQuizSN 后", this._quizList)
-	}
-
 	setCurQuizIndex = (index : number) => {
 		// console.log("quizController setCurQuizIndex index", index);
 		this._curQuizIndex = index;
