@@ -3,7 +3,7 @@
 		<view class="card mb30">
 			<view v-if="loggedIn" class="hbox mb30" style="justify-content: center;" @click="login">
 				<input type="nickname" class="mine__name weui-input" :placeholder="loginInfo.commenter_name"
-					@blur="onNameBlur" />
+					@change="onNameChange" />
 				<button class="mine__avatar" open-type="chooseAvatar" @chooseavatar="onChooseAvatar">
 					<u--image :src="loginInfo.avatar_url" shape="circle" width="80px" height="80px"></u--image>
 				</button>
@@ -87,15 +87,18 @@
 		}
 	})
 
-	const onChooseAvatar = (e) => {
+	const onChooseAvatar = async (e) => {
 		console.log('onChooseAvatar');
-		const { avatarUrl } = e.detail;
-		loginInfo.value = { ...loginInfo.value, avatar_url: avatarUrl };
+		const { avatarUrl: filePath } = e.detail;
+		const cloudPath = `commenter/${loginInfo.value.id}.jpg`;
+		const { fileID: avatar_url } = await wx.cloud.uploadFile({ cloudPath, filePath })
+		console.log('上传图片到云存储后', avatar_url);
+		loginInfo.value = { ...loginInfo.value, avatar_url };
 		addOrUpdateCommenter(loginInfo.value);
 	}
 
-	const onNameBlur = (e) => {
-		// console.log("onNameBlur", e);
+	const onNameChange = (e) => {
+		console.log("onNameChange", e);
 		loginInfo.value = { ...loginInfo.value, commenter_name: e.detail.value };
 		addOrUpdateCommenter(loginInfo.value);
 	}

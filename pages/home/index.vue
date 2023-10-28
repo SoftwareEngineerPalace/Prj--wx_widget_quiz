@@ -69,7 +69,7 @@
 	onMounted(async () => {
 		const hasSession = await checkSession();
 		const token = uni.getStorageSync('token');
-		console.log('home onMounted', { hasSession, token })
+		// console.log('home onMounted', { hasSession, token })
 		if (!hasSession || !token) {
 			uni.switchTab({
 				url: '/pages/mine/index'

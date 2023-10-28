@@ -244,12 +244,12 @@
 
 	/** 更新评论区 */
 	const upadteComment = async (first_comment_id : string) => {
-		console.log("获取评论前", first_comment_id)
+		// console.log("获取评论前", first_comment_id)
 		const rsp : any = await wx.cloud.callFunction({
 			name: 'getComment',
 			data: { id: first_comment_id }
 		});
-		console.log('获取到的评论', rsp);
+		// console.log('获取到的评论', rsp);
 		commentList.value.push(rsp.result[0]);
 	}
 
@@ -315,12 +315,12 @@
 			quiz_id: curQuiz.value.id,
 			first_comment_id: curQuiz?.value?.first_comment_id
 		};
-		console.log('4 把 comment 放到 comment 数据库', data)
+		// console.log('4 把 comment 放到 comment 数据库', data)
 		const rsp_addComment = await wx.cloud.callFunction({
 			name: 'addComment',
 			data
 		})
-		console.log('rsp_addComment', rsp_addComment);
+		// console.log('rsp_addComment', rsp_addComment);
 
 		// 5 更新 quiz 的 first_comment_id
 		if (!curQuiz.value.first_comment_id) {
