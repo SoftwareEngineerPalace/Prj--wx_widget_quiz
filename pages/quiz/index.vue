@@ -224,7 +224,7 @@
 
 		commentList.value = [];
 
-		// upadteComment(quiz?.value.id)
+		upadteComment(quiz?.id)
 	}
 
 	/** 刷新当前题目选项 */
@@ -251,7 +251,15 @@
 			data: { quiz_id }
 		});
 		console.log('upadteComment 获取到的评论', rsp);
-		commentList.value = rsp.result;
+		if (rsp.result.length === 0) return;
+		const list = rsp.result.map(v => {
+			return {
+				...v,
+				commenter_name: v.name,
+				commenter_url: v.url
+			}
+		})
+		commentList.value = list;
 	}
 
 	// 下面是关于评论的
@@ -305,11 +313,11 @@
 			commenter_url
 		}
 		commentList.value.push(comment);
-		
+
 		// console.log('4 把 comment 放到 comment 数据库', data)
 		const rsp_addComment = await wx.cloud.callFunction({
 			name: 'addComment',
-			data:comment
+			data: comment
 		})
 		// console.log('rsp_addComment', rsp_addComment);
 	}
