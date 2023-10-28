@@ -245,7 +245,7 @@
 
 	/** 更新评论区 */
 	const upadteComment = async (quiz_id : string) => {
-		// console.log("获取评论前", first_comment_id)
+		// console.log("获取评论前 quiz_id", quiz_id)
 		const rsp : any = await wx.cloud.callFunction({
 			name: 'getComments',
 			data: { quiz_id }
@@ -298,14 +298,14 @@
 
 			content: commentValue,
 			time: new Date().toLocaleDateString(),
-			likeCount: 0,
+			like_count: 0,
 
 			commenter_id,
 			commenter_name,
 			commenter_url
 		}
 		commentList.value.push(comment);
-		return;
+		
 		// console.log('4 把 comment 放到 comment 数据库', data)
 		const rsp_addComment = await wx.cloud.callFunction({
 			name: 'addComment',

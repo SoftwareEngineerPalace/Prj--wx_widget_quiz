@@ -16,8 +16,6 @@ interface IQuiz {
 	submitted ?: boolean;
 	/** 题目的编号 从 1 开始 是固定的 */
 	sn ?: number;
-	/** 第 1 个评论的 id */
-	first_comment_id ?: string;
 }
 
 interface IData {
