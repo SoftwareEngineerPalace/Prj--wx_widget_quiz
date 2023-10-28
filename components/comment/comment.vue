@@ -21,12 +21,15 @@
 					</view>
 				</view>
 			</view>
+
+			<comment v-for="(sub_comment) in vo.children" style="width: 100%;" :key="sub_comment.id" :vo="sub_comment"></comment>
 		</view>
 	</view>
 </template>
 
 <script lang="ts" setup>
 	import { defineProps, ref, onMounted, computed } from 'vue';
+	import comment from "./comment.vue";
 	const props = defineProps(['vo']);
 	const emits = defineEmits(['reply']);
 	const originalLikeCount = ref(0);
@@ -50,7 +53,7 @@
 	}
 
 	const onReply = () => {
-		emits('reply', props.vo );
+		emits('reply', props.vo);
 	}
 </script>
 

@@ -82,6 +82,7 @@
 	import queryString from 'query-string';
 	import { onLoad, onUnload } from '@dcloudio/uni-app';
 	import { getAllQuizs, getErrorCollectonQuiz } from '../../service';
+	import * as _ from 'lodash';
 
 	const quizType = ref("");        // 题目类型
 	const curExerciseType = ref("")  // 做题类型
@@ -249,6 +250,9 @@
 			name: 'getComments',
 			data: { first_comment_id }
 		});
+		// const list = _.cloneDeep(rsp.result);
+		// const children = _.cloneDeep(rsp.result);
+		// list[0].children = children;
 		console.log('upadteComment 获取到的评论', rsp);
 		commentList.value = rsp.result;
 	}
