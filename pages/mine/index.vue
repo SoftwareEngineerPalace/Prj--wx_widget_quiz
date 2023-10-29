@@ -33,7 +33,7 @@
 
 			<button class="btn-primary mb20 mt20" @click="logout" v-if="loggedIn">退出登录</button>
 
-			<button class="btn-primary mb20" @click="adminVisible=!adminVisible">{{adminVisible?'关闭后台':'显示后台'}}</button>
+			<button v-if="loginInfo.id==='oGJqI61rEAICwpBqGgw_hteePEbY'" class="btn-primary mb20" @click="adminVisible=!adminVisible">{{adminVisible?'关闭后台':'显示后台'}}</button>
 
 			<!-- 3 后台 -->
 			<view class="mine__admin" v-if="adminVisible">
