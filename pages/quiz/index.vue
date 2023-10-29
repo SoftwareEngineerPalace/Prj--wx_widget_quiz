@@ -55,7 +55,7 @@
 				</view>
 			</view>
 			<!-- 不明白为什么这里有 style="width: 100%;" -->
-			<comment v-for="(c) in commentList" style="width: 100%;" :key="c.id" :vo="c" @reply="onReplyComment">
+			<comment v-for="(c) in commentListModel" style="width: 100%;" :key="c.id" :vo="c" @reply="onReplyComment">
 
 			</comment>
 		</view>
@@ -222,7 +222,7 @@
 		// console.log('upadteQuiz', quiz);
 		updateOptions(quiz);
 
-		commentList.value = [];
+		commentListModel.value = [];
 
 		upadteComment(quiz?.id)
 	}
@@ -250,7 +250,7 @@
 			name: 'getComments',
 			data: { quiz_id }
 		});
-		console.log('upadteComment 获取到的评论', rsp);
+		// console.log('upadteComment 获取到的评论', rsp);
 		if (rsp.result.length === 0) return;
 		const list = rsp.result.map(v => {
 			return {
@@ -259,14 +259,14 @@
 				commenter_url: v.url
 			}
 		})
-		commentList.value = list;
+		commentListModel.value = list;
 		_1stDepthCommentCount.value = list.length;
 	}
 
 	// 下面是关于评论的
 	const showCommentPopup = ref(false);
 	const comment_value = ref('');
-	const commentList = ref([]);
+	const commentListModel = ref([]);
 
 	const onComment = () => {
 		commentToReply.value = null;
@@ -284,13 +284,13 @@
 	/** 要回复的评论 vo */
 	const commentToReply = ref(null);
 	const onReplyComment = async (comment_vo) => {
-		console.log('onReplyComment', comment_vo);
+		// console.log('onReplyComment', comment_vo);
 		commentToReply.value = comment_vo;
 		showCommentPopup.value = true;
 	}
 
 	const onConfirmComment = async (e) => {
-		console.log('onConfirmComment', e);
+		// console.log('onConfirmComment', e);
 		// 1 清空 popup
 		const commentValue : string = comment_value.value;
 		comment_value.value = '';
@@ -316,22 +316,21 @@
 			comment_list: [],
 		}
 		if (!parent_id) {
-			// 放到第一层
-			commentList.value.push(comment);
+			console.log("放到第一层")
+			commentListModel.value.push(comment);
 		} else {
-			// 放进树里
-			let list = toRaw(commentList.value);
+			console.log('放进树里')
+			let list = toRaw(commentListModel.value);
 			console.log('list', list);
 			console.log('parent_id', parent_id);
 			const parent : IComment = findComment(list, parent_id);
 			parent.comment_list = !parent?.comment_list || parent?.comment_list.length === 0 ? [] : parent.comment_list
 			parent.comment_list.push(comment);
-			list = toRaw(commentList.value);
+			list = toRaw(commentListModel.value);
 			console.log('list', list);
 		}
 
 		console.log('4 把 comment 放到 comment 数据库', comment);
-		return;
 		const rsp_addComment = await wx.cloud.callFunction({
 			name: 'addComment',
 			data: comment

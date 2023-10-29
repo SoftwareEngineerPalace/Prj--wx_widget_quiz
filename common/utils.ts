@@ -90,11 +90,11 @@ const preOrder = (comment : IComment, targetId : string) => {
 	if (!comment) {
 		return null;
 	}
-	console.log('comment.id === targetId', comment.id === targetId)
+	// console.log('comment.id === targetId', comment.id === targetId)
 	if (comment.id === targetId) {
 		return comment;
 	}
-	console.log('preOrder', comment)
+	// console.log('preOrder', comment)
 	let len = comment.comment_list.length;
 	for (let i = 0; i < len; i++) {
 		return preOrder(comment.comment_list[i], targetId);
