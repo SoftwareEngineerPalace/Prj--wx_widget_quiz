@@ -78,7 +78,7 @@
 	import comment from "../../components/comment/comment.vue";
 	import { ref, computed, toRaw } from 'vue';
 	import quizController from '../../common/quizController';
-	import { generateUUID, findComment } from '../../common/utils';
+	import { generateUUID, findComment, addCommenterParam } from '../../common/utils';
 	import { ICheckbox, IQuiz, quizNameDic, ExerciseType, IComment, ICommenter } from '../../common/common';
 	import queryString from 'query-string';
 	import { onLoad, onUnload } from '@dcloudio/uni-app';
@@ -92,7 +92,7 @@
 	const checkboxList = ref([]);    // 当前4个选项
 	const userAnswer = ref('');      // 用户的答案
 	const quizList = ref([]);
-	const _1stDepthCommentCount = ref(0)
+	const _1stDepthCommentCount = computed(()=> commentListModel.value.length)
 
 	onLoad(async (evt : { quizType : string, exerciseType : string, latest_quiz_index : string }) => {
 		// console.log('quiz onLoad', evt);
@@ -252,15 +252,9 @@
 		});
 		// console.log('upadteComment 获取到的评论', rsp);
 		if (rsp.result.length === 0) return;
-		const list = rsp.result.map(v => {
-			return {
-				...v,
-				commenter_name: v.name,
-				commenter_url: v.url
-			}
-		})
+		const list = rsp.result;
+		addCommenterParam(list);
 		commentListModel.value = list;
-		_1stDepthCommentCount.value = list.length;
 	}
 
 	// 下面是关于评论的
@@ -303,7 +297,7 @@
 		const parent_id = commentToReply.value?.id;
 		const comment : IComment = {
 			id: generateUUID(),
-			quiz_id: curQuiz.value.id,
+			quiz_id: parent_id ? null : curQuiz.value.id,
 			parent_id,
 
 			content: commentValue,
@@ -316,21 +310,23 @@
 			comment_list: [],
 		}
 		if (!parent_id) {
-			console.log("放到第一层")
+			// console.log("放到第一层")
 			commentListModel.value.push(comment);
 		} else {
-			console.log('放进树里')
+			// console.log('放进树里')
 			let list = toRaw(commentListModel.value);
-			console.log('list', list);
-			console.log('parent_id', parent_id);
+			// console.log('list', list);
+			// console.log('parent_id', parent_id);
 			const parent : IComment = findComment(list, parent_id);
+			// console.log('parent', parent);
 			parent.comment_list = !parent?.comment_list || parent?.comment_list.length === 0 ? [] : parent.comment_list
+			// console.log('comment_list', parent.comment_list);
 			parent.comment_list.push(comment);
 			list = toRaw(commentListModel.value);
-			console.log('list', list);
+			// console.log('list', list);
 		}
 
-		console.log('4 把 comment 放到 comment 数据库', comment);
+		// console.log('4 把 comment 放到 comment 数据库', comment);s
 		const rsp_addComment = await wx.cloud.callFunction({
 			name: 'addComment',
 			data: comment

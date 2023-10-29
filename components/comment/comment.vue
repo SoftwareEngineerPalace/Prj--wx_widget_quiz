@@ -22,13 +22,14 @@
 				</view>
 			</view>
 
-			<comment v-for="(sub_comment) in vo.comment_list" style="width: 100%;" :key="sub_comment.id" :vo="sub_comment"></comment>
+			<comment v-for="(sub_comment) in vo.comment_list" style="width: 100%;" :key="sub_comment.id"
+				:vo="sub_comment"></comment>
 		</view>
 	</view>
 </template>
 
 <script lang="ts" setup>
-	import { defineProps, ref, onMounted, computed } from 'vue';
+	import { ref, onMounted, computed } from 'vue';
 	import comment from "./comment.vue";
 	const props = defineProps(['vo']);
 	const emits = defineEmits(['reply']);

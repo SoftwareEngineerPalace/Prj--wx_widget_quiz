@@ -80,13 +80,19 @@ const getOpenId = () => {
 	})
 };
 
+/** 下面2个方法应该优化下 */
 const findComment = (comments : IComment[], targetId : string) => {
 	for (let i = 0, len = comments.length; i < len; i++) {
-		return preOrder(comments[i], targetId);
+		// console.log('findComment i=', i);
+		const target = preOrder(comments[i], targetId);
+		if (target) {
+			return target;
+		}
 	}
 }
 
 const preOrder = (comment : IComment, targetId : string) => {
+	// console.log('preOrder comment.id=', comment.id, 'targetId=', targetId);
 	if (!comment) {
 		return null;
 	}
@@ -94,14 +100,32 @@ const preOrder = (comment : IComment, targetId : string) => {
 	if (comment.id === targetId) {
 		return comment;
 	}
-	// console.log('preOrder', comment)
-	let len = comment.comment_list.length;
+	// console.log('preOrder comment', comment)
+	let len = comment.comment_list?.length || 0;
+	// console.log('preOrder len', len)
 	for (let i = 0; i < len; i++) {
-		return preOrder(comment.comment_list[i], targetId);
+		preOrder(comment.comment_list[i], targetId);
+	}
+}
+
+const addCommenterParam = (comments : any[]) => {
+	comments.forEach(cmt => {
+		traversal(cmt)
+	})
+}
+
+const traversal = (comment : IComment) => {
+	comment.commenter_name = comment.name;
+	comment.commenter_url = comment.url;
+	if (comment?.comment_list?.length > 0) {
+		comment.comment_list.forEach(cmt => {
+			traversal(cmt)
+		})
 	}
 }
 
 export {
+	addCommenterParam,
 	findComment,
 	getOpenId,
 	ExerciseType,
