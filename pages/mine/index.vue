@@ -33,7 +33,8 @@
 
 			<button class="btn-primary mb20 mt20" @click="logout" v-if="loggedIn">退出登录</button>
 
-			<button v-if="loginInfo.id==='oGJqI61rEAICwpBqGgw_hteePEbY'" class="btn-primary mb20" @click="adminVisible=!adminVisible">{{adminVisible?'关闭后台':'显示后台'}}</button>
+			<button v-if="loginInfo.id==='oGJqI61rEAICwpBqGgw_hteePEbY'" class="btn-primary mb20"
+				@click="adminVisible=!adminVisible">{{adminVisible?'关闭后台':'显示后台'}}</button>
 
 			<!-- 3 后台 -->
 			<view class="mine__admin" v-if="adminVisible">
@@ -53,6 +54,8 @@
 
 	import { getOpenId, getProfile, checkSession } from '../../common/utils';
 	import { loginInfo_default, ICommenter } from '../../common/common';
+	import { addOrUpdateCommenter } from '../../service'
+	
 	import queryString from 'query-string';
 
 	import { ref, onMounted } from 'vue';
@@ -116,22 +119,15 @@
 		uni.navigateTo({ url });
 	};
 
-	const addOrUpdateCommenter = async (data : any) => {
-		console.log('addOrUpdateCommenter', data);
-		await wx.cloud.callFunction({
-			name: 'addOrUpdateCommenter',
-			data
-		})
-	}
-
 	const login = async () => {
 		if (loggedIn.value) return;
 		const rsp = await getOpenId();
-		console.log('login', rsp);
-		loginInfo.value = { ...loginInfo.value, ...rsp }
+		console.log('login rsp', rsp);
+		loginInfo.value = { ...loginInfo.value, ...rsp };
+		console.log('loginInfo', loginInfo.value);
 		loggedIn.value = true;
-		(getApp().globalData as any).loginInfo = rsp;
 		uni.showTabBar();
+
 		addOrUpdateCommenter(loginInfo.value)
 	}
 

@@ -17,4 +17,15 @@ const getErrorCollectonQuiz = async (quiz_type : string) => {
 	return rsp.result.data;
 }
 
-export { getAllQuizs, getErrorCollectonQuiz }
+const addOrUpdateCommenter = async (data : any) => {
+	console.log('addOrUpdateCommenter', data);
+	// 存入内存
+	(getApp().globalData as any).loginInfo = data;
+	// 存入数据库
+	await wx.cloud.callFunction({
+		name: 'addOrUpdateCommenter',
+		data
+	})
+}
+
+export { getAllQuizs, getErrorCollectonQuiz, addOrUpdateCommenter }

@@ -309,6 +309,7 @@
 			commenter_url,
 			comment_list: [],
 		}
+		console.log('新的评论 UI 数据', comment)
 		if (!parent_id) {
 			// console.log("放到第一层")
 			commentListModel.value.push(comment);
