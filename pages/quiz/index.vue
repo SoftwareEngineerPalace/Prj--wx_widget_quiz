@@ -83,7 +83,6 @@
 	import queryString from 'query-string';
 	import { onLoad, onUnload } from '@dcloudio/uni-app';
 	import { getAllQuizs, getErrorCollectonQuiz } from '../../service';
-	import * as _ from 'lodash';
 
 	const quizType = ref("");        // 题目类型
 	const curExerciseType = ref("")  // 做题类型

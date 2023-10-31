@@ -14,15 +14,15 @@
 		<view class="card mb30">
 			<view class="text-primary mb20" style="align-self: flex-start;">继续</view>
 			<view class="text-sub mb20" style="align-self: flex-start;">从上次中断的地方继续练习</view>
-			<button class="btn-primary" @click="continueExercise">继续练习</button>
+			<button class="btn-primary" @click="$u.debounce(continueExercise, 500)">继续练习</button>
 		</view>
 
 		<!-- 3 回顾练习 -->
 		<view class="card mb30">
 			<view class="text-primary mb20" style="align-self: flex-start;">回顾练习</view>
 			<view class="text-sub mb20" style="align-self: flex-start;">练习错题本 / 收藏夹中的题目</view>
-			<button class="btn-primary mb20" @click="startErrCollection">错题练习</button>
-			<button class="btn-primary" @click="startFavQuiz">收藏夹练习</button>
+			<button class="btn-primary mb20" @click="$u.debounce(startErrCollection, 500)">错题练习</button>
+			<button class="btn-primary" @click="$u.debounce(startFavQuiz, 500)">收藏夹练习</button>
 		</view>
 
 		<!-- <view class="card">
@@ -44,6 +44,7 @@
 </template>
 
 <script lang="ts" setup>
+	import { debounce } from 'lodash'
 	import { ExerciseType, quizNameDic, quizTypeArray } from '../../common/common';
 	import { computed, onMounted, ref } from 'vue';
 
