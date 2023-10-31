@@ -41,7 +41,7 @@
 		</view>
 
 		<!-- 评论区 start -->
-		<view class="card">
+		<view class="card" v-show="curQuiz.submitted">
 			<view class="comment-title-row">
 				<view class="hbox">
 					<view class="text-primary">评论</view>&nbsp;·&nbsp; <view class="text-primary">
@@ -64,7 +64,8 @@
 		<u-popup :show="showCommentPopup" mode="bottom" @close="onCommentPopupClose" @open="onCommentPopupOpen">
 			<view class="card">
 				<view class="hbox">
-					<u-textarea :adjust-position="false" v-model="comment_value" :auto-height="true" class="text-primary mr30"
+					<u-textarea :adjust-position="false" v-model="comment_value" :auto-height="true"
+						class="text-primary mr30"
 						:placeholder="`${!commentToReply?.commenter_name?'发表评论...':'回复给:' + commentToReply?.commenter_name}`"></u-textarea>
 					&nbsp;
 					<u-icon name="arrow-upward" color="#5ab8b3" size="40" @click="onConfirmComment"></u-icon>
@@ -91,7 +92,7 @@
 	const checkboxList = ref([]);    // 当前4个选项
 	const userAnswer = ref('');      // 用户的答案
 	const quizList = ref([]);
-	const _1stDepthCommentCount = computed(()=> commentListModel.value.length)
+	const _1stDepthCommentCount = computed(() => commentListModel.value.length)
 
 	onLoad(async (evt : { quizType : string, exerciseType : string, latest_quiz_index : string }) => {
 		// console.log('quiz onLoad', evt);
