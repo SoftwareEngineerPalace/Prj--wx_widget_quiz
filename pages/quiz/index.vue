@@ -64,7 +64,7 @@
 		<u-popup :show="showCommentPopup" mode="bottom" @close="onCommentPopupClose" @open="onCommentPopupOpen">
 			<view class="card">
 				<view class="hbox">
-					<u-textarea v-model="comment_value" :auto-height="true" class="text-primary mr30"
+					<u-textarea :adjust-position="false" v-model="comment_value" :auto-height="true" class="text-primary mr30"
 						:placeholder="`${!commentToReply?.commenter_name?'发表评论...':'回复给:' + commentToReply?.commenter_name}`"></u-textarea>
 					&nbsp;
 					<u-icon name="arrow-upward" color="#5ab8b3" size="40" @click="onConfirmComment"></u-icon>
