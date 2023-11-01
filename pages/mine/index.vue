@@ -155,6 +155,7 @@
 		height: 100vh;
 
 		.mine-wrapper {
+			height: 100vh;
 			display: flex;
 			flex-direction: column;
 			justify-content: flex-start;

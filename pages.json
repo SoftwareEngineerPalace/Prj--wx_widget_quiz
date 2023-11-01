@@ -5,15 +5,19 @@
 		"^u-([^-].*)": "@/uni_modules/uview-plus/components/u-$1/u-$1.vue"
 	},
 	"tabBar": {
+		"iconfontSrc": "static/iconfont.ttf",
 		"color": "#000",
 		"selectedColor": "#5ab8b3",
 		"list": [{
 			"pagePath": "pages/home/index",
-			"text": "练习"
-
+			"text": "练习",
+			"iconPath": "static/images/quiz_default.png",
+			"selectedIconPath": "static/images/quiz_selected.png"
 		}, {
 			"pagePath": "pages/mine/index",
-			"text": "我的"
+			"text": "我的",
+			"iconPath": "static/images/mine_default.png",
+			"selectedIconPath": "static/images/mine_selected.png"
 		}]
 	},
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
