@@ -16,6 +16,7 @@ interface IQuiz {
 	submitted ?: boolean;
 	/** 题目的编号 从 1 开始 是固定的 */
 	sn ?: number;
+	favorite ?: boolean;
 }
 
 interface IData {

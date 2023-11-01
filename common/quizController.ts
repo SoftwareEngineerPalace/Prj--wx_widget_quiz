@@ -42,7 +42,6 @@ class QuizController {
 	}
 
 	setCurQuizIndex = (index : number) => {
-		// console.log("quizController setCurQuizIndex index", index);
 		this._curQuizIndex = index;
 	}
 
@@ -65,6 +64,14 @@ class QuizController {
 			return this._quizList[this._curQuizIndex];
 		}
 	}
+
+	/** 更新题目的 first_comment_id by sn */
+	updateFavorite = (id : string, favorite : boolean) => {
+		const targetQuiz : IQuiz = this._quizList.find((quiz : IQuiz) => quiz.id === id);
+		targetQuiz.favorite = favorite
+		console.log("updateFavorite 后 id=", id, "favorite=", favorite)
+	}
+
 }
 
 export default QuizController.getInstance();

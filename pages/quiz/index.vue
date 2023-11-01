@@ -59,20 +59,25 @@
 
 			</comment>
 		</view>
-
-		<!-- 以后抽取出一个组件 -->
-		<u-popup :show="showCommentPopup" mode="bottom" @close="onCommentPopupClose" @open="onCommentPopupOpen">
-			<view class="card">
-				<view class="hbox">
-					<u-textarea :adjust-position="false" v-model="comment_value" :auto-height="true"
-						class="text-primary mr30"
-						:placeholder="`${!commentToReply?.commenter_name?'发表评论...':'回复给:' + commentToReply?.commenter_name}`"></u-textarea>
-					&nbsp;
-					<u-icon name="arrow-upward" color="#5ab8b3" size="40" @click="onConfirmComment"></u-icon>
-				</view>
-			</view>
-		</u-popup>
 	</view>
+	<view class="group-bottom">
+		<view class="group-fav" @click="toggleFavorite">
+			<u-icon :name="curQuiz.favorite?'star-fill':'star'" color="#5ab8b3" size="40"></u-icon>
+			<view class="text-primary">收藏</view>
+		</view>
+	</view>
+	<!-- 以后抽取出一个组件 -->
+	<u-popup :show="showCommentPopup" mode="bottom" @close="onCommentPopupClose" @open="onCommentPopupOpen">
+		<view class="card">
+			<view class="hbox">
+				<u-textarea :adjust-position="false" v-model="comment_value" :auto-height="true"
+					class="text-primary mr30"
+					:placeholder="`${!commentToReply?.commenter_name?'发表评论...':'回复给:' + commentToReply?.commenter_name}`"></u-textarea>
+				&nbsp;
+				<u-icon name="arrow-upward" color="#5ab8b3" size="40" @click="onConfirmComment"></u-icon>
+			</view>
+		</view>
+	</u-popup>
 </template>
 
 <script lang="ts" setup>
@@ -230,6 +235,7 @@
 	/** 刷新当前题目选项 */
 	const updateOptions = (quiz : any) => {
 		const { option_a, option_b, option_c, option_d, answer } = quiz;
+		console.log('updateOptions quiz', quiz);
 		checkboxList.value = Object.entries({ option_a, option_b, option_c, option_d }).map((v : string[]) => {
 			const id = v[0].charAt(v[0].length - 1).toUpperCase();
 			const option = {
@@ -334,6 +340,23 @@
 		})
 		// console.log('rsp_addComment', rsp_addComment);
 	}
+
+	// 下面关于收藏
+	const toggleFavorite = async () => {
+		// 1 存入数据库
+		const token = uni.getStorageSync('token');
+		const data = { token, quiz_id: curQuiz.value.id };
+		// console.log('toggleFavorite 入参', data);
+		const rsp : any = await wx.cloud.callFunction({
+			name: 'toggleFavorite',
+			data
+		});
+		// console.log('toggleFavorite rsp', rsp.result.favorite);
+		const { favorite } = rsp.result;
+		// 存入内存
+		curQuiz.value.favorite = favorite;
+		quizController.updateFavorite(curQuiz.value.id, favorite);
+	}
 </script>
 
 <style lang="scss" scoped>
@@ -420,5 +443,29 @@
 		justify-content: space-between;
 		align-items: center;
 		width: 100%;
+	}
+
+	.group-bottom {
+		width: 100vw;
+		height: 100rpx;
+		position: fixed;
+		background-color: white;
+		bottom: 0;
+		display: flex;
+		flex-direction: row;
+		justify-content: flex-end;
+		align-items: flex-start;
+		padding: 10rpx;
+
+		.group-fav {
+			display: flex;
+			flex-direction: row;
+			justify-content: space-evenly;
+			height: 50rpx;
+			align-items: center;
+			margin-right: 20rpx;
+			width: 120rpx;
+			// background-color: red;
+		}
 	}
 </style>

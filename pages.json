@@ -5,7 +5,6 @@
 		"^u-([^-].*)": "@/uni_modules/uview-plus/components/u-$1/u-$1.vue"
 	},
 	"tabBar": {
-		"iconfontSrc": "static/iconfont.ttf",
 		"color": "#000",
 		"selectedColor": "#5ab8b3",
 		"list": [{
