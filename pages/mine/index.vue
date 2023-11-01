@@ -94,13 +94,13 @@
 		const { avatarUrl: filePath } = e.detail;
 		const cloudPath = `commenter/${loginInfo.value.id}.jpg`;
 		const { fileID: url } = await wx.cloud.uploadFile({ cloudPath, filePath })
-		console.log('上传图片到云存储后', url);
+		// console.log('上传图片到云存储后', url);
 		loginInfo.value = { ...loginInfo.value, url };
 		addOrUpdateCommenter(loginInfo.value);
 	}
 
 	const onNameChange = (e) => {
-		console.log("onNameChange", e);
+		// console.log("onNameChange", e);
 		loginInfo.value = { ...loginInfo.value, name: e.detail.value };
 		addOrUpdateCommenter(loginInfo.value);
 	}
@@ -122,9 +122,8 @@
 	const login = async () => {
 		if (loggedIn.value) return;
 		const rsp = await getOpenId();
-		console.log('login rsp', rsp);
 		loginInfo.value = { ...loginInfo.value, ...rsp };
-		console.log('loginInfo', loginInfo.value);
+		// console.log('loginInfo', loginInfo.value);
 		loggedIn.value = true;
 		uni.showTabBar();
 

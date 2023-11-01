@@ -117,12 +117,13 @@
 		let list : IQuiz[] = [];
 		if (exerciseType === ExerciseType.Common) {
 			list = await getAllQuizs(evt.quizType);
+			// console.log('要做的所有题目', list);
 		} else if (exerciseType === ExerciseType.ErrCollection) {
 			list = await getErrorCollectonQuiz(evt.quizType);
-			console.log('要做的 ErrCollection 题目', list);
+			// console.log('要做的 ErrCollection 题目', list);
 		} else if (exerciseType === ExerciseType.Favorite) {
 			list = await getFavoriteQuiz(evt.quizType);
-			console.log('要做的 Favorite 题目', list);
+			// console.log('要做的 Favorite 题目', list);
 		}
 		if (list.length === 0) {
 			uni.showToast({
@@ -201,7 +202,7 @@
 
 	const onPrev = () => {
 		curQuiz.value = { ...quizController.goPreview(), submitted: false };
-		console.log('onPrev', curQuiz.value);
+		// console.log('onPrev', curQuiz.value);
 		updateQuiz(curQuiz.value);
 	};
 
@@ -223,7 +224,7 @@
 
 		if (nextQuiz !== null) {
 			curQuiz.value = { ...nextQuiz, submitted: false };
-			console.log('onNext', curQuiz.value);
+			// console.log('onNext', curQuiz.value);
 			updateQuiz(curQuiz.value);
 		}
 	};
@@ -321,7 +322,7 @@
 			commenter_url,
 			comment_list: [],
 		}
-		console.log('新的评论 UI 数据', comment)
+		// console.log('新的评论 UI 数据', comment)
 		if (!parent_id) {
 			// console.log("放到第一层")
 			commentListModel.value.push(comment);
