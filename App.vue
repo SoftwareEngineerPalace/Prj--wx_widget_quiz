@@ -23,5 +23,4 @@
 	@import "@/uni_modules/uview-plus/index.scss";
 	@import '@/style/normalize.scss';
 	@import '@/style/reset.scss';
-	// @import url('@/static/icon/iconfont.css')
 </style>
