@@ -36,7 +36,7 @@
 				@click="onNext"></button>
 
 			<button class="btn-primary" v-text="'回到首页'"
-				v-show="curExerciseType === ExerciseType.ErrCollection && curQuiz.submitted && !quizController.hasNext() "
+				v-show="curExerciseType !== ExerciseType.Common && curQuiz.submitted && !quizController.hasNext() "
 				@click="onNext"></button>
 		</view>
 
@@ -88,7 +88,7 @@
 	import { ICheckbox, IQuiz, quizNameDic, ExerciseType, IComment, ICommenter } from '../../common/common';
 	import queryString from 'query-string';
 	import { onLoad, onUnload } from '@dcloudio/uni-app';
-	import { getAllQuizs, getErrorCollectonQuiz } from '../../service';
+	import { getAllQuizs, getErrorCollectonQuiz, getFavoriteQuiz } from '../../service';
 
 	const quizType = ref("");        // 题目类型
 	const curExerciseType = ref("")  // 做题类型
@@ -119,6 +119,10 @@
 			list = await getAllQuizs(evt.quizType);
 		} else if (exerciseType === ExerciseType.ErrCollection) {
 			list = await getErrorCollectonQuiz(evt.quizType);
+			console.log('要做的 ErrCollection 题目', list);
+		} else if (exerciseType === ExerciseType.Favorite) {
+			list = await getFavoriteQuiz(evt.quizType);
+			console.log('要做的 Favorite 题目', list);
 		}
 		if (list.length === 0) {
 			uni.showToast({
@@ -154,7 +158,7 @@
 		}
 		if (curExerciseType.value === ExerciseType.Common) {
 			return sn !== 0 ? `${sn}/${count}.  ` : "";
-		} else if (curExerciseType.value === ExerciseType.ErrCollection) {
+		} else {
 			return sn !== 0 ? `${sn}. ` : "";
 		}
 	})
@@ -197,6 +201,7 @@
 
 	const onPrev = () => {
 		curQuiz.value = { ...quizController.goPreview(), submitted: false };
+		console.log('onPrev', curQuiz.value);
 		updateQuiz(curQuiz.value);
 	};
 
@@ -211,13 +216,14 @@
 			return;
 		}
 
-		if (!nextQuiz && curExerciseType.value === ExerciseType.ErrCollection) {
+		if (!nextQuiz && curExerciseType.value !== ExerciseType.Common) {
 			uni.navigateBack();
 			return;
 		}
 
 		if (nextQuiz !== null) {
 			curQuiz.value = { ...nextQuiz, submitted: false };
+			console.log('onNext', curQuiz.value);
 			updateQuiz(curQuiz.value);
 		}
 	};
@@ -229,13 +235,13 @@
 
 		commentListModel.value = [];
 
-		upadteComment(quiz?.id)
+		updateComment(quiz?.id)
 	}
 
 	/** 刷新当前题目选项 */
 	const updateOptions = (quiz : any) => {
 		const { option_a, option_b, option_c, option_d, answer } = quiz;
-		console.log('updateOptions quiz', quiz);
+		// console.log('updateOptions quiz', quiz);
 		checkboxList.value = Object.entries({ option_a, option_b, option_c, option_d }).map((v : string[]) => {
 			const id = v[0].charAt(v[0].length - 1).toUpperCase();
 			const option = {
@@ -250,7 +256,7 @@
 	}
 
 	/** 更新评论区 */
-	const upadteComment = async (quiz_id : string) => {
+	const updateComment = async (quiz_id : string) => {
 		// console.log("获取评论前 quiz_id", quiz_id)
 		const rsp : any = await wx.cloud.callFunction({
 			name: 'getComments',

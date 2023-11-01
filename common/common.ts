@@ -53,7 +53,7 @@ interface IData {
 enum ExerciseType {
 	Common = 'Common',
 	ErrCollection = 'ErrCollection',
-	Fav = 'Fav'
+	Favorite = 'Favorite',
 }
 
 interface IComment {

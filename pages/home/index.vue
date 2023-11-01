@@ -51,7 +51,7 @@
 	import { checkSession } from '../../common/utils';
 	import queryString from 'query-string';
 	import { onShow, onInit } from '@dcloudio/uni-app';
-	import { getAllQuizs, getErrorCollectonQuiz } from '../../service';
+	import { getAllQuizs, getErrorCollectonQuiz, getFavoriteQuiz } from '../../service';
 
 	const latestQuizIndex = ref(0);
 	const quizCount = ref(0);
@@ -189,11 +189,29 @@
 	}
 
 	/** 收藏夹做题 */
-	const startFavQuiz = () => {
-		uni.showToast({
-			title: "功能没开放",
-			duration: 1000
-		})
+	const startFavQuiz = async () => {
+		// 1 题目类型
+		const quizType = curQuizType.value;
+		
+		const list = await getFavoriteQuiz(quizType);
+		// console.log('startErrCollection', { list });
+		if (list.length === 0) {
+			uni.showToast({
+				title: "还没有收藏",
+				duration: 1000
+			})
+			return;
+		}
+		
+		// 2 最后一个题目序号
+		const latest_quiz_index = -1;
+		
+		// 传给下一页的数据
+		// console.log('continueExercise', { quizType, latest_quiz_index })
+		const queryStr = queryString.stringify({ quizType, exerciseType: ExerciseType.Favorite, latest_quiz_index });
+		
+		const url = `/pages/quiz/index?${queryStr}`;
+		uni.navigateTo({ url })
 	}
 </script>
 
