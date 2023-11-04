@@ -12,7 +12,7 @@
 			<u-line v-if="loggedIn" class="line" color="#dddddd"></u-line>
 
 			<view class="hbox" style="padding-top: 30rpx; justify-content: space-evenly;">
-				<view class="vbox" v-for="(item) in commonUseSettings" :key="item.id">
+				<view class="vbox" v-for="(item) in commonUseSettings" :key="item.id" @click="waiting">
 					<u-icon :name="item.icon" color="#bbbbbb" size="50"></u-icon>
 					<view>{{item.label}}</view>
 				</view>
@@ -22,7 +22,7 @@
 		<view class="card">
 			<view class="hbox" style="padding:20rpx; justify-content: space-between; border-bottom: 1px solid #eeeeee;"
 				v-for="(item) in notCommonUseSettings" :key="item.id">
-				<view class="hbox">
+				<view class="hbox" @click="waiting">
 					<u-icon custom-style="margin-right:30rpx" :name="item.icon" color="#bbbbbb" size="50"></u-icon>
 					<view class='label'>{{ item.label }}</view>
 				</view>
@@ -52,7 +52,7 @@
 	// uni.login 获取 weixin 获取 code
 	// 调用后台的 login，用 code 获取 token 和 openid
 
-	import { getOpenId, getProfile, checkSession } from '../../common/utils';
+	import { getOpenId, getProfile, checkSession, waiting } from '../../common/utils';
 	import { loginInfo_default, ICommenter } from '../../common/common';
 	import { addOrUpdateCommenter } from '../../service'
 	

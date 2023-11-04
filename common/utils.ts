@@ -10,6 +10,13 @@ const generateUUID = () => {
 	return uuid;
 }
 
+const waiting = () => {
+	uni.showToast({
+		title: "暂未开放",
+		duration: 1000
+	})
+}
+
 /** 格式化时间 */
 const formatTime = (totalMinutes : number) => {
 	let hours = Math.floor(totalMinutes / 60);
@@ -135,4 +142,5 @@ export {
 	checkSession,
 	quizTypeArray,
 	formatTime,
+	waiting
 }
