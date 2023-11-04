@@ -67,10 +67,11 @@
 		</view>
 	</view>
 	<!-- 以后抽取出一个组件 -->
-	<u-popup :show="showCommentPopup" mode="bottom" @close="onCommentPopupClose" @open="onCommentPopupOpen">
+	<u-popup :show="showCommentPopup" :custom-style="{ paddingBottom: commentPopupBottom}" mode="bottom"
+		@close="onCommentPopupClose" @open="onCommentPopupOpen">
 		<view class="card">
 			<view class="hbox">
-				<u-textarea :adjust-position="false" v-model="comment_value" :auto-height="true"
+				<u-textarea :show-confirm-bar="false" :focus="inputFocus" confirm-type="发送" :adjust-position="false" v-model="comment_value" :auto-height="true"
 					class="text-primary mr30"
 					:placeholder="`${!commentToReply?.commenter_name?'发表评论...':'回复给:' + commentToReply?.commenter_name}`"></u-textarea>
 				&nbsp;
@@ -97,10 +98,12 @@
 	const checkboxList = ref([]);    // 当前4个选项
 	const userAnswer = ref('');      // 用户的答案
 	const quizList = ref([]);
+	const commentPopupBottom = ref('');
 	const _1stDepthCommentCount = computed(() => commentListModel.value.length)
+	const inputFocus = ref();
 
 	onLoad(async (evt : { quizType : string, exerciseType : string, latest_quiz_index : string }) => {
-		// console.log('quiz onLoad', evt);
+		console.log('quiz index onLoad');
 		const { latest_quiz_index, exerciseType } = evt;
 		curExerciseType.value = exerciseType;
 		wx.cloud.init({
@@ -142,9 +145,17 @@
 		quizController.setCurQuizIndex(parseInt(latest_quiz_index));
 
 		onNext();
+
+		uni.onKeyboardHeightChange(onKeyboardHeightChange);
 	});
 
+	const onKeyboardHeightChange = (value) => {
+		console.log('onKeyboardHeightChange', value);
+		commentPopupBottom.value = `${value.height}px`;
+	}
+
 	onUnload(() => {
+		uni.offKeyboardHeightChange(onKeyboardHeightChange);
 		quizController.setQuizList([]);
 	})
 
@@ -282,10 +293,11 @@
 
 	const onCommentPopupClose = () => {
 		showCommentPopup.value = false;
+		inputFocus.value = false;
 	}
 
 	const onCommentPopupOpen = () => {
-
+		inputFocus.value = true;
 	}
 
 	/** 要回复的评论 vo */
@@ -447,9 +459,9 @@
 	}
 
 
-	view {
-		font-size: 28upx;
-	}
+	// view {
+	// 	font-size: 28upx;
+	// }
 
 	.comment-title-row {
 		display: flex;
@@ -459,6 +471,7 @@
 		width: 100%;
 	}
 
+	// 包含收藏按钮的 group
 	.group-bottom {
 		width: 100vw;
 		height: 100rpx;
