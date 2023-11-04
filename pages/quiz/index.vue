@@ -340,7 +340,7 @@
 			// console.log('list', list);
 		}
 
-		// console.log('4 把 comment 放到 comment 数据库', comment);s
+		// console.log('4 把 comment 放到 comment 数据库', comment);
 		const rsp_addComment = await wx.cloud.callFunction({
 			name: 'addComment',
 			data: comment
@@ -371,14 +371,21 @@
 		width: 100vw;
 		height: 100vh;
 		background-color: #eeeeee;
+		display: flex;
+		flex-direction: column;
 
 		.quiz-wrapper {
 			width: 100vw;
 			height: 100vh;
+			// border: 1px solid red;
+			overflow-y: auto;
+			flex-grow: 1;
+			padding-bottom: 130rpx;
 			display: flex;
 			flex-direction: column;
 			justify-content: flex-start;
 			background-color: $uni-bg-color-grey;
+			// border: 1px solid red;
 
 			.quiz__group-title {
 				font-size: 35rpx;
