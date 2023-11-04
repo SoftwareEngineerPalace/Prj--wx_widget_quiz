@@ -69,7 +69,6 @@ class QuizController {
 	updateFavorite = (id : string, favorite : boolean) => {
 		const targetQuiz : IQuiz = this._quizList.find((quiz : IQuiz) => quiz.id === id);
 		targetQuiz.favorite = favorite;
-		console.log("updateFavorite 后 id=", id, "favorite=", favorite)
 	}
 
 }

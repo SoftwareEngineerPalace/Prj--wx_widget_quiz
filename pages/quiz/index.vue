@@ -63,7 +63,7 @@
 	<view class="group-bottom">
 		<view class="group-fav" @click="toggleFavorite">
 			<u-icon :name="curQuiz.favorite?'star-fill':'star'" color="#5ab8b3" size="40"></u-icon>
-			<view class="text-primary">收藏</view>
+			<view class="text-primary favorite">{{ curQuiz.favorite ? '取消收藏':'收藏'}}</view>
 		</view>
 	</view>
 	<!-- 以后抽取出一个组件 -->
@@ -358,7 +358,7 @@
 			name: 'toggleFavorite',
 			data
 		});
-		// console.log('toggleFavorite rsp', rsp.result.favorite);
+		console.log('toggleFavorite rsp', rsp);
 		const { favorite } = rsp.result;
 		// 存入内存
 		curQuiz.value.favorite = favorite;
@@ -467,12 +467,18 @@
 		.group-fav {
 			display: flex;
 			flex-direction: row;
-			justify-content: space-evenly;
+			justify-content: flex-start;
 			height: 50rpx;
 			align-items: center;
 			margin-right: 20rpx;
 			width: 120rpx;
+			margin-right: 50rpx;
+
 			// background-color: red;
+			.favorite {
+				margin-left: 10rpx;
+				padding-top: 4rpx;
+			}
 		}
 	}
 </style>
