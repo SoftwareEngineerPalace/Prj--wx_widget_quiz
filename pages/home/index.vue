@@ -14,7 +14,7 @@
 		<view class="card mb30">
 			<view class="text-primary mb20" style="align-self: flex-start;">继续</view>
 			<view class="text-sub mb20" style="align-self: flex-start;">从上次中断的地方继续练习</view>
-			<button class="btn-primary" @click="$u.debounce(continueExercise, 500)">继续练习</button>
+			<button class="btn-primary" @click="onBtnContinue">继续练习</button>
 		</view>
 
 		<!-- 3 回顾练习 -->
@@ -44,32 +44,27 @@
 </template>
 
 <script lang="ts" setup>
-	import { debounce } from 'lodash'
+	import { throttle } from 'lodash';
 	import { ExerciseType, quizNameDic, quizTypeArray } from '../../common/common';
 	import { computed, onMounted, ref } from 'vue';
 
 	import { checkSession } from '../../common/utils';
 	import queryString from 'query-string';
-	import { onShow, onInit } from '@dcloudio/uni-app';
-	import { getAllQuizs, getErrorCollectonQuiz, getFavoriteQuiz } from '../../service';
+	import { onShow, onLoad, onInit } from '@dcloudio/uni-app';
+	import { getAllQuiz, getErrorCollectonQuiz, getFavoriteQuiz } from '../../service';
 
 	const latestQuizIndex = ref(0);
 	const quizCount = ref(0);
 	const userOpenId = ref('');
 	const curQuizType = ref('js');
 	const showSelectPopup = ref(false);
+	const quizList = ref();
 
-	onShow(() => {
-		updateOnQuizTypeChanged();
-		updateUI();
-		// console.log('home onShow');
-	})
-
-	// 这里不要用 onMounted
-	onMounted(async () => {
+	// 只更新一次
+	onLoad(async () => {
 		const hasSession = await checkSession();
 		const token = uni.getStorageSync('token');
-		// console.log('home onMounted', { hasSession, token })
+		console.log('home onLoad', { hasSession, token })
 		if (!hasSession || !token) {
 			uni.switchTab({
 				url: '/pages/mine/index'
@@ -87,6 +82,51 @@
 		}
 	})
 
+	// 每次展示都会调用
+	onShow(() => {
+		console.log("home onShow")
+		initData()
+	})
+
+	const initData = () => {
+		// 1 进度
+		updateProcess();
+		// 2 全部题
+		getAllQuizList();
+		// 2 错题本
+		getErrorQuizList();
+		// 3 收藏
+		getFavoriteQuizList();
+	}
+
+	/** 题库发生变化 */
+	const onSelectQuizType = async (evt : any) => {
+		console.log("onSelectQuizType", evt);
+		showSelectPopup.value = false;
+		const quizType = evt.currentTarget.dataset.id;
+		curQuizType.value = quizType;
+		initData();
+	};
+
+	const getAllQuizList = async () => {
+		const list = await getAllQuiz(curQuizType.value);
+		(getApp().globalData as any).quizList = list;
+		console.log('getAllQuizList', list);
+		quizCount.value = list.length;
+	}
+
+	const getErrorQuizList = async () => {
+		const list = await getErrorCollectonQuiz(curQuizType.value);
+		console.log('getErrorQuizList', list);
+		(getApp().globalData as any).errList = list;
+	}
+
+	const getFavoriteQuizList = async () => {
+		const list = await getFavoriteQuiz(curQuizType.value);
+		console.log('getFavoriteQuizList', list);
+		(getApp().globalData as any).favList = list;
+	}
+
 	const processDesc = computed(() => {
 		if (quizCount.value) {
 			return `练习进度 ${latestQuizIndex.value}/${quizCount.value}`;
@@ -95,25 +135,17 @@
 		}
 	})
 
-	const updateUI = () => {
-		const token = uni.getStorageSync('token');
-		const [user_open_id] = token.split("__");
-		userOpenId.value = user_open_id;
-	};
-
-	/** 题目类型变化后，更新数据 */
-	const updateOnQuizTypeChanged = async () => {
-		// 用用户id和题目类型拿进度
+	/** 更新进度 */
+	const updateProcess = async () => {
+		// 用用户 id 和题目类型拿进度
 		const token = uni.getStorageSync('token');
 		const rsp : any = await wx.cloud.callFunction({
 			name: 'getProcess',
 			data: { token, quiz_type: curQuizType.value }
 		});
-		// console.log('index updateOnQuizTypeChanged 获得题目进度', rsp.result)
-		const { latest_quiz_sn, quiz_count } = rsp.result;
+		const { latest_quiz_sn } = rsp.result;
 		latestQuizIndex.value = latest_quiz_sn;
-		quizCount.value = quiz_count;
-	};
+	}
 
 	const onClickTitle = () => {
 		showSelectPopup.value = true;
@@ -123,41 +155,20 @@
 		showSelectPopup.value = false;
 	};
 
-	const onSelectQuizType = (evt : any) => {
-		// console.log("onSelectQuizType", evt);
-		showSelectPopup.value = false;
-		const quizType = evt.currentTarget.dataset.id;
-		curQuizType.value = quizType;
-		updateOnQuizTypeChanged();
-	};
+	// const onBtnContinue = () => {
+	// 	console.time('onBtnContinue')
+	// 	continueExercise();
+	// }
+
+	// const onBtnContinueThrottle = throttle(() => {
+	// 	continueExercise();
+	// }, 2000);
 
 	/** 继续练习 */
-	const continueExercise = async () => {
+	const onBtnContinue = async () => {
 		// 1 题目类型
-		const quizType = curQuizType.value;
-
-		const list = await getAllQuizs(quizType);
-		// console.log("continueExercise 加载到的题目的数目", list[2]);
-		if (list.length === 0) {
-			uni.showToast({
-				title: "还没有题目",
-				duration: 1000
-			})
-			return;
-		}
-
-		// 2 最后一个题目序号
-		const token = uni.getStorageSync('token');
-		const rsp : any = await wx.cloud.callFunction({
-			name: 'getProcess',
-			data: { token, quiz_type: quizType }
-		});
-		const latest_quiz_index = rsp.result.latest_quiz_sn - 1;
-
-		// 传给下一页的数据
-		// console.log('continueExercise', { quizType, latest_quiz_index })
-		const queryStr = queryString.stringify({ quizType, exerciseType: ExerciseType.Common, latest_quiz_index });
-
+		const queryStr = queryString.stringify({ quizType: curQuizType.value, exerciseType: ExerciseType.Common, latest_quiz_index: latestQuizIndex.value - 1 });
+		console.time('navigateTo')
 		const url = `/pages/quiz/index?${queryStr}`;
 		uni.navigateTo({ url })
 	};
@@ -167,8 +178,7 @@
 		// 1 题目类型
 		const quizType = curQuizType.value;
 
-		const list = await getErrorCollectonQuiz(quizType);
-		// console.log('startErrCollection', { list });
+		const list = getApp().globalData.errList;
 		if (list.length === 0) {
 			uni.showToast({
 				title: "还没有错题",
@@ -177,12 +187,8 @@
 			return;
 		}
 
-		// 2 最后一个题目序号
-		const latest_quiz_index = -1;
-
 		// 传给下一页的数据
-		// console.log('continueExercise', { quizType, latest_quiz_index })
-		const queryStr = queryString.stringify({ quizType, exerciseType: ExerciseType.ErrCollection, latest_quiz_index });
+		const queryStr = queryString.stringify({ quizType, exerciseType: ExerciseType.ErrCollection, latest_quiz_index: -1 });
 
 		const url = `/pages/quiz/index?${queryStr}`;
 		uni.navigateTo({ url })
@@ -192,7 +198,7 @@
 	const startFavQuiz = async () => {
 		// 1 题目类型
 		const quizType = curQuizType.value;
-		
+
 		const list = await getFavoriteQuiz(quizType);
 		// console.log('startErrCollection', { list });
 		if (list.length === 0) {
@@ -202,14 +208,10 @@
 			})
 			return;
 		}
-		
-		// 2 最后一个题目序号
-		const latest_quiz_index = -1;
-		
+
 		// 传给下一页的数据
-		// console.log('continueExercise', { quizType, latest_quiz_index })
-		const queryStr = queryString.stringify({ quizType, exerciseType: ExerciseType.Favorite, latest_quiz_index });
-		
+		const queryStr = queryString.stringify({ quizType, exerciseType: ExerciseType.Favorite, latest_quiz_index: -1 });
+
 		const url = `/pages/quiz/index?${queryStr}`;
 		uni.navigateTo({ url })
 	}

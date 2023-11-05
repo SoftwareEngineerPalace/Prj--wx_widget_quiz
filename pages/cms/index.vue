@@ -48,20 +48,16 @@
 
 	onLoad(async (evt : { quizType : string }) => {
 		dbName.value = evt.quizType;
-		// console.log("onLoad", evt);
 		uni.setNavigationBarTitle({ title: `${quizNameDic.get(evt.quizType)} 后台` });
-		wx.cloud.init({
-			env: "quiz-0gb2aw2vb2850af4"
-		});
 		const data : IQuiz[] = await getAllQuiz(evt.quizType);
 		quizList.value.push(...data);
 	});
 
 	// 获取全部题目
-	const getAllQuiz = async (dbName : string) => {
+	const getAllQuiz = async (quiz_type : string) => {
 		const rsp : any = await wx.cloud.callFunction({
 			name: 'getAllQuiz',
-			data: { dbName }
+			data: { quiz_type }
 		})
 		return rsp.result.data;
 	};

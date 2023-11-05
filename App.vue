@@ -13,7 +13,10 @@
 			// console.log('App Hide')
 		},
 		globalData: {
-			loginInfo: {}
+			loginInfo: {},
+			quizList: [], // 全部题目
+			errList: [], // 错题本
+			favList: [] // 收藏
 		},
 	}
 </script>

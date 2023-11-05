@@ -71,8 +71,8 @@
 		@close="onCommentPopupClose" @open="onCommentPopupOpen">
 		<view class="card">
 			<view class="hbox">
-				<u-textarea :show-confirm-bar="false" :focus="inputFocus" confirm-type="发送" :adjust-position="false" v-model="comment_value" :auto-height="true"
-					class="text-primary mr30"
+				<u-textarea :show-confirm-bar="false" :focus="inputFocus" confirm-type="发送" :adjust-position="false"
+					v-model="comment_value" :auto-height="true" class="text-primary mr30"
 					:placeholder="`${!commentToReply?.commenter_name?'发表评论...':'回复给:' + commentToReply?.commenter_name}`"></u-textarea>
 				&nbsp;
 				<u-icon name="arrow-upward" color="#5ab8b3" size="40" @click="onConfirmComment"></u-icon>
@@ -89,7 +89,6 @@
 	import { ICheckbox, IQuiz, quizNameDic, ExerciseType, IComment, ICommenter } from '../../common/common';
 	import queryString from 'query-string';
 	import { onLoad, onUnload } from '@dcloudio/uni-app';
-	import { getAllQuizs, getErrorCollectonQuiz, getFavoriteQuiz } from '../../service';
 
 	const quizType = ref("");        // 题目类型
 	const curExerciseType = ref("")  // 做题类型
@@ -102,14 +101,11 @@
 	const _1stDepthCommentCount = computed(() => commentListModel.value.length)
 	const inputFocus = ref();
 
-	onLoad(async (evt : { quizType : string, exerciseType : string, latest_quiz_index : string }) => {
-		console.log('quiz index onLoad');
-		const { latest_quiz_index, exerciseType } = evt;
-		curExerciseType.value = exerciseType;
-		wx.cloud.init({
-			env: "quiz-0gb2aw2vb2850af4"
-		});
+	onLoad(async (evt : { quizType : string, exerciseType : string, latest_quiz_index : number }) => {
+		console.timeEnd('navigateTo');
+		const { exerciseType, latest_quiz_index } = evt;
 		// 1 设置类型
+		curExerciseType.value = exerciseType;
 		quizType.value = evt.quizType;
 
 		// 2 设置 bar title
@@ -119,14 +115,11 @@
 		// 3 加载所有题目
 		let list : IQuiz[] = [];
 		if (exerciseType === ExerciseType.Common) {
-			list = await getAllQuizs(evt.quizType);
-			// console.log('要做的所有题目', list);
+			list = (getApp().globalData as any).quizList;
 		} else if (exerciseType === ExerciseType.ErrCollection) {
-			list = await getErrorCollectonQuiz(evt.quizType);
-			// console.log('要做的 ErrCollection 题目', list);
+			list = (getApp().globalData as any).errList;
 		} else if (exerciseType === ExerciseType.Favorite) {
-			list = await getFavoriteQuiz(evt.quizType);
-			// console.log('要做的 Favorite 题目', list);
+			list = (getApp().globalData as any).favList;
 		}
 		if (list.length === 0) {
 			uni.showToast({
@@ -203,12 +196,11 @@
 			quiz_count: quizCount,
 			exerciseType: curExerciseType.value
 		};
-		// console.log("onSubmit", data);
+		// data 里的 quiz_count 可能没用，待删
 		await wx.cloud.callFunction({
 			name: 'answer',
 			data
 		});
-		// console.log('答题结果', rsp)
 	};
 
 	const onPrev = () => {
@@ -235,14 +227,12 @@
 
 		if (nextQuiz !== null) {
 			curQuiz.value = { ...nextQuiz, submitted: false };
-			// console.log('onNext', curQuiz.value);
 			updateQuiz(curQuiz.value);
 		}
 	};
 
 	/** 更新题目选项和评论区 */
 	const updateQuiz = (quiz : any) => {
-		// console.log('upadteQuiz', quiz);
 		updateOptions(quiz);
 
 		commentListModel.value = [];
@@ -253,7 +243,6 @@
 	/** 刷新当前题目选项 */
 	const updateOptions = (quiz : any) => {
 		const { option_a, option_b, option_c, option_d, answer } = quiz;
-		// console.log('updateOptions quiz', quiz);
 		checkboxList.value = Object.entries({ option_a, option_b, option_c, option_d }).map((v : string[]) => {
 			const id = v[0].charAt(v[0].length - 1).toUpperCase();
 			const option = {
@@ -269,12 +258,12 @@
 
 	/** 更新评论区 */
 	const updateComment = async (quiz_id : string) => {
-		// console.log("获取评论前 quiz_id", quiz_id)
+		console.time('getComments database')
 		const rsp : any = await wx.cloud.callFunction({
 			name: 'getComments',
 			data: { quiz_id }
 		});
-		// console.log('upadteComment 获取到的评论', rsp);
+		console.timeEnd('getComments database')
 		if (rsp.result.length === 0) return;
 		const list = rsp.result;
 		addCommenterParam(list);

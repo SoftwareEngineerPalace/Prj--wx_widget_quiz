@@ -12,8 +12,6 @@ class QuizController {
 
 	/** sn 是题目编码 从1开始 是固定的*/
 	public getCurQuizSN() {
-		// console.log("quizController getCurQuizSN this._curQuizIndex=", this._curQuizIndex);
-		// console.log("quizController getCurQuizSN this._quizList=", this._quizList.length);
 		return this._quizList?.[this._curQuizIndex]?.sn || ''; // 空字符串表示没有取到数据
 	}
 
@@ -65,7 +63,7 @@ class QuizController {
 		}
 	}
 
-	/** 更新题目的 first_comment_id by sn */
+	/** 更新内存中的收藏数据 */
 	updateFavorite = (id : string, favorite : boolean) => {
 		const targetQuiz : IQuiz = this._quizList.find((quiz : IQuiz) => quiz.id === id);
 		targetQuiz.favorite = favorite;

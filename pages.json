@@ -39,8 +39,7 @@
 			"style": {
 				"navigationBarTitleText": "",
 				"enablePullDownRefresh": false,
-				"navigationBarBackgroundColor": "#eeeeee",
-				"softinputNavBar": "none"
+				"navigationBarBackgroundColor": "#eeeeee"
 			}
 		}, {
 			"path": "pages/summary/index",
@@ -69,8 +68,7 @@
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "uni-app",
 		"navigationBarBackgroundColor": "#F8F8F8",
-		"backgroundColor": "#F8F8F8",
-		"softinputNavBar": "none"
+		"backgroundColor": "#F8F8F8"
 	},
 	"uniIdRouter": {}
 }

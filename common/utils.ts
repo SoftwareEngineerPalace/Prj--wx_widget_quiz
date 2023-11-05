@@ -116,9 +116,11 @@ const preOrder = (comment : IComment, targetId : string) => {
 }
 
 const addCommenterParam = (comments : any[]) => {
+	console.time('addCommenterParam');
 	comments.forEach(cmt => {
 		traversal(cmt)
 	})
+	console.timeEnd('addCommenterParam');
 }
 
 const traversal = (comment : IComment) => {

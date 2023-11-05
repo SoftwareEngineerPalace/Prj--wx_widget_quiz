@@ -229,34 +229,38 @@
 	};
 
 	const update = () => {
-		console.log("update");
+		// console.log("update");
 		list.value = toRaw(list.value).sort((a : { priority : number }, b : { priority : number }) => b.priority - a.priority);
-		setTimeout(() => {
-			updateDeadline();
-			save();
-		}, 300);
+		// setTimeout(() => {
+		// 	updateDeadline();
+		// 	save();
+		// }, 300);
+		updateDeadline();
+		save();
 	};
 
 	/** 更新 deadline */
 	const updateDeadline = () => {
-		console.log("updateDeadline start");
+		// console.log("updateDeadline start");
 		let pre = initTime.value;
 		list.value = toRaw(list.value).map((cur : any) => {
 			cur.deadline = formatTime(pre + cur.duration);
 			pre += cur.duration;
 			return cur;
 		});
-		console.log("updateDeadline", toRaw(list.value));
+		// console.log("updateDeadline", toRaw(list.value));
 	};
 
 	/** 保存 */
 	const save = async () => {
 		const _list = toRaw(list.value);
-		console.log("准备保存的数据", _list);
+		console.log("start addTasks", _list);
+		console.time('addTasks')
 		const rsp : any = await wx.cloud.callFunction({
-			name: 'addTask',
+			name: 'addTasks',
 			data: { list: _list }
 		})
+		console.timeEnd('addTasks')
 		console.log('保存数据后的回调', rsp);
 		const result = rsp.errMsg === "cloud.callFunction:ok";
 		if (result) {

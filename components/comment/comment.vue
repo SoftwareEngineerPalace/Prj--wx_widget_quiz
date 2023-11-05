@@ -58,7 +58,7 @@
 	}
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 	.comment {
 		border-top: 1rpx solid #eeeeee;
 		padding-top: 20rpx;

@@ -1,31 +1,28 @@
-const getAllQuizs = async (dbName : string) => {
+const getAllQuiz = async (quiz_type : string) => {
 	const token = uni.getStorageSync('token');
-	const data = { dbName, token }
-	// console.log("getAllQuizs 入参", data);
+	// console.time('db getAllQuiz');
 	const rsp : any = await wx.cloud.callFunction({
 		name: 'getAllQuiz',
-		data
+		data: { quiz_type, token }
 	});
-	// console.log("getAllQuizs 返回", rsp);
-	return rsp.result;
+	// console.timeEnd('db getAllQuiz');
+	return rsp.result.list;
 };
 
 const getErrorCollectonQuiz = async (quiz_type : string) => {
 	const token = uni.getStorageSync('token');
 	const data = { quiz_type, token };
-	// console.log("getErrorCollectonQuiz 入参", data);
 	const rsp : any = await wx.cloud.callFunction({
 		name: 'getErrorCollectonQuiz',
 		data
 	});
-	// console.log("getErrorCollectonQuiz 返回", rsp);
+	console.log('getErrorCollectonQuiz', rsp);
 	return rsp.result;
 }
 
 const getFavoriteQuiz = async (quiz_type : string) => {
 	const token = uni.getStorageSync('token');
 	const data = { quiz_type, token };
-	// console.log("getFavoriteQuiz", { data });
 	const rsp : any = await wx.cloud.callFunction({
 		name: 'getFavoriteQuiz',
 		data
@@ -44,4 +41,4 @@ const addOrUpdateCommenter = async (data : any) => {
 	})
 }
 
-export { getAllQuizs, getErrorCollectonQuiz, addOrUpdateCommenter, getFavoriteQuiz }
+export { getAllQuiz, getErrorCollectonQuiz, addOrUpdateCommenter, getFavoriteQuiz }
