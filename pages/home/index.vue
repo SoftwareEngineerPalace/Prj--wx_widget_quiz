@@ -21,8 +21,8 @@
 		<view class="card mb30">
 			<view class="text-primary mb20" style="align-self: flex-start;">回顾练习</view>
 			<view class="text-sub mb20" style="align-self: flex-start;">练习错题本 / 收藏夹中的题目</view>
-			<button class="btn-primary mb20" @click="$u.debounce(startErrCollection, 500)">错题练习</button>
-			<button class="btn-primary" @click="$u.debounce(startFavQuiz, 500)">收藏夹练习</button>
+			<button class="btn-primary mb20" @click="startErrCollection">错题练习</button>
+			<button class="btn-primary" @click="startFavQuiz">收藏夹练习</button>
 		</view>
 
 		<!-- <view class="card">
@@ -64,7 +64,7 @@
 	onLoad(async () => {
 		const hasSession = await checkSession();
 		const token = uni.getStorageSync('token');
-		console.log('home onLoad', { hasSession, token })
+		// console.log('home onLoad', { hasSession, token })
 		if (!hasSession || !token) {
 			uni.switchTab({
 				url: '/pages/mine/index'
@@ -84,7 +84,7 @@
 
 	// 每次展示都会调用
 	onShow(() => {
-		console.log("home onShow")
+		// console.log("home onShow")
 		initData()
 	})
 
@@ -101,7 +101,7 @@
 
 	/** 题库发生变化 */
 	const onSelectQuizType = async (evt : any) => {
-		console.log("onSelectQuizType", evt);
+		// console.log("onSelectQuizType", evt);
 		showSelectPopup.value = false;
 		const quizType = evt.currentTarget.dataset.id;
 		curQuizType.value = quizType;
@@ -111,19 +111,16 @@
 	const getAllQuizList = async () => {
 		const list = await getAllQuiz(curQuizType.value);
 		(getApp().globalData as any).quizList = list;
-		console.log('getAllQuizList', list);
 		quizCount.value = list.length;
 	}
 
 	const getErrorQuizList = async () => {
 		const list = await getErrorCollectonQuiz(curQuizType.value);
-		console.log('getErrorQuizList', list);
 		(getApp().globalData as any).errList = list;
 	}
 
 	const getFavoriteQuizList = async () => {
 		const list = await getFavoriteQuiz(curQuizType.value);
-		console.log('getFavoriteQuizList', list);
 		(getApp().globalData as any).favList = list;
 	}
 
@@ -155,15 +152,6 @@
 		showSelectPopup.value = false;
 	};
 
-	// const onBtnContinue = () => {
-	// 	console.time('onBtnContinue')
-	// 	continueExercise();
-	// }
-
-	// const onBtnContinueThrottle = throttle(() => {
-	// 	continueExercise();
-	// }, 2000);
-
 	/** 继续练习 */
 	const onBtnContinue = async () => {
 		// 1 题目类型
@@ -175,6 +163,7 @@
 
 	/** 错题本 */
 	const startErrCollection = async () => {
+		console.time('navigateTo')
 		// 1 题目类型
 		const quizType = curQuizType.value;
 
@@ -186,20 +175,19 @@
 			})
 			return;
 		}
-
 		// 传给下一页的数据
 		const queryStr = queryString.stringify({ quizType, exerciseType: ExerciseType.ErrCollection, latest_quiz_index: -1 });
-
 		const url = `/pages/quiz/index?${queryStr}`;
 		uni.navigateTo({ url })
 	}
 
 	/** 收藏夹做题 */
 	const startFavQuiz = async () => {
+		console.time('navigateTo')
 		// 1 题目类型
 		const quizType = curQuizType.value;
 
-		const list = await getFavoriteQuiz(quizType);
+		const list = getApp().globalData.favList;
 		// console.log('startErrCollection', { list });
 		if (list.length === 0) {
 			uni.showToast({
@@ -211,7 +199,6 @@
 
 		// 传给下一页的数据
 		const queryStr = queryString.stringify({ quizType, exerciseType: ExerciseType.Favorite, latest_quiz_index: -1 });
-
 		const url = `/pages/quiz/index?${queryStr}`;
 		uni.navigateTo({ url })
 	}

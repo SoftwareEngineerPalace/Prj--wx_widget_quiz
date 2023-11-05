@@ -481,12 +481,12 @@
 			align-items: center;
 			margin-right: 20rpx;
 			width: 120rpx;
-			margin-right: 50rpx;
+			margin-right: 70rpx;
 
 			// background-color: red;
 			.favorite {
 				margin-left: 10rpx;
-				padding-top: 4rpx;
+				// padding-top: 2rpx;
 			}
 		}
 	}

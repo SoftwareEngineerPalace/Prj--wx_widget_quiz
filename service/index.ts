@@ -16,7 +16,6 @@ const getErrorCollectonQuiz = async (quiz_type : string) => {
 		name: 'getErrorCollectonQuiz',
 		data
 	});
-	console.log('getErrorCollectonQuiz', rsp);
 	return rsp.result;
 }
 
