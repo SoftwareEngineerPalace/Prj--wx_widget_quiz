@@ -351,18 +351,15 @@
 
 	// 下面关于收藏
 	const toggleFavorite = async () => {
-		// 1 存入数据库
+		// 1 更新当前按钮
+		curQuiz.value.favorite = !curQuiz.value.favorite;
+		// 2 存入数据库
 		const token = uni.getStorageSync('token');
-		const data = { token, quiz_id: curQuiz.value.id };
-		// console.log('toggleFavorite 入参', data);
-		const rsp : any = await wx.cloud.callFunction({
+		const { result: favorite } = await wx.cloud.callFunction({
 			name: 'toggleFavorite',
-			data
+			data: { token, quiz_id: curQuiz.value.id }
 		});
-		console.log('toggleFavorite rsp', rsp);
-		const { favorite } = rsp.result;
-		// 存入内存
-		curQuiz.value.favorite = favorite;
+		// 3 存入内存
 		quizController.updateFavorite(curQuiz.value.id, favorite);
 	}
 </script>
