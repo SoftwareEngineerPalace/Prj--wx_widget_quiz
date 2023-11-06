@@ -388,7 +388,7 @@
 	const onCommentLongPress = async (comment : IComment) => {
 		const { commenter_id, exist } = comment;
 		const open_user_id = getApp().globalData.loginInfo.id;
-		if (comment.commenter_id !== open_user_id || !exist) return;
+		if (!(comment.commenter_id === open_user_id && exist)) return; // 自己的且存在的才可以被删
 		commentIdToBeDeleted.value = comment.id;
 		showDeletePopup.value = true;
 	}
