@@ -55,8 +55,8 @@
 				</view>
 			</view>
 			<!-- 不明白为什么这里有 style="width: 100%;" -->
-			<comment v-for="(c) in commentListModel" style="width: 100%;" :key="c.id" :vo="c" @reply="onReplyComment">
-
+			<comment v-for="(c) in commentListModel" style="width: 100%;" :key="c.id" :vo="c" @reply="onReplyComment"
+				@longPressComment="onCommentLongPress">
 			</comment>
 		</view>
 	</view>
@@ -68,7 +68,7 @@
 	</view>
 	<!-- 以后抽取出一个组件 -->
 	<u-popup :show="showCommentPopup" :custom-style="{ paddingBottom: commentPopupBottom}" mode="bottom"
-		@close="onCommentPopupClose" @open="onCommentPopupOpen">
+		@close="onCommentPopupClose" @open="onCommentPopupOpen" :close-on-click-overlay="true">
 		<view class="card">
 			<view class="hbox">
 				<u-textarea :show-confirm-bar="false" :focus="inputFocus" confirm-type="发送" :adjust-position="false"
@@ -77,6 +77,13 @@
 				&nbsp;
 				<u-icon name="arrow-upward" color="#5ab8b3" size="40" @click="onConfirmComment"></u-icon>
 			</view>
+		</view>
+	</u-popup>
+	<!-- 以后抽取出一个组件 -->
+	<u-popup :show="showDeletePopup" mode="bottom" @close="onDeletePopupClose" @open="onDeletePopupOpen"
+		:close-on-click-overlay="true">
+		<view class="card" @click="onDeleteComment">
+			删除
 		</view>
 	</u-popup>
 </template>
@@ -100,6 +107,8 @@
 	const commentPopupBottom = ref('');
 	const _1stDepthCommentCount = computed(() => commentListModel.value.length)
 	const inputFocus = ref();
+	// 关于删除弹窗
+	const showDeletePopup = ref(false);
 
 	onLoad(async (evt : { quizType : string, exerciseType : string, latest_quiz_index : number }) => {
 		console.timeEnd('navigateTo');
@@ -346,7 +355,6 @@
 			name: 'addComment',
 			data: comment
 		})
-		// console.log('rsp_addComment', rsp_addComment);
 	}
 
 	// 下面关于收藏
@@ -361,6 +369,25 @@
 		});
 		// 3 存入内存
 		quizController.updateFavorite(curQuiz.value.id, favorite);
+	}
+
+	const onDeletePopupClose = () => {
+		showDeletePopup.value = false;
+	}
+
+	const onDeletePopupOpen = () => {
+		showDeletePopup.value = true;
+	}
+
+	const tobeDeletedComment = ref(null);
+	const onCommentLongPress = async (comment_vo) => {
+		tobeDeletedComment.value = comment_vo;
+		console.log('onCommentLongPress', comment_vo);
+		showDeletePopup.value = true;
+	}
+
+	const onDeleteComment = () => {
+		showDeletePopup.value = false;
 	}
 </script>
 

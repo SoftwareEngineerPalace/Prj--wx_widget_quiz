@@ -4,7 +4,8 @@
 		<u-image :show-loading="true" mode="widthFix" shape="circle" :src="vo.commenter_url" width="30px"
 			height="30px"></u-image>
 		<!-- 1 vbox -->
-		<view class="vbox" style="align-items: flex-start; margin-left: 20rpx; flex-grow: 1;">
+		<view class="vbox" style="align-items: flex-start; margin-left: 20rpx; flex-grow: 1;"
+			@longpress="onCommentLongPress">
 			<!-- 1.0 名字 -->
 			<view class="comment__commenter-name mb10">{{ vo.commenter_name }}</view>
 			<!-- 1.1 内容 -->
@@ -23,7 +24,7 @@
 			</view>
 
 			<comment v-for="(sub_comment) in vo.comment_list" style="width: 100%;" :key="sub_comment.id"
-				:vo="sub_comment"></comment>
+				:vo="sub_comment" @longPressComment="onCommentLongPress"></comment>
 		</view>
 	</view>
 </template>
@@ -32,7 +33,7 @@
 	import { ref, onMounted, computed } from 'vue';
 	import comment from "./comment.vue";
 	const props = defineProps(['vo']);
-	const emits = defineEmits(['reply']);
+	const emits = defineEmits(['reply', 'longPressComment']);
 	const originalLikeCount = ref(0);
 	const state_likeCount = ref(0);
 	const comment_id = ref('');
@@ -55,6 +56,10 @@
 
 	const onReply = () => {
 		emits('reply', props.vo);
+	}
+
+	const onCommentLongPress = () => {
+		emits('longPressComment', props.vo);
 	}
 </script>
 
