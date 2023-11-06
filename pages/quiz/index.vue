@@ -56,7 +56,7 @@
 			</view>
 			<!-- 不明白为什么这里有 style="width: 100%;" -->
 			<comment v-for="(c) in commentListModel" style="width: 100%;" :key="c.id" :vo="c" @reply="onReplyComment"
-				@longPressComment="onCommentLongPress">
+				@longPressComment="onCommentLongPress" @likeCountChanged='onLikeCountChanged'>
 			</comment>
 		</view>
 	</view>
@@ -406,8 +406,24 @@
 		// 2 删除数据库数据
 		const rsp = await wx.cloud.callFunction({
 			name: 'commentUpdate',
-			data: { id: commentIdToBeDeleted.value, content: words_deleted, time: new Date().toLocaleDateString(), exist: false }
+			data: { comment }
 		});
+	}
+
+	const onLikeCountChanged = async (vo) => {
+		console.log('quiz index onLikeCountChanged', vo);
+
+		// 1 存到内存里
+		let list = toRaw(commentListModel.value);
+		const comment : IComment = findCommentById(list, vo.commentId);
+		comment.like_count = vo.likeCount;
+
+		// 2 存到数据库里
+		const rsp = await wx.cloud.callFunction({
+			name: 'commentUpdate',
+			data: { comment }
+		});
+		console.log("onLikeCountChanged rsp", rsp);
 	}
 </script>
 

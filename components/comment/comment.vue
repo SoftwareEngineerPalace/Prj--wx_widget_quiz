@@ -9,22 +9,24 @@
 			<view class="comment__commenter-name mb10">{{ vo.commenter_name }}</view>
 			<!-- 1.1 内容 -->
 			<view class="comment__content mb10" @longpress="onSelfLongPress" :data-vo="vo" @click="onReply">
-				{{vo.content}}</view>
+				{{vo.content}}
+			</view>
 			<!-- 1.2 时间和赞的 hbox -->
 			<view class="hbox text-sub" style="justify-content: space-between;">
 				<!-- 1.2.1 时间 -->
 				<view class="comment__time">{{vo.time}}</view>
 				<!-- 1.2.2 赞 -->
-				<view class="hbox" style="width: auto;" @click="onLike">
-					<u-icon name="thumb-up-fill" :color="likeIsOrigin?'#999':'#5ab8b3'" size="40"></u-icon>
-					<view class="comment__like-count" :style="{color:likeIsOrigin?'#999':'#5ab8b3'}">
+				<view class="hbox" :style="{width: 'auto', pointerEvents: vo.exist?'auto':'none'}" @click="onLike">
+					<u-icon name="thumb-up-fill" :color="likeCountIsInitial?'#999':'#5ab8b3'" size="40"></u-icon>
+					<view class="comment__like-count" :style="{color:likeCountIsInitial?'#999':'#5ab8b3'}">
 						{{ state_likeCount || '点赞' }}
 					</view>
 				</view>
 			</view>
 
 			<comment v-for="(sub_comment) in vo.comment_list" style="width: 100%;" :key="sub_comment.id"
-				:vo="sub_comment" :data-vo="sub_comment" @longPressComment="onLongPressEvtBubble"></comment>
+				:vo="sub_comment" :data-vo="sub_comment" @longPressComment="onLongPressEvtBubble"
+				@likeCountChanged='onLikeCountChanged'></comment>
 		</view>
 	</view>
 </template>
@@ -34,25 +36,33 @@
 	import { IComment } from '../../common/common';
 	import comment from "./comment.vue";
 	const props = defineProps(['vo']);
-	const emits = defineEmits(['reply', 'longPressComment']);
-	const originalLikeCount = ref(0);
+	const emits = defineEmits(['reply', 'longPressComment', 'likeCountChanged']);
+	const initialLikeCount = ref(0);
 	const state_likeCount = ref(0);
 	const comment_id = ref('');
 
 	// TODO 不想用 onMounted
 	onMounted(async () => {
 		const { vo } = props;
-		// console.log('onMounted vo', vo);
-		originalLikeCount.value = vo.likeCount;
-		state_likeCount.value = vo.likeCount;
+		console.log('initialLikeCount', vo.like_count);
+		initialLikeCount.value = vo.like_count;
+		state_likeCount.value = vo.like_count;
 		comment_id.value = vo.id;
 	})
 
-	const likeIsOrigin = computed(() => state_likeCount.value === originalLikeCount.value);
+	// 只负责更新颜色
+	const likeCountIsInitial = computed(() => state_likeCount.value === initialLikeCount.value);
 
+	// 以下4个emits都应该换一下，用状态管理来实现
 	const onLike = () => {
-		state_likeCount.value = likeIsOrigin.value
-			? originalLikeCount.value + 1 : originalLikeCount.value;
+		state_likeCount.value = likeCountIsInitial.value
+			? initialLikeCount.value + 1 : initialLikeCount.value;
+
+		emits('likeCountChanged', { commentId: props.vo.id, likeCount: state_likeCount.value })
+	}
+
+	const onLikeCountChanged = (vo) => {
+		emits('likeCountChanged', vo)
 	}
 
 	const onReply = () => {
