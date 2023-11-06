@@ -88,9 +88,8 @@ const getOpenId = () => {
 };
 
 /** 下面2个方法应该优化下 */
-const findComment = (comments : IComment[], targetId : string) => {
+const findCommentById = (comments : IComment[], targetId : string) => {
 	for (let i = 0, len = comments.length; i < len; i++) {
-		// console.log('findComment i=', i);
 		const target = preOrder(comments[i], targetId);
 		if (target) {
 			return target;
@@ -99,28 +98,27 @@ const findComment = (comments : IComment[], targetId : string) => {
 }
 
 const preOrder = (comment : IComment, targetId : string) => {
-	// console.log('preOrder comment.id=', comment.id, 'targetId=', targetId);
+	console.log('preOrder comment.id=', comment.id, 'targetId=', targetId);
 	if (!comment) {
 		return null;
 	}
-	// console.log('comment.id === targetId', comment.id === targetId)
+	console.log('comment.id === targetId', comment.id === targetId)
 	if (comment.id === targetId) {
 		return comment;
 	}
-	// console.log('preOrder comment', comment)
+	console.log('preOrder comment', comment)
 	let len = comment.comment_list?.length || 0;
-	// console.log('preOrder len', len)
+	console.log('preOrder len', len)
 	for (let i = 0; i < len; i++) {
 		preOrder(comment.comment_list[i], targetId);
 	}
 }
 
+/** 把 name 和 url 赋到 commenter_name 和 commenter_url 上 */
 const addCommenterParam = (comments : any[]) => {
-	console.time('addCommenterParam');
 	comments.forEach(cmt => {
 		traversal(cmt)
 	})
-	console.timeEnd('addCommenterParam');
 }
 
 const traversal = (comment : IComment) => {
@@ -135,7 +133,7 @@ const traversal = (comment : IComment) => {
 
 export {
 	addCommenterParam,
-	findComment,
+	findCommentById,
 	getOpenId,
 	ExerciseType,
 	generateUUID,

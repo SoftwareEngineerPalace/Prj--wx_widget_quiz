@@ -89,13 +89,15 @@
 </template>
 
 <script lang="ts" setup>
-	import comment from "../../components/comment/comment.vue";
 	import { ref, computed, toRaw } from 'vue';
-	import quizController from '../../common/quizController';
-	import { generateUUID, findComment, addCommenterParam } from '../../common/utils';
+	import { generateUUID, findCommentById, addCommenterParam } from '../../common/utils';
 	import { ICheckbox, IQuiz, quizNameDic, ExerciseType, IComment, ICommenter } from '../../common/common';
+	import { words_deleted } from '../../common/langConfig';
 	import queryString from 'query-string';
 	import { onLoad, onUnload } from '@dcloudio/uni-app';
+
+	import quizController from '../../common/quizController';
+	import comment from "../../components/comment/comment.vue";
 
 	const quizType = ref("");        // 题目类型
 	const curExerciseType = ref("")  // 做题类型
@@ -240,7 +242,7 @@
 		}
 	};
 
-	/** 更新题目选项和评论区 */
+	/** 初始化时，更新题目选项和评论区 */
 	const updateQuiz = (quiz : any) => {
 		updateOptions(quiz);
 
@@ -265,17 +267,18 @@
 		showGroupBtns.value = true;
 	}
 
-	/** 更新评论区 */
+	/** 初始化时 更新评论区 */
 	const updateComment = async (quiz_id : string) => {
-		console.time('getComments database')
+		// 1 取出数据库数据
 		const rsp : any = await wx.cloud.callFunction({
 			name: 'getComments',
 			data: { quiz_id }
 		});
-		console.timeEnd('getComments database')
 		if (rsp.result.length === 0) return;
 		const list = rsp.result;
+		// 2 把 name 和 url 赋到 commenter_name 和 commenter_url 上
 		addCommenterParam(list);
+		// 3 数据 model
 		commentListModel.value = list;
 	}
 
@@ -301,13 +304,11 @@
 	/** 要回复的评论 vo */
 	const commentToReply = ref(null);
 	const onReplyComment = async (comment_vo) => {
-		// console.log('onReplyComment', comment_vo);
 		commentToReply.value = comment_vo;
 		showCommentPopup.value = true;
 	}
 
 	const onConfirmComment = async (e) => {
-		// console.log('onConfirmComment', e);
 		// 1 清空 popup
 		const commentValue : string = comment_value.value;
 		comment_value.value = '';
@@ -320,37 +321,39 @@
 		const parent_id = commentToReply.value?.id;
 		const comment : IComment = {
 			id: generateUUID(),
+
+			at_first_level: !parent_id,
 			quiz_id: parent_id ? null : curQuiz.value.id,
 			parent_id,
 
 			content: commentValue,
 			time: new Date().toLocaleDateString(),
 			like_count: 0,
+			deleted: false,
 
 			commenter_id,
 			commenter_name,
 			commenter_url,
 			comment_list: [],
 		}
-		// console.log('新的评论 UI 数据', comment)
+
+		// 4 新的评论 UI 数据'
 		if (!parent_id) {
-			// console.log("放到第一层")
+			// 放到第一层
 			commentListModel.value.push(comment);
 		} else {
-			// console.log('放进树里')
+			// 放进树里
 			let list = toRaw(commentListModel.value);
-			// console.log('list', list);
-			// console.log('parent_id', parent_id);
-			const parent : IComment = findComment(list, parent_id);
-			// console.log('parent', parent);
-			parent.comment_list = !parent?.comment_list || parent?.comment_list.length === 0 ? [] : parent.comment_list
-			// console.log('comment_list', parent.comment_list);
+			const parent : IComment = findCommentById(list, parent_id);
+			if (!parent?.comment_list) {
+				parent.comment_list = [];// 这三行得优化
+			};
+			console.log('parent', parent);
 			parent.comment_list.push(comment);
 			list = toRaw(commentListModel.value);
-			// console.log('list', list);
 		}
 
-		// console.log('4 把 comment 放到 comment 数据库', comment);
+		// 5 放进数据库里
 		const rsp_addComment = await wx.cloud.callFunction({
 			name: 'addComment',
 			data: comment
@@ -371,6 +374,7 @@
 		quizController.updateFavorite(curQuiz.value.id, favorite);
 	}
 
+	// ---- 下面关于评论的删除 ------
 	const onDeletePopupClose = () => {
 		showDeletePopup.value = false;
 	}
@@ -379,15 +383,32 @@
 		showDeletePopup.value = true;
 	}
 
-	const tobeDeletedComment = ref(null);
+	// 要删除的评论 id
+	const tobeDeletedCommentId = ref(null);
 	const onCommentLongPress = async (comment_vo) => {
-		tobeDeletedComment.value = comment_vo;
-		console.log('onCommentLongPress', comment_vo);
+		console.log('onCommentLongPress tobeDeletedCommentId', comment_vo.id);
+		tobeDeletedCommentId.value = comment_vo.id;
+		console.log('onCommentLongPress tobeDeletedCommentId.value=', tobeDeletedCommentId.value);
 		showDeletePopup.value = true;
 	}
 
-	const onDeleteComment = () => {
+	const onDeleteComment = async () => {
 		showDeletePopup.value = false;
+		// 1 删除内存数据
+		let list = toRaw(commentListModel.value);
+		console.log('onDeleteComment list', list);
+		console.log('onDeleteComment 要删除的评论 id ', tobeDeletedCommentId);
+		const comment_to_be_deleted : IComment = findCommentById(list, tobeDeletedCommentId.value);
+		if (!comment_to_be_deleted) return;
+		console.log("onDeleteComment 找到的评论", comment_to_be_deleted);
+		comment_to_be_deleted.content = words_deleted;
+		comment_to_be_deleted.time = new Date().toLocaleDateString();
+		// 2 删除数据库数据
+		const rsp = await wx.cloud.callFunction({
+			name: 'commentUpdate',
+			data: { id: tobeDeletedCommentId.value, content: words_deleted, time: new Date().toLocaleDateString() }
+		});
+		console.log('onDeleteComment 删除结果', rsp);
 	}
 </script>
 
