@@ -303,8 +303,9 @@
 
 	/** 要回复的评论 vo */
 	const commentToReply = ref(null);
-	const onReplyComment = async (comment_vo) => {
-		commentToReply.value = comment_vo;
+	const onReplyComment = async (comment : IComment) => {
+		if (!comment.exist) return;
+		commentToReply.value = comment;
 		showCommentPopup.value = true;
 	}
 

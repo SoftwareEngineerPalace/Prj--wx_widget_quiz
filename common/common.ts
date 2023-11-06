@@ -66,6 +66,7 @@ interface IComment {
 	commenter_url : string;
 
 	content : string;
+	exist : boolean;
 
 	likeCount : number;
 	time : string;
