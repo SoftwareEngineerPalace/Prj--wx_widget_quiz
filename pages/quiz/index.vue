@@ -329,7 +329,7 @@
 			content: commentValue,
 			time: new Date().toLocaleDateString(),
 			like_count: 0,
-			deleted: false,
+			exist: true,
 
 			commenter_id,
 			commenter_name,
@@ -384,11 +384,12 @@
 	}
 
 	// 要删除的评论 id
-	const tobeDeletedCommentId = ref(null);
-	const onCommentLongPress = async (comment_vo) => {
-		console.log('onCommentLongPress tobeDeletedCommentId', comment_vo.id);
-		tobeDeletedCommentId.value = comment_vo.id;
-		console.log('onCommentLongPress tobeDeletedCommentId.value=', tobeDeletedCommentId.value);
+	const commentIdToBeDeleted = ref(null);
+	const onCommentLongPress = async (comment : IComment) => {
+		const { commenter_id, exist } = comment;
+		const open_user_id = getApp().globalData.loginInfo.id;
+		if (comment.commenter_id !== open_user_id || !exist) return;
+		commentIdToBeDeleted.value = comment.id;
 		showDeletePopup.value = true;
 	}
 
@@ -396,19 +397,15 @@
 		showDeletePopup.value = false;
 		// 1 删除内存数据
 		let list = toRaw(commentListModel.value);
-		console.log('onDeleteComment list', list);
-		console.log('onDeleteComment 要删除的评论 id ', tobeDeletedCommentId);
-		const comment_to_be_deleted : IComment = findCommentById(list, tobeDeletedCommentId.value);
-		if (!comment_to_be_deleted) return;
-		console.log("onDeleteComment 找到的评论", comment_to_be_deleted);
-		comment_to_be_deleted.content = words_deleted;
-		comment_to_be_deleted.time = new Date().toLocaleDateString();
+		const comment : IComment = findCommentById(list, commentIdToBeDeleted.value);
+		comment.content = words_deleted;
+		comment.time = new Date().toLocaleDateString();
+		comment.exist = false;
 		// 2 删除数据库数据
 		const rsp = await wx.cloud.callFunction({
 			name: 'commentUpdate',
-			data: { id: tobeDeletedCommentId.value, content: words_deleted, time: new Date().toLocaleDateString() }
+			data: { id: commentIdToBeDeleted.value, content: words_deleted, time: new Date().toLocaleDateString(), exist: false }
 		});
-		console.log('onDeleteComment 删除结果', rsp);
 	}
 </script>
 
