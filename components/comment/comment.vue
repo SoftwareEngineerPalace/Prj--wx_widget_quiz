@@ -4,12 +4,12 @@
 		<u-image :show-loading="true" mode="widthFix" shape="circle" :src="vo.commenter_url" width="30px"
 			height="30px"></u-image>
 		<!-- 1 vbox -->
-		<view class="vbox" style="align-items: flex-start; margin-left: 20rpx; flex-grow: 1;"
-			@longpress="onCommentLongPress">
+		<view class="vbox" style="align-items: flex-start; margin-left: 20rpx; flex-grow: 1;">
 			<!-- 1.0 名字 -->
 			<view class="comment__commenter-name mb10">{{ vo.commenter_name }}</view>
 			<!-- 1.1 内容 -->
-			<view class="comment__content mb10" @click="onReply">{{vo.content}}</view>
+			<view class="comment__content mb10" @longpress="onSelfLongPress" :data-vo="vo" @click="onReply">
+				{{vo.content}}</view>
 			<!-- 1.2 时间和赞的 hbox -->
 			<view class="hbox text-sub" style="justify-content: space-between;">
 				<!-- 1.2.1 时间 -->
@@ -24,13 +24,14 @@
 			</view>
 
 			<comment v-for="(sub_comment) in vo.comment_list" style="width: 100%;" :key="sub_comment.id"
-				:vo="sub_comment" @longPressComment="onCommentLongPress"></comment>
+				:vo="sub_comment" :data-vo="sub_comment" @longPressComment="onLongPressEvtBubble"></comment>
 		</view>
 	</view>
 </template>
 
 <script lang="ts" setup>
 	import { ref, onMounted, computed } from 'vue';
+	import { IComment } from '../../common/common';
 	import comment from "./comment.vue";
 	const props = defineProps(['vo']);
 	const emits = defineEmits(['reply', 'longPressComment']);
@@ -58,8 +59,12 @@
 		emits('reply', props.vo);
 	}
 
-	const onCommentLongPress = () => {
-		emits('longPressComment', props.vo);
+	const onSelfLongPress = (evt) => {
+		emits('longPressComment', evt.currentTarget.dataset.vo);
+	}
+
+	const onLongPressEvtBubble = (comment : IComment) => {
+		emits('longPressComment', comment);
 	}
 </script>
 

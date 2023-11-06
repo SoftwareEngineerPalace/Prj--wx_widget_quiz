@@ -387,6 +387,7 @@
 	// 要删除的评论 id
 	const commentIdToBeDeleted = ref(null);
 	const onCommentLongPress = async (comment : IComment) => {
+		console.log('quiz onCommentLongPress', comment);
 		const { commenter_id, exist } = comment;
 		const open_user_id = getApp().globalData.loginInfo.id;
 		if (!(comment.commenter_id === open_user_id && exist)) return; // 自己的且存在的才可以被删
