@@ -55,8 +55,8 @@
 				</view>
 			</view>
 			<!-- 不明白为什么这里有 style="width: 100%;" -->
-			<comment v-for="(c) in commentListModel" style="width: 100%;" :key="c.id" :vo="c" @reply="onReplyComment"
-				@longPressComment="onCommentLongPress" @likeCountChanged='onLikeCountChanged'>
+			<comment v-for="(c) in commentListModel" style="width: 100%;" :key="c.id" :vo="c" :user_ids_like="c.user_ids_like" @reply="onReplyComment"
+				@longPressComment="onCommentLongPress" @evt_clickLike='onLikeClicked'>
 			</comment>
 		</view>
 	</view>
@@ -113,7 +113,6 @@
 	const showDeletePopup = ref(false);
 
 	onLoad(async (evt : { quizType : string, exerciseType : string, latest_quiz_index : number }) => {
-		console.timeEnd('navigateTo');
 		const { exerciseType, latest_quiz_index } = evt;
 		// 1 设置类型
 		curExerciseType.value = exerciseType;
@@ -329,13 +328,13 @@
 
 			content: commentValue,
 			time: new Date().toLocaleDateString(),
-			like_count: 0,
 			exist: true,
 
 			commenter_id,
 			commenter_name,
 			commenter_url,
 			comment_list: [],
+			user_ids_like: []
 		}
 
 		// 4 新的评论 UI 数据'
@@ -387,7 +386,6 @@
 	// 要删除的评论 id
 	const commentIdToBeDeleted = ref(null);
 	const onCommentLongPress = async (comment : IComment) => {
-		console.log('quiz onCommentLongPress', comment);
 		const { commenter_id, exist } = comment;
 		const open_user_id = getApp().globalData.loginInfo.id;
 		if (!(comment.commenter_id === open_user_id && exist)) return; // 自己的且存在的才可以被删
@@ -400,6 +398,8 @@
 		// 1 删除内存数据
 		let list = toRaw(commentListModel.value);
 		const comment : IComment = findCommentById(list, commentIdToBeDeleted.value);
+		// console.log('quiz onDeleteComment comment.content', comment.content);
+		// console.log('quiz onDeleteComment comment', comment); // 这有系统 bug
 		comment.content = words_deleted;
 		comment.time = new Date().toLocaleDateString();
 		comment.exist = false;
@@ -410,20 +410,23 @@
 		});
 	}
 
-	const onLikeCountChanged = async (vo) => {
-		console.log('quiz index onLikeCountChanged', vo);
-
+	const onLikeClicked = async (vo) => {
+		// 为什么必须要有下两行代码
+		showDeletePopup.value = true;
+		showDeletePopup.value = false; 
+		const { commentId, liked } = vo;
+		const myUserId = getApp().globalData.loginInfo.id;
 		// 1 存到内存里
 		let list = toRaw(commentListModel.value);
 		const comment : IComment = findCommentById(list, vo.commentId);
-		comment.like_count = vo.likeCount;
-
+		// 更新点赞人列表
+		comment.user_ids_like = comment.user_ids_like || [];
+		comment.user_ids_like = liked ? comment.user_ids_like.concat(myUserId) : comment.user_ids_like.filter(userId => userId !== myUserId);
 		// 2 存到数据库里
 		const rsp = await wx.cloud.callFunction({
 			name: 'commentUpdate',
 			data: { comment }
 		});
-		console.log("onLikeCountChanged rsp", rsp);
 	}
 </script>
 

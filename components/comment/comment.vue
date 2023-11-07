@@ -17,52 +17,43 @@
 				<view class="comment__time">{{vo.time}}</view>
 				<!-- 1.2.2 赞 -->
 				<view class="hbox" :style="{width: 'auto', pointerEvents: vo.exist?'auto':'none'}" @click="onLike">
-					<u-icon name="thumb-up-fill" :color="likeCountIsInitial?'#999':'#5ab8b3'" size="40"></u-icon>
-					<view class="comment__like-count" :style="{color:likeCountIsInitial?'#999':'#5ab8b3'}">
-						{{ state_likeCount || '点赞' }}
+					<u-icon name="thumb-up-fill" :color="ihaveLiked?'#5ab8b3':'#999'" size="40"></u-icon>
+					<view class="comment__like-count" :style="{color:ihaveLiked?'#5ab8b3':'#999'}">
+						{{ vo.user_ids_like?.length || '点赞' }}
 					</view>
 				</view>
 			</view>
 
 			<comment v-for="(sub_comment) in vo.comment_list" style="width: 100%;" :key="sub_comment.id"
 				:vo="sub_comment" :data-vo="sub_comment" @longPressComment="onLongPressEvtBubble"
-				@likeCountChanged='onLikeCountChanged'></comment>
+				@evt_clickLike='onLikeClicked'></comment>
 		</view>
 	</view>
 </template>
 
 <script lang="ts" setup>
-	import { ref, onMounted, computed } from 'vue';
+	import { ref, onMounted, computed, toRaw, watch } from 'vue';
 	import { IComment } from '../../common/common';
 	import comment from "./comment.vue";
+
 	const props = defineProps(['vo']);
-	const emits = defineEmits(['reply', 'longPressComment', 'likeCountChanged']);
-	const initialLikeCount = ref(0);
-	const state_likeCount = ref(0);
-	const comment_id = ref('');
+	const emits = defineEmits(['reply', 'longPressComment', 'evt_clickLike']);
+	const ihaveLiked = ref(false);
 
-	// TODO 不想用 onMounted
-	onMounted(async () => {
-		const { vo } = props;
-		console.log('initialLikeCount', vo.like_count);
-		initialLikeCount.value = vo.like_count;
-		state_likeCount.value = vo.like_count;
-		comment_id.value = vo.id;
-	})
-
-	// 只负责更新颜色
-	const likeCountIsInitial = computed(() => state_likeCount.value === initialLikeCount.value);
+	watch(() => props.user_ids_like, (newVal, oldVal) => {
+		console.log("comment watch", { oldVal, newVal });
+		 const open_user_id = getApp().globalData.loginInfo.id;
+		 ihaveLiked.value = !!props.vo.user_ids_like?.includes(open_user_id);
+	});
 
 	// 以下4个emits都应该换一下，用状态管理来实现
 	const onLike = () => {
-		state_likeCount.value = likeCountIsInitial.value
-			? initialLikeCount.value + 1 : initialLikeCount.value;
-
-		emits('likeCountChanged', { commentId: props.vo.id, likeCount: state_likeCount.value })
+		// 变更数据
+		emits('evt_clickLike', { commentId: props.vo.id, liked: !ihaveLiked.value })
 	}
 
-	const onLikeCountChanged = (vo) => {
-		emits('likeCountChanged', vo)
+	const onLikeClicked = (vo) => {
+		emits('evt_clickLike', vo)
 	}
 
 	const onReply = () => {

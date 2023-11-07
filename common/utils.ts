@@ -91,7 +91,7 @@ const getOpenId = () => {
 const findCommentById = (comments : IComment[], targetId : string) => {
 	for (let i = 0, len = comments.length; i < len; i++) {
 		const target = preOrder(comments[i], targetId);
-		console.log('findCommentById target', target)
+		// console.log('findCommentById target', target)
 		if (target) {
 			return target;
 		}
@@ -100,17 +100,17 @@ const findCommentById = (comments : IComment[], targetId : string) => {
 
 /** 这遍历写得不够好 */
 const preOrder = (comment : IComment, targetId : string) => {
-	console.log('preOrder comment.id=', comment.id, 'targetId=', targetId);
+	// console.log('preOrder comment.id=', comment.id, 'targetId=', targetId);
 	if (!comment) {
 		return null;
 	}
-	console.log('comment.id === targetId', comment.id === targetId)
+	// console.log('comment.id === targetId', comment.id === targetId)
 	if (comment.id === targetId) {
 		return comment;
 	}
-	console.log('preOrder comment', comment)
+	// console.log('preOrder comment', comment)
 	let len = comment.comment_list?.length || 0;
-	console.log('preOrder len', len)
+	// console.log('preOrder len', len)
 	for (let i = 0; i < len; i++) {
 		return preOrder(comment.comment_list[i], targetId);
 	}

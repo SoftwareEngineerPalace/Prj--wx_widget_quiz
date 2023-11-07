@@ -255,12 +255,10 @@
 	const save = async () => {
 		const _list = toRaw(list.value);
 		console.log("start addTasks", _list);
-		console.time('addTasks')
 		const rsp : any = await wx.cloud.callFunction({
 			name: 'addTasks',
 			data: { list: _list }
 		})
-		console.timeEnd('addTasks')
 		console.log('保存数据后的回调', rsp);
 		const result = rsp.errMsg === "cloud.callFunction:ok";
 		if (result) {

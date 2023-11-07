@@ -156,14 +156,12 @@
 	const onBtnContinue = async () => {
 		// 1 题目类型
 		const queryStr = queryString.stringify({ quizType: curQuizType.value, exerciseType: ExerciseType.Common, latest_quiz_index: latestQuizIndex.value - 1 });
-		console.time('navigateTo')
 		const url = `/pages/quiz/index?${queryStr}`;
 		uni.navigateTo({ url })
 	};
 
 	/** 错题本 */
 	const startErrCollection = async () => {
-		console.time('navigateTo')
 		// 1 题目类型
 		const quizType = curQuizType.value;
 
@@ -183,7 +181,6 @@
 
 	/** 收藏夹做题 */
 	const startFavQuiz = async () => {
-		console.time('navigateTo')
 		// 1 题目类型
 		const quizType = curQuizType.value;
 

@@ -1,11 +1,9 @@
 const getAllQuiz = async (quiz_type : string) => {
 	const token = uni.getStorageSync('token');
-	// console.time('db getAllQuiz');
 	const rsp : any = await wx.cloud.callFunction({
 		name: 'getAllQuiz',
 		data: { quiz_type, token }
 	});
-	// console.timeEnd('db getAllQuiz');
 	return rsp.result.list;
 };
 

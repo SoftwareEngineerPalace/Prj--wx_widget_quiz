@@ -68,7 +68,6 @@ interface IComment {
 	content : string;
 	exist : boolean;
 
-	likeCount : number;
 	time : string;
 	/** 只用于 UI 对应的数据上 */
 	comment_list : IComment[];
