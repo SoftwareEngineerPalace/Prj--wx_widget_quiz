@@ -55,7 +55,7 @@
 	import { getOpenId, getProfile, checkSession, waiting } from '../../common/utils';
 	import { loginInfo_default, ICommenter } from '../../common/common';
 	import { addOrUpdateCommenter } from '../../service'
-	
+
 	import queryString from 'query-string';
 
 	import { ref, onMounted } from 'vue';
@@ -152,14 +152,17 @@
 	page {
 		width: 100vw;
 		height: 100vh;
+		border: 1px solid red;
 
 		.mine-wrapper {
+			// border: 1px solid green;
 			height: 100vh;
 			display: flex;
 			flex-direction: column;
 			justify-content: flex-start;
 			align-items: center;
 			background-color: $uni-bg-color-grey;
+			overflow-y: auto;
 
 			.mine__name {
 				width: 190rpx;
