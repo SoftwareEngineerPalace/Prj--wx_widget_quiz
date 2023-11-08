@@ -97,3 +97,11 @@
 .padding30 {
 	padding: 30rpx;
 }
+
+.list-wrapper {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	// border: 1px solid red;
+}

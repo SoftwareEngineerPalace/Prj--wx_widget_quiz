@@ -17,7 +17,7 @@
 			<view class="hbox mb20" style="justify-content: space-between;">
 				<view class="text-sm">选择题目</view>
 				<view class="hbox text-sm" style="justify-content: flex-end;" @click='handler_showQuizSelectPopup'>
-					{{`第 ${latestQuizSn + 1} 题`}}
+					<view class="text-sm" style="margin-right: 15rpx;">{{`第 ${latestQuizSn + 1} 题`}}</view>
 					<u-icon name="arrow-right" :color="'#000'" size="35"></u-icon>
 				</view>
 			</view>
@@ -32,28 +32,28 @@
 			<button class="btn-primary" @click="startFavQuiz">收藏夹练习</button>
 		</view>
 	</view>
-	<u-popup :safeAreaInsetTop='false' :round="10" :safe-area-inset-bottom="false" round='20' :overlay='true'
-		:customStyle="{display:'flex', flexDirection:'column', alignItems:'center',
+
+	<u-popup :safeAreaInsetTop='false' :safe-area-inset-bottom="false" round='20' :overlay='true' :customStyle="{display:'flex', flexDirection:'column', alignItems:'center',
 	justifyContent:'space-between', paddingLeft:'60rpx', paddingRight:'60rpx'}" :show="showSelectQuizTypePopup" mode="top"
-		:close-on-click-overlay='true' @close="onSelectQuizTypePopupClose" @open="onSelectQuizTypePopupOpen">
-		<view>
+		:close-on-click-overlay='true' @close="onSelectQuizTypePopupClose">
+		<view class="list-wrapper">
 			<view class="choice" v-for="(item) in quizTypeArray" :data-id="item.value" @click="onSelectQuizType"
 				:key="item.value">
 				<text :key="item.value">{{item.label}}</text>
 			</view>
 		</view>
-		<button class="btn-sub" style="margin-top: 10px; margin-bottom: 10px; width: 100%; font-size: 30rpx;"
-			@click="closeSelectQuizTypePopup">取消</button>
+		<button class="btn-sub mb30" style="width: 100%;" @click="closeSelectQuizTypePopup">取消</button>
 	</u-popup>
-	<u-popup :show="showQuizSelectPopup" :round="10" :custom-style="{ paddingBottom: '0px'}" mode="bottom"
-		@close="onQuizSelectPopupClose" @open="onQuizSelectPopupOpen" :close-on-click-overlay="true">
-		<view class="card">
-			<view class="container-quiz-sn">
-				<view class="quiz-sn" v-for="(item, index) in new Array(quizCount)" :key="index">{{index + 1 }}</view>
-			</view>
-			<button class="btn-sub mt20" v-text="'取消'" @click="closeSelectQuizPopup"></button>
+
+	<u-popup :show="showQuizSelectPopup" round="20" :custom-style="{ padding: '20px', backgroundColor: '#eeeeee', maxHeight: '650rpx', display:'flex', flexDirection: 'column', 
+	justifyContent:'flex-start', alignItems:'center' }" mode="bottom" @close="onQuizSelectPopupClose"
+		@open="onQuizSelectPopupOpen" :close-on-click-overlay="true">
+		<view class="grid-quiz-sn">
+			<view class="quiz-sn" v-for="(item, index) in new Array(quizCount)" :data-index="index" :key="index"
+				@click="selectQuizSn">{{index + 1 }}</view>
 		</view>
 	</u-popup>
+
 </template>
 
 <script lang="ts" setup>
@@ -156,6 +156,14 @@
 		showQuizSelectPopup.value = false;
 	}
 
+	const selectQuizSn = (evt) => {
+		showQuizSelectPopup.value = false;
+		const nextQuizIndex = evt.currentTarget.dataset.index;
+		console.log('evt', evt.currentTarget.dataset.index);
+		latestQuizSn.value = nextQuizIndex;
+		onBtnContinue();
+	}
+
 	/** 3 错题本 */
 	const startErrCollection = async () => {
 		// 1 题目类型
@@ -250,24 +258,24 @@
 			align-items: center;
 		}
 
-		.container-quiz-sn {
-			overflow-y: scroll;
+		.grid-quiz-sn {
+			overflow-y: auto;
 			width: 100%;
 			height: 100%;
-			display: flex;
-			justify-content: space-around;
-			flex-wrap: wrap;
+			background-color: #eeeeee;
+			display: grid;
+			grid-template-columns: repeat(5, 1fr);
+			grid-row-gap: 30rpx;
+			justify-items: center;
 
 			.quiz-sn {
-				width: 80rpx;
-				height: 80rpx;
-				background-color: gainsboro;
+				width: 90rpx;
+				height: 90rpx;
+				background-color: white;
 				display: flex;
 				justify-content: center;
 				align-items: center;
-				border-radius: 40rpx;
-				margin-right: 10rpx;
-				margin-bottom: 10rpx;
+				border-radius: 45rpx;
 			}
 		}
 	}
@@ -275,6 +283,14 @@
 	.choice {
 		font-size: $uni-font-size-base;
 		color: #333333;
-		margin-top: 30rpx;
+		padding: 10px;
+		display: flex;
+		justify-content: center;
+		border-bottom: 1px solid $uni-border-color-lighter;
+
+		// border: red 1px solid;
+		&:last-child {
+			border-bottom: none;
+		}
 	}
 </style>
