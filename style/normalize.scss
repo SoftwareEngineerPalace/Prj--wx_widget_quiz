@@ -1,5 +1,13 @@
 @import '@/uni.scss';
 
+.group-btns {
+	width: 100%;
+	flex-direction: row;
+	display: flex;
+	align-items: center;
+	justify-content: space-evenly;
+}
+
 .text-primary {
 	font-size: $uni-font-size-lg;
 	white-space: nowrap;
