@@ -2,7 +2,7 @@
 	<view class="mine-wrapper padding30">
 		<view class="card mb30">
 			<view v-if="loggedIn" class="hbox mb30" style="justify-content: center;" @click="login">
-				<input type="nickname" class="mine__name weui-input" :placeholder="loginInfo.name"
+				<input type="nickname" class="mine__name weui-input text-primary" :placeholder="loginInfo.name"
 					@change="onNameChange" />
 				<button class="mine__avatar" open-type="chooseAvatar" @chooseavatar="onChooseAvatar">
 					<u--image :src="loginInfo.url" shape="circle" width="80px" height="80px"></u--image>

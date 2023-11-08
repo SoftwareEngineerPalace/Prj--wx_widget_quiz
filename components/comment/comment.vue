@@ -6,19 +6,19 @@
 		<!-- 1 vbox -->
 		<view class="vbox" style="align-items: flex-start; margin-left: 20rpx; flex-grow: 1;">
 			<!-- 1.0 名字 -->
-			<view class="comment__commenter-name mb10">{{ vo.commenter_name }}</view>
+			<view class="comment__commenter-name text-sm mb10">{{ vo.commenter_name }}</view>
 			<!-- 1.1 内容 -->
 			<view class="comment__content mb10" @longpress="onSelfLongPress" :data-vo="vo" @click="onReply">
 				{{vo.content}}
 			</view>
 			<!-- 1.2 时间和赞的 hbox -->
-			<view class="hbox text-sub" style="justify-content: space-between;">
+			<view class="hbox text-sm" style="justify-content: space-between;">
 				<!-- 1.2.1 时间 -->
 				<view class="comment__time">{{vo.time}}</view>
 				<!-- 1.2.2 赞 -->
 				<view class="hbox" :style="{width: 'auto', pointerEvents: vo.exist?'auto':'none'}" @click="onLike">
 					<u-icon name="thumb-up-fill" :color="ihaveLiked?'#5ab8b3':'#999'" size="40"></u-icon>
-					<view class="comment__like-count" :style="{color:ihaveLiked?'#5ab8b3':'#999'}">
+					<view class="comment__like-count text-sm" :style="{color:ihaveLiked?'#5ab8b3':'#999'}">
 						{{ vo.user_ids_like?.length || '点赞' }}
 					</view>
 				</view>

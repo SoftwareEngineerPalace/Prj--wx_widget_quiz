@@ -3,14 +3,14 @@
 
 		<!-- 题目 -->
 		<view class="quiz__group-title mb20">
-			<text :size="`35rpx`" class="index">{{index_str}}</text>
+			<text class="index">{{index_str}}</text>
 			<text>{{`&nbsp;&nbsp;`}}</text>
-			<text :size="`35rpx`" class="title">{{title_str}}</text>
+			<text class="title">{{title_str}}</text>
 		</view>
 
 		<!-- 4 个选项 -->
-		<text class="quiz__option mb20" style="flex: none;" :size="`35rpx`" v-for="(option) in checkboxList"
-			:key="option.id" autoHeight v-bind:class="{ option: true, 
+		<text class="quiz__option mb20" style="flex: none;" v-for="(option) in checkboxList" :key="option.id" autoHeight
+			v-bind:class="{ option: true, 
 			selected: option.selected, 
 			isCorrect: curQuiz.submitted && option.isCorrect, 
 			isWrong: curQuiz.submitted && option.selected && !option.isCorrect}" :data-id="option.id" @click="onClickOption">
@@ -44,26 +44,27 @@
 		<view class="card" v-show="curQuiz.submitted">
 			<view class="comment-title-row">
 				<view class="hbox">
-					<view class="text-primary">评论</view>&nbsp;·&nbsp; <view class="text-primary">
+					<view class="text-sm">评论</view>&nbsp;·&nbsp; <view class="text-sm">
 						{{_1stDepthCommentCount}}
 					</view>
 				</view>
 				<view class="hbox" style="width: auto;" @click="onComment">
-					<view class="text-primary">评论</view>&nbsp;
+					<view class="text-sm">评论</view>&nbsp;
 					<!-- 这里颜色用的是主题色，要抽取出来 TODO -->
 					<u-icon name="edit-pen-fill" color="#5ab8b3" size="40"></u-icon>
 				</view>
 			</view>
 			<!-- 不明白为什么这里有 style="width: 100%;" -->
-			<comment v-for="(c) in commentListModel" style="width: 100%;" :key="c.id" :vo="c" :user_ids_like="c.user_ids_like" @reply="onReplyComment"
-				@longPressComment="onCommentLongPress" @evt_clickLike='onLikeClicked'>
+			<comment v-for="(c) in commentListModel" style="width: 100%;" :key="c.id" :vo="c"
+				:user_ids_like="c.user_ids_like" @reply="onReplyComment" @longPressComment="onCommentLongPress"
+				@evt_clickLike='onLikeClicked'>
 			</comment>
 		</view>
 	</view>
 	<view class="group-bottom">
 		<view class="group-fav" @click="toggleFavorite">
 			<u-icon :name="curQuiz.favorite?'star-fill':'star'" color="#5ab8b3" size="40"></u-icon>
-			<view class="text-primary favorite">{{ curQuiz.favorite ? '取消收藏':'收藏'}}</view>
+			<view class="text-sm favorite">{{ curQuiz.favorite ? '取消收藏':'收藏'}}</view>
 		</view>
 	</view>
 	<!-- 以后抽取出一个组件 -->
@@ -413,7 +414,7 @@
 	const onLikeClicked = async (vo) => {
 		// 为什么必须要有下两行代码
 		showDeletePopup.value = true;
-		showDeletePopup.value = false; 
+		showDeletePopup.value = false;
 		const { commentId, liked } = vo;
 		const myUserId = getApp().globalData.loginInfo.id;
 		// 1 存到内存里
@@ -452,7 +453,8 @@
 			// border: 1px solid red;
 
 			.quiz__group-title {
-				font-size: 35rpx;
+				font-size: 38rpx;
+				font-weight: bold;
 				display: flex;
 				justify-content: flex-start;
 
@@ -465,7 +467,7 @@
 			}
 
 			.quiz__option {
-				font-size: 35rpx;
+				font-size: 33rpx;
 				background-color: white;
 				border-radius: 20rpx;
 				padding: 20rpx;
@@ -495,7 +497,7 @@
 				flex-direction: row;
 
 				.btn {
-					font-size: 30rpx;
+					font-size: $uni-font-size-base;
 					width: 40%;
 					margin-top: 30rpx;
 					font-size: 40rpx;

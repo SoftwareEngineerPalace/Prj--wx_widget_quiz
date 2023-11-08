@@ -7,20 +7,20 @@
 				</view>
 				<u-icon class="icon" name="arrow-down-fill" color="#5ab8b3" size="25"></u-icon>
 			</view>
-			<view class="text-sub">{{processDesc}}</view>
+			<view class="text-sm-grey">{{processDesc}}</view>
 		</view>
 
 		<!-- 2 继续 -->
 		<view class="card mb30">
 			<view class="text-primary mb20" style="align-self: flex-start;">继续</view>
-			<view class="text-sub mb20" style="align-self: flex-start;">从上次中断的地方继续练习</view>
+			<view class="text-sm-grey mb20" style="align-self: flex-start;">从上次中断的地方继续练习</view>
 			<button class="btn-primary" @click="onBtnContinue">继续练习</button>
 		</view>
 
 		<!-- 3 回顾练习 -->
 		<view class="card mb30">
 			<view class="text-primary mb20" style="align-self: flex-start;">回顾练习</view>
-			<view class="text-sub mb20" style="align-self: flex-start;">练习错题本 / 收藏夹中的题目</view>
+			<view class="text-sm-grey mb20" style="align-self: flex-start;">练习错题本 / 收藏夹中的题目</view>
 			<button class="btn-primary mb20" @click="startErrCollection">错题练习</button>
 			<button class="btn-primary" @click="startFavQuiz">收藏夹练习</button>
 		</view>
@@ -38,7 +38,7 @@
 				<text :key="item.value">{{item.label}}</text>
 			</view>
 		</view>
-		<button class="btn-sub" style="margin-top: 10px; margin-bottom: 10px; width: 100%;"
+		<button class="btn-sub" style="margin-top: 10px; margin-bottom: 10px; width: 100%; font-size: 30rpx;"
 			@click="closeSelectPop">取消</button>
 	</u-popup>
 </template>
@@ -218,7 +218,7 @@
 	}
 
 	.choice {
-		font-size: $uni-font-size-lg;
+		font-size: $uni-font-size-base;
 		color: #333333;
 		margin-top: 30rpx;
 	}
