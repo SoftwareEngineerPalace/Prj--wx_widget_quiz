@@ -111,10 +111,10 @@
 
 	const getTask = async () => {
 		const rsp : any = await wx.cloud.callFunction({
-			name: 'getTask',
+			name: 'getTasks',
 		});
 		const raw = rsp.result.data;
-		console.log('getTask', raw);
+		console.log('getTasks', raw);
 		if (!!raw) {
 			list.value = raw;
 			console.log("getTask init", toRaw(list.value));

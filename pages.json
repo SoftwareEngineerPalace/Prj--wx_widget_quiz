@@ -62,6 +62,13 @@
 				"enablePullDownRefresh": false,
 				"navigationBarBackgroundColor": "#eeeeee"
 			}
+		},
+		{
+			"path": "pages/like/like",
+			"style": {
+				"navigationBarTitleText": "收到的赞",
+				"enablePullDownRefresh": false
+			}
 		}
 	],
 	"globalStyle": {

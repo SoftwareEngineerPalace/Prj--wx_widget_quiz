@@ -58,16 +58,15 @@
 	<view class="group-bottom">
 		<!-- 1 上一题 -->
 		<button class="btn-sub" v-text="'上一题'"
-			:style="{visibility:quizController.getCurQuizIndex() > 0?'visible':'hidden'}"
-			@click="onPrev"></button>
+			:style="{visibility:quizController.getCurQuizIndex() > 0?'visible':'hidden'}" @click="onPrev"></button>
 		<!-- 2 收藏 -->
 		<view class="group-fav" @click="toggleFavorite">
 			<u-icon :name="curQuiz.favorite?'star-fill':'star'" color="#5ab8b3" size="40"></u-icon>
 			<view class="text-sm favorite-word">{{ curQuiz.favorite ? '取消收藏':'收藏'}}</view>
 		</view>
 		<!-- 3 下一题 -->
-		<button class="btn-sub" v-text="'下一题'"
-			:style="{visibility:quizController.hasNext()?'visible':'hidden'}" @click="onNext"></button>
+		<button class="btn-sub" v-text="'下一题'" :style="{visibility:quizController.hasNext()?'visible':'hidden'}"
+			@click="onNext"></button>
 	</view>
 	<!-- 以后抽取出一个组件 -->
 	<u-popup :show="showCommentPopup" :custom-style="{ paddingBottom: commentPopupBottom}" mode="bottom"
@@ -422,7 +421,7 @@
 		const comment : IComment = findCommentById(list, vo.commentId);
 		// 更新点赞人列表
 		comment.user_ids_like = comment.user_ids_like || [];
-		comment.user_ids_like = liked ? comment.user_ids_like.concat({ myUserId, time: new Date().getTime() })
+		comment.user_ids_like = liked ? comment.user_ids_like.concat({ given_like_user_id: myUserId, like_time: new Date().getTime() })
 			: comment.user_ids_like.filter(vo => vo.userId !== myUserId);
 		// 2 存到数据库里
 		const rsp = await wx.cloud.callFunction({

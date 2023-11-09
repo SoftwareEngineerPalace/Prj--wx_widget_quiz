@@ -2,8 +2,8 @@
 	<view class="mine-wrapper padding30">
 		<view class="card mb30">
 			<view v-if="loggedIn" class="hbox mb30" style="justify-content: center;" @click="login">
-				<input type="nickname" class="mine__name weui-input text-primary" placeholder="点击修改名字" :value="loginInfo.name"
-					@change="onNameChange" />
+				<input type="nickname" class="mine__name weui-input text-primary" placeholder="点击修改名字"
+					:value="loginInfo.name" @change="onNameChange" />
 				<button class="mine__avatar" open-type="chooseAvatar" @chooseavatar="onChooseAvatar">
 					<u--image :src="loginInfo.url" shape="circle" width="80px" height="80px"></u--image>
 				</button>
@@ -22,7 +22,7 @@
 		<view class="card">
 			<view class="hbox" style="padding:20rpx; justify-content: space-between; border-bottom: 1px solid #eeeeee;"
 				v-for="(item) in notCommonUseSettings" :key="item.id">
-				<view class="hbox" @click="waiting">
+				<view class="hbox" :data-id="item.id" @click="onClick_notCommonUseSettings">
 					<u-icon custom-style="margin-right:30rpx" :name="item.icon" color="#bbbbbb" size="50"></u-icon>
 					<view class='label'>{{ item.label }}</view>
 				</view>
@@ -97,6 +97,17 @@
 		// console.log('上传图片到云存储后', url);
 		loginInfo.value = { ...loginInfo.value, url };
 		addOrUpdateCommenter(loginInfo.value);
+	}
+
+	const onClick_notCommonUseSettings = (evt) => {
+		const { id } = evt.currentTarget.dataset;
+		console.log('onClick_notCommonUseSettings id', id);
+		if (id !== 'like') waiting();
+		if (id === "like") {
+			uni.navigateTo({
+				url: "/pages/like/like"
+			})
+		}
 	}
 
 	const onNameChange = (e) => {

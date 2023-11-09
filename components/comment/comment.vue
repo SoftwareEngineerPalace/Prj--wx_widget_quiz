@@ -42,8 +42,8 @@
 
 	watch(() => props.user_ids_like, (newVal, oldVal) => {
 		console.log("comment watch", { oldVal, newVal });
-		 const open_user_id = getApp().globalData.loginInfo.id;
-		 ihaveLiked.value = !!props.vo.user_ids_like?.includes(open_user_id);
+		const open_user_id = getApp().globalData.loginInfo.id;
+		ihaveLiked.value = !!props.vo.user_ids_like?.some(vo => vo.given_like_user_id.includes(open_user_id));
 	});
 
 	// 以下4个emits都应该换一下，用状态管理来实现

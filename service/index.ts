@@ -50,4 +50,14 @@ const progressPostOrPut = async (quizType : string, latestQuizSn : number) => {
 	return rsp.result;
 }
 
-export { progressPostOrPut, getAllQuiz, getErrorCollectonQuiz, addOrUpdateCommenter, getFavoriteQuiz }
+const getReceivedLike = async (quiz_type : string) => {
+	const token = uni.getStorageSync('token');
+	const rsp : any = await wx.cloud.callFunction({
+		name: 'likeReceivedGet',
+		data: { token }
+	});
+	// console.log("getReceivedLike rsp", rsp);
+	return rsp.result;
+};
+
+export { progressPostOrPut, getAllQuiz, getErrorCollectonQuiz, addOrUpdateCommenter, getFavoriteQuiz, getReceivedLike }
