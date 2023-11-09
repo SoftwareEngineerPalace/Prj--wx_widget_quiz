@@ -164,7 +164,8 @@
 			overflow-y: auto;
 
 			.mine__name {
-				width: 190rpx;
+				width: 220rpx;
+				text-align: center;
 			}
 
 			.mine__avatar {
