@@ -422,7 +422,8 @@
 		const comment : IComment = findCommentById(list, vo.commentId);
 		// 更新点赞人列表
 		comment.user_ids_like = comment.user_ids_like || [];
-		comment.user_ids_like = liked ? comment.user_ids_like.concat(myUserId) : comment.user_ids_like.filter(userId => userId !== myUserId);
+		comment.user_ids_like = liked ? comment.user_ids_like.concat({ myUserId, time: new Date().getTime() })
+			: comment.user_ids_like.filter(vo => vo.userId !== myUserId);
 		// 2 存到数据库里
 		const rsp = await wx.cloud.callFunction({
 			name: 'commentUpdate',
@@ -454,16 +455,9 @@
 
 			.quiz__group-title {
 				font-size: 38rpx;
-				font-weight: bold;
+				font-weight: 400;
 				display: flex;
 				justify-content: flex-start;
-
-				.index {
-					// color: $uni-color-success;
-					font-weight: 500;
-				}
-
-				.title {}
 			}
 
 			.quiz__option {
