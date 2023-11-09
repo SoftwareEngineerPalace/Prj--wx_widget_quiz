@@ -152,7 +152,6 @@
 	page {
 		width: 100vw;
 		height: 100vh;
-		border: 1px solid red;
 
 		.mine-wrapper {
 			// border: 1px solid green;

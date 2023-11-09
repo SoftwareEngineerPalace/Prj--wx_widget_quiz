@@ -45,11 +45,11 @@
 		<button class="btn-sub mb30" style="width: 100%;" @click="closeSelectQuizTypePopup">取消</button>
 	</u-popup>
 
-	<u-popup :show="showQuizSelectPopup" round="20" :custom-style="{ padding: '20px', backgroundColor: '#eeeeee', maxHeight: '650rpx', display:'flex', flexDirection: 'column', 
+	<u-popup :show="showQuizSelectPopup" round="20" :custom-style="{ padding: '20px', backgroundColor: '#ffffff', maxHeight: '650rpx', display:'flex', flexDirection: 'column', 
 	justifyContent:'flex-start', alignItems:'center' }" mode="bottom" @close="onQuizSelectPopupClose"
 		@open="onQuizSelectPopupOpen" :close-on-click-overlay="true">
 		<view class="grid-quiz-sn">
-			<view class="quiz-sn" v-for="(item, index) in new Array(quizCount)" :data-index="index" :key="index"
+			<view class="quiz-sn" v-for="(item, index) in new Array(quizCount)" :data-sn="index + 1" :key="index"
 				@click="selectQuizSn">{{index + 1 }}</view>
 		</view>
 	</u-popup>
@@ -64,7 +64,7 @@
 	import { checkSession } from '../../common/utils';
 	import queryString from 'query-string';
 	import { onShow, onLoad, onInit } from '@dcloudio/uni-app';
-	import { getAllQuiz, getErrorCollectonQuiz, getFavoriteQuiz } from '../../service';
+	import { getAllQuiz, getErrorCollectonQuiz, getFavoriteQuiz, progressPostOrPut } from '../../service';
 
 	/** 上一个题目的序号 从 1 开始*/
 	const latestQuizSn = ref(0);
@@ -103,7 +103,7 @@
 
 	const initData = () => {
 		// 1 进度
-		updateProcess();
+		updateProgress();
 		// 2 全部题
 		getAllQuizList();
 		// 2 错题本
@@ -157,10 +157,15 @@
 	}
 
 	const selectQuizSn = (evt) => {
+		// 关闭 popup
 		showQuizSelectPopup.value = false;
-		const nextQuizIndex = evt.currentTarget.dataset.index;
-		console.log('evt', evt.currentTarget.dataset.index);
-		latestQuizSn.value = nextQuizIndex;
+		// latestQuizSn 内存更新 
+		const nextQuizSn = evt.currentTarget.dataset.sn;
+		console.log('evt', nextQuizSn);
+		latestQuizSn.value = nextQuizSn - 1;
+		// latestQuizSn db 更新
+		progressPostOrPut(curQuizType.value, latestQuizSn.value);
+		// 显示该题
 		onBtnContinue();
 	}
 
@@ -205,13 +210,14 @@
 	}
 
 	/** 更新进度 */
-	const updateProcess = async () => {
+	const updateProgress = async () => {
 		// 用用户 id 和题目类型拿进度
 		const token = uni.getStorageSync('token');
 		const rsp : any = await wx.cloud.callFunction({
 			name: 'getProcess',
 			data: { token, quiz_type: curQuizType.value }
 		});
+		// 下面三行代码 真别扭
 		const { latest_quiz_sn, finished_quiz_count } = rsp.result;
 		latestQuizSn.value = latest_quiz_sn;
 		finishedQuizCount.value = finished_quiz_count;
@@ -246,7 +252,6 @@
 	page {
 		width: 100vw;
 		height: 100vh;
-		overflow-y: hidden;
 
 		.home-wrapper {
 			width: 100vw;
@@ -262,7 +267,7 @@
 			overflow-y: auto;
 			width: 100%;
 			height: 100%;
-			background-color: #eeeeee;
+			background-color: white;
 			display: grid;
 			grid-template-columns: repeat(5, 1fr);
 			grid-row-gap: 30rpx;
@@ -271,7 +276,7 @@
 			.quiz-sn {
 				width: 90rpx;
 				height: 90rpx;
-				background-color: white;
+				background-color: #eeeeee;
 				display: flex;
 				justify-content: center;
 				align-items: center;

@@ -1,3 +1,4 @@
+import { camelToUnderline, underlineToCamel } from '../common/utils'
 const getAllQuiz = async (quiz_type : string) => {
 	const token = uni.getStorageSync('token');
 	const rsp : any = await wx.cloud.callFunction({
@@ -28,7 +29,6 @@ const getFavoriteQuiz = async (quiz_type : string) => {
 }
 
 const addOrUpdateCommenter = async (data : any) => {
-	console.log('addOrUpdateCommenter', data);
 	// 存入内存
 	(getApp().globalData as any).loginInfo = data;
 	// 存入数据库
@@ -38,4 +38,16 @@ const addOrUpdateCommenter = async (data : any) => {
 	})
 }
 
-export { getAllQuiz, getErrorCollectonQuiz, addOrUpdateCommenter, getFavoriteQuiz }
+const progressPostOrPut = async (quizType : string, latestQuizSn : number) => {
+	const token = uni.getStorageSync('token');
+	const raw = { quizType, token, latestQuizSn };
+	const data = camelToUnderline(raw);
+	// console.log('progressPostOrPut 入参', data);
+	const rsp : any = await wx.cloud.callFunction({
+		name: 'progressPostOrPut',
+		data
+	});
+	return rsp.result;
+}
+
+export { progressPostOrPut, getAllQuiz, getErrorCollectonQuiz, addOrUpdateCommenter, getFavoriteQuiz }

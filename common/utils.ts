@@ -133,7 +133,29 @@ const traversal = (comment : IComment) => {
 	}
 }
 
+const underlineToCamel = (underline : unknown) => {
+	const list = Object.keys(camel).map((v : string) => {
+		const key = v.split('_').map((str : string, index : number) => index === 0 ? str : str.charAt(0).toUpperCase() + str.slice(1)).join('');
+		return [key, underline[v]];
+	})
+	const result = Object.fromEntries(list);
+	console.log('underlineToCamel', result);
+	return result;
+}
+
+const camelToUnderline = (camel : unknown) => {
+	const list = Object.keys(camel).map((v : string) => {
+		const key = v.replace(/[A-Z]/g, (match) => `_${match.toLowerCase()}`).toLowerCase()
+		return [key, camel[v]];
+	})
+	const result = Object.fromEntries(list);
+	return result;
+}
+
 export {
+	camelToUnderline,
+	underlineToCamel,
+	convertUnderlineToCamelCase,
 	addCommenterParam,
 	findCommentById,
 	getOpenId,

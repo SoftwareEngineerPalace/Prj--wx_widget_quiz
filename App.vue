@@ -26,4 +26,8 @@
 	@import "@/uni_modules/uview-plus/index.scss";
 	@import '@/style/normalize.scss';
 	@import '@/style/reset.scss';
+
+	page {
+		overflow: hidden;
+	}
 </style>
