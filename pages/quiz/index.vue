@@ -19,14 +19,8 @@
 
 		<!-- 控制进度按钮 -->
 		<view class="quiz__group-btn mb30" v-if="showGroupBtns">
-			<button class="btn-sub mr30" v-text="'上一题'" v-show="quizController.getCurQuizIndex() > 0"
-				@click="onPrev"></button>
-
 			<button class="btn-primary" v-text="'提交'" v-show="!curQuiz.submitted && quizController.hasNext()"
 				@click="onSubmit"></button>
-
-			<button class="btn-sub" v-text="'下一题'" v-show="curQuiz.submitted && quizController.hasNext() "
-				@click="onNext"></button>
 
 			<button class="btn-sub" v-text="'提交'" v-show="!curQuiz.submitted && !quizController.hasNext()"
 				@click="onSubmit"></button>
@@ -62,10 +56,18 @@
 		</view>
 	</view>
 	<view class="group-bottom">
+		<!-- 1 上一题 -->
+		<button class="btn-sub" v-text="'上一题'"
+			:style="{visibility:quizController.getCurQuizIndex() > 0?'visible':'hidden'}"
+			@click="onPrev"></button>
+		<!-- 2 收藏 -->
 		<view class="group-fav" @click="toggleFavorite">
 			<u-icon :name="curQuiz.favorite?'star-fill':'star'" color="#5ab8b3" size="40"></u-icon>
-			<view class="text-sm favorite">{{ curQuiz.favorite ? '取消收藏':'收藏'}}</view>
+			<view class="text-sm favorite-word">{{ curQuiz.favorite ? '取消收藏':'收藏'}}</view>
 		</view>
+		<!-- 3 下一题 -->
+		<button class="btn-sub" v-text="'下一题'"
+			:style="{visibility:quizController.hasNext()?'visible':'hidden'}" @click="onNext"></button>
 	</view>
 	<!-- 以后抽取出一个组件 -->
 	<u-popup :show="showCommentPopup" :custom-style="{ paddingBottom: commentPopupBottom}" mode="bottom"
@@ -180,7 +182,6 @@
 	})
 
 	const onClickOption = (evt : any) => {
-		// console.log("onClickOption evt", evt);
 		const clicked_id = evt.target.dataset.id;
 		checkboxList.value.forEach((v : any) => {
 			if (v.id === clicked_id) {
@@ -188,7 +189,6 @@
 			}
 		})
 		const _userAnswer = checkboxList.value.filter((v : ICheckbox) => v.selected).map((v : ICheckbox) => v.id).join('');
-		// console.log({ _userAnswer });
 		userAnswer.value = _userAnswer;
 	};
 
@@ -506,11 +506,6 @@
 		}
 	}
 
-
-	// view {
-	// 	font-size: 28upx;
-	// }
-
 	.comment-title-row {
 		display: flex;
 		flex-direction: row;
@@ -521,31 +516,29 @@
 
 	// 包含收藏按钮的 group
 	.group-bottom {
-		width: 100vw;
+		width: 100%;
 		height: 100rpx;
 		position: fixed;
 		background-color: white;
 		bottom: 0;
 		display: flex;
 		flex-direction: row;
-		justify-content: flex-end;
-		align-items: flex-start;
+		justify-content: space-between;
+		align-items: center;
 		padding: 10rpx;
 
 		.group-fav {
 			display: flex;
 			flex-direction: row;
-			justify-content: flex-start;
+			justify-content: center;
 			height: 50rpx;
 			align-items: center;
-			margin-right: 20rpx;
-			width: 120rpx;
-			margin-right: 70rpx;
+			width: 200rpx;
+			margin-left: 50rpx;
+			margin-right: 50rpx;
 
-			// background-color: red;
-			.favorite {
+			.favorite-word {
 				margin-left: 10rpx;
-				// padding-top: 2rpx;
 			}
 		}
 	}
