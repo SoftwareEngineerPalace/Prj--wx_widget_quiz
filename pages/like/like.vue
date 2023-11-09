@@ -1,9 +1,9 @@
 <template>
 	<view class="card">
-		<view class="like" v-for="(vo,index) in list" :key="index">
+		<view class="like" v-for="(vo,index) in list" :key="index" :data-vo="vo" @click="gotoQuiz">
 			<!-- 左头像 -->
-			<u-image :show-loading="true" mode="widthFix" shape="circle" :src="vo.commenter_url" width="50px"
-				height="50px"></u-image>
+			<u-image :show-loading="true" mode="widthFix" shape="circle" :src="vo.commenter_url" width="80rpx"
+				height="80rpx"></u-image>
 			<view class="vbox ml30">
 				<view class="hbox mb10">
 					<view class="user-name mr20">{{vo.commenter_name}}</view>
@@ -23,10 +23,13 @@
 	const list = ref([]);
 	onShow(async () => {
 		const token = uni.getStorageSync('token');
-		console.log('like onShow token', token);
 		list.value = await getReceivedLike(token);
 		console.log('like onShow list', list.value);
 	})
+
+	const gotoQuiz = (evt) => {
+		console.log(evt.currentTarget.dataset.vo);
+	}
 </script>
 
 <style lang='scss'>
@@ -45,6 +48,7 @@
 			.user-name {
 				font-size: $uni-font-size-base;
 			}
+
 			.comment-content {
 				border-left: 6rpx solid $uni-bg-color-grey;
 				width: 100%;

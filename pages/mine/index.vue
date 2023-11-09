@@ -11,7 +11,7 @@
 
 			<u-line v-if="loggedIn" class="line" color="#dddddd"></u-line>
 
-			<view class="hbox" style="padding-top: 30rpx; justify-content: space-evenly;">
+			<view v-if="false" class="hbox" style="padding-top: 30rpx; justify-content: space-evenly;">
 				<view class="vbox" v-for="(item) in commonUseSettings" :key="item.id" @click="waiting">
 					<u-icon :name="item.icon" color="#bbbbbb" size="50"></u-icon>
 					<view>{{item.label}}</view>
@@ -52,7 +52,7 @@
 	// uni.login 获取 weixin 获取 code
 	// 调用后台的 login，用 code 获取 token 和 openid
 
-	import { getOpenId, getProfile, checkSession, waiting } from '../../common/utils';
+	import { getOpenId, getProfile, checkSession, waiting, plsLogin } from '../../common/utils';
 	import { loginInfo_default, ICommenter } from '../../common/common';
 	import { addOrUpdateCommenter } from '../../service'
 
@@ -64,17 +64,18 @@
 	const loginInfo = ref(loginInfo_default);
 	const adminVisible = ref(false);
 
-	const commonUseSettings = ref([
-		{ id: 'wrongbook', 'label': '错题本', 'icon': 'order' },
-		{ id: 'comment', 'label': '评论', 'icon': 'chat-fill' },
-		{ id: 'favorite', 'label': '收藏', 'icon': 'star-fill' }])
+	// const commonUseSettings = ref([
+	// 	{ id: 'wrongbook', 'label': '错题本', 'icon': 'order' },
+	// 	{ id: 'comment', 'label': '评论', 'icon': 'chat-fill' },
+	// 	{ id: 'favorite', 'label': '收藏', 'icon': 'star-fill' }])
+	const commonUseSettings = ref([]);
 
 	const notCommonUseSettings = ref([
-		{ id: 'history', 'label': '我的做题记录', 'icon': 'order' },
+		// { id: 'history', 'label': '我的做题记录', 'icon': 'order' },
 		{ id: 'like', 'label': '我收到的赞', 'icon': 'thumb-up-fill' },
-		{ id: 'share', 'label': '分享', 'icon': 'share-fill' },
+		// { id: 'share', 'label': '分享', 'icon': 'share-fill' },
 		{ id: 'feedback', 'label': '问题反馈', 'icon': 'chat-fill' },
-		{ id: 'settings', 'label': '设置', 'icon': 'setting-fill' },
+		// { id: 'settings', 'label': '设置', 'icon': 'setting-fill' },
 		{ id: 'about', 'label': '关于程序', 'icon': 'error-circle' }])
 
 	onMounted(async () => {
@@ -102,8 +103,13 @@
 	const onClick_notCommonUseSettings = (evt) => {
 		const { id } = evt.currentTarget.dataset;
 		console.log('onClick_notCommonUseSettings id', id);
+		
 		if (id !== 'like') waiting();
 		if (id === "like") {
+			if( !loggedIn.value ){
+				plsLogin();
+				return ;
+			}
 			uni.navigateTo({
 				url: "/pages/like/like"
 			})

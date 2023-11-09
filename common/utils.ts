@@ -17,6 +17,13 @@ const waiting = () => {
 	})
 }
 
+const plsLogin = () => {
+	uni.showToast({
+		title: "请先登录",
+		duration: 1000
+	})
+}
+
 /** 格式化时间 */
 const formatTime = (totalMinutes : number) => {
 	let hours = Math.floor(totalMinutes / 60);
@@ -166,5 +173,6 @@ export {
 	checkSession,
 	quizTypeArray,
 	formatTime,
-	waiting
+	waiting,
+	plsLogin
 }
