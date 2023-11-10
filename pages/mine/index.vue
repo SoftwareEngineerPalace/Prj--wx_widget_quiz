@@ -2,7 +2,7 @@
 	<view class="mine-wrapper padding30">
 		<view class="card mb30">
 			<view v-if="loggedIn" class="hbox mb30" style="justify-content: center;" @click="login">
-				<input type="nickname" class="mine__name weui-input text-primary" placeholder="点击修改名字"
+				<input type="nickname" class="mine__name weui-input text-primary" placeholder="修改名字"
 					:value="loginInfo.name" @change="onNameChange" />
 				<button class="mine__avatar" open-type="chooseAvatar" @chooseavatar="onChooseAvatar">
 					<u--image :src="loginInfo.url" shape="circle" width="80px" height="80px"></u--image>
@@ -103,12 +103,12 @@
 	const onClick_notCommonUseSettings = (evt) => {
 		const { id } = evt.currentTarget.dataset;
 		console.log('onClick_notCommonUseSettings id', id);
-		
+
 		if (id !== 'like') waiting();
 		if (id === "like") {
-			if( !loggedIn.value ){
+			if (!loggedIn.value) {
 				plsLogin();
-				return ;
+				return;
 			}
 			uni.navigateTo({
 				url: "/pages/like/like"
@@ -181,8 +181,9 @@
 			overflow-y: auto;
 
 			.mine__name {
-				width: 220rpx;
-				text-align: center;
+				width: 200rpx;
+				text-align: left;
+				
 			}
 
 			.mine__avatar {

@@ -1,7 +1,7 @@
 <template>
 	<view class='home-wrapper'>
 		<!-- 1 当前题库 -->
-		<view class="card mb30" @click="onClickTitle">
+		<view class="card mb40" @click="onClickTitle">
 			<view class="hbox mb20" style="justify-content: center;">
 				<view class="text-primary" style="margin-right: 20rpx;">{{`当前题库: ${quizNameDic.get(curQuizType)}`}}
 				</view>
@@ -11,7 +11,7 @@
 		</view>
 
 		<!-- 2 继续 -->
-		<view class="card mb30">
+		<view class="card mb40">
 			<view class="text-primary mb20" style="align-self: flex-start;">顺序练习</view>
 			<view class="text-sm-grey mb20" style="align-self: flex-start;">可选择从哪道题开始 有进度记录</view>
 			<view class="hbox mb20" style="justify-content: space-between;">
@@ -25,7 +25,7 @@
 		</view>
 
 		<!-- 3 回顾练习 -->
-		<view class="card mb30">
+		<view class="card mb40">
 			<view class="text-primary mb20" style="align-self: flex-start;">回顾练习</view>
 			<view class="text-sm-grey mb20" style="align-self: flex-start;">练习错题本 / 收藏夹中的题目</view>
 			<button class="btn-primary mb20" @click="startErrCollection">错题练习</button>
