@@ -11,7 +11,7 @@
 		<!-- 4 个选项 -->
 		<text class="quiz__option mb20" style="flex: none;" v-for="(option) in checkboxList" :key="option.id" autoHeight
 			v-bind:class="{ option: true, 
-			isCorrect: option.isCorrect}" >
+			isCorrect: option.isCorrect}">
 			{{option.value}}
 		</text>
 
@@ -42,8 +42,9 @@
 			:style="{visibility:quizController.getCurQuizIndex() > 0?'visible':'hidden'}" @click="onPrev"></button>
 		<!-- 2 收藏 -->
 		<view class="group-fav" @click="toggleFavorite">
-			<u-icon :name="curQuiz.favorite?'star-fill':'star'" color="#5ab8b3" size="40"></u-icon>
-			<view class="text-sm favorite-word">{{ curQuiz.favorite ? '取消收藏':'收藏'}}</view>
+			<u-icon :name="curQuiz.favorite?'star-fill':'star'" :color="curQuiz.favorite?'#5ab8b3':'0xbbbbbb'"
+				size="40"></u-icon>
+			<view :style="{color:curQuiz.favorite?'#5ab8b3':'0xbbbbbb'}" class="text-sm ml10">{{'收藏'}}</view>
 		</view>
 		<!-- 3 下一题 -->
 		<button class="btn-sub w200" v-text="'下一题'" :style="{visibility:quizController.hasNext()?'visible':'hidden'}"

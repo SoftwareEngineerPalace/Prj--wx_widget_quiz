@@ -58,9 +58,15 @@
 			:style="{visibility:quizController.getCurQuizIndex() > 0?'visible':'hidden'}" @click="onPrev"></button>
 		<!-- 2 收藏 -->
 		<view class="group-fav" @click="toggleFavorite">
-			<u-icon :name="curQuiz.favorite?'star-fill':'star'" color="#5ab8b3" size="40"></u-icon>
-			<view class="text-sm favorite-word">{{ curQuiz.favorite ? '取消收藏':'收藏'}}</view>
+			<u-icon :name="curQuiz.favorite?'star-fill':'star'" :color="curQuiz.favorite?'#5ab8b3':'0xbbbbbb'"
+				size="40"></u-icon>
+			<view :style="{color:curQuiz.favorite?'#5ab8b3':'0xbbbbbb'}" class="text-sm ml10">{{'收藏'}}</view>
 		</view>
+		<!-- 3 反馈 -->
+		<button plain class="hbox btn-mini" open-type="feedback">
+			<u-icon name="chat-fill" color="0xbbbbbb" size="40"></u-icon>
+			<view class='text-sm ml10'>反馈</view>
+		</button>
 		<!-- 3 下一题 -->
 		<button class="btn-sub w200" v-text="'下一题'" :style="{visibility:quizController.hasNext()?'visible':'hidden'}"
 			@click="onNext"></button>
@@ -515,7 +521,7 @@
 		width: 100%;
 		height: 100rpx;
 		position: fixed;
-		background-color: 0xeeeeee;
+		background-color: $uni-bg-color-grey;
 		bottom: 0;
 		display: flex;
 		flex-direction: row;
@@ -532,13 +538,20 @@
 			height: 50rpx;
 			align-items: center;
 			width: 200rpx;
-			margin-left: 50rpx;
-			margin-right: 50rpx;
+			// margin-left: 50rpx;
+			// margin-right: 50rpx;
 
 			.favorite-word {
 				margin-left: 10rpx;
 				// border: 1px solid red;
 			}
+		}
+
+		.btn-mini {
+			border: none;
+			height: 50rpx;
+			width: 200rpx;
+			font-size: $uni-font-size-sm;
 		}
 	}
 </style>

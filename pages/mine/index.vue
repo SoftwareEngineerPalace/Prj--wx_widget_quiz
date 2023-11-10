@@ -1,7 +1,7 @@
 <template>
 	<view class="mine-wrapper padding30">
-		<view class="card mb30">
-			<view v-if="loggedIn" class="hbox mb30" style="justify-content: center;" @click="login">
+		<view class="card mb40">
+			<view v-if="loggedIn" class="hbox" style="justify-content: center;" @click="login">
 				<input type="nickname" class="mine__name weui-input text-primary" placeholder="修改名字"
 					:value="loginInfo.name" @change="onNameChange" />
 				<button class="mine__avatar" open-type="chooseAvatar" @chooseavatar="onChooseAvatar">
@@ -9,29 +9,47 @@
 				</button>
 			</view>
 
-			<u-line v-if="loggedIn" class="line" color="#dddddd"></u-line>
+			<u-line v-if="false" class="line" color="#dddddd"></u-line>
 
 			<view v-if="false" class="hbox" style="padding-top: 30rpx; justify-content: space-evenly;">
 				<view class="vbox" v-for="(item) in commonUseSettings" :key="item.id" @click="waiting">
-					<u-icon :name="item.icon" color="#bbbbbb" size="50"></u-icon>
-					<view>{{item.label}}</view>
+					<u-icon :name="item.icon" color="#bbbbbb" size="70"></u-icon>
+					<view class="mt20">{{item.label}}</view>
 				</view>
 			</view>
 		</view>
 
 		<view class="card">
-			<view class="hbox" style="padding:20rpx; justify-content: space-between; border-bottom: 1px solid #eeeeee;"
-				v-for="(item) in notCommonUseSettings" :key="item.id">
-				<view class="hbox" :data-id="item.id" @click="onClick_notCommonUseSettings">
-					<u-icon custom-style="margin-right:30rpx" :name="item.icon" color="#bbbbbb" size="50"></u-icon>
-					<view class='label'>{{ item.label }}</view>
+			<button plain class="hbox menu-btn" @click="onClickLike"
+				style="padding:20rpx; justify-content: space-between; border-bottom: 1px solid #eeeeee;">
+				<view class="hbox">
+					<u-icon custom-style="margin-right:30rpx" name="thumb-up-fill" color="#bbbbbb" size="50"></u-icon>
+					<view class='label'>我收到的赞</view>
 				</view>
 				<u-icon name="arrow-right" color="#bbbbbb" size="40"></u-icon>
-			</view>
+			</button>
 
-			<button class="btn-primary mb20 mt20" @click="login" v-if="!loggedIn">点击登录</button>
+			<button plain class="hbox menu-btn" open-type="feedback"
+				style="padding:20rpx; justify-content: space-between; border-bottom: 1px solid #eeeeee;">
+				<view class="hbox">
+					<u-icon custom-style="margin-right:30rpx" name="chat-fill" color="#bbbbbb" size="50"></u-icon>
+					<view class='label'>问题反馈</view>
+				</view>
+				<u-icon name="arrow-right" color="#bbbbbb" size="40"></u-icon>
+			</button>
 
-			<button class="btn-primary mb20 mt20" @click="logout" v-if="loggedIn">退出登录</button>
+			<button plain class="hbox menu-btn"
+				style="padding:20rpx; justify-content: space-between; border-bottom: 1px solid #eeeeee;">
+				<view class="hbox">
+					<u-icon custom-style="margin-right:30rpx" name="error-circle" color="#bbbbbb" size="50"></u-icon>
+					<view class='label'>关于</view>
+				</view>
+				<u-icon name="arrow-right" color="#bbbbbb" size="40"></u-icon>
+			</button>
+
+			<button class="btn-primary mb20 mt40" @click="login" v-if="!loggedIn">点击登录</button>
+
+			<button class="btn-primary mb20 mt40" @click="logout" v-if="loggedIn">退出登录</button>
 
 			<button v-if="loginInfo.id==='oGJqI61rEAICwpBqGgw_hteePEbY'" class="btn-primary mb20"
 				@click="adminVisible=!adminVisible">{{adminVisible?'关闭后台':'显示后台'}}</button>
@@ -64,11 +82,11 @@
 	const loginInfo = ref(loginInfo_default);
 	const adminVisible = ref(false);
 
-	// const commonUseSettings = ref([
-	// 	{ id: 'wrongbook', 'label': '错题本', 'icon': 'order' },
-	// 	{ id: 'comment', 'label': '评论', 'icon': 'chat-fill' },
-	// 	{ id: 'favorite', 'label': '收藏', 'icon': 'star-fill' }])
-	const commonUseSettings = ref([]);
+	const commonUseSettings = ref([
+		{ id: 'wrongbook', 'label': '错题本', 'icon': 'order' },
+		{ id: 'comment', 'label': '评论', 'icon': 'chat-fill' },
+		{ id: 'favorite', 'label': '收藏', 'icon': 'star-fill' }])
+	// const commonUseSettings = ref([]);
 
 	const notCommonUseSettings = ref([
 		// { id: 'history', 'label': '我的做题记录', 'icon': 'order' },
@@ -100,20 +118,14 @@
 		addOrUpdateCommenter(loginInfo.value);
 	}
 
-	const onClick_notCommonUseSettings = (evt) => {
-		const { id } = evt.currentTarget.dataset;
-		console.log('onClick_notCommonUseSettings id', id);
-
-		if (id !== 'like') waiting();
-		if (id === "like") {
-			if (!loggedIn.value) {
-				plsLogin();
-				return;
-			}
-			uni.navigateTo({
-				url: "/pages/like/like"
-			})
+	const onClickLike = (evt) => {
+		if (!loggedIn.value) {
+			plsLogin();
+			return;
 		}
+		uni.navigateTo({
+			url: "/pages/like/like"
+		})
 	}
 
 	const onNameChange = (e) => {
@@ -183,7 +195,7 @@
 			.mine__name {
 				width: 200rpx;
 				text-align: left;
-				
+
 			}
 
 			.mine__avatar {
@@ -211,5 +223,11 @@
 				}
 			}
 		}
+	}
+
+	.menu-btn {
+		border: none;
+		height: 90rpx;
+		font-size: $uni-font-size-sm;
 	}
 </style>
