@@ -17,9 +17,11 @@
 </template>
 
 <script lang="ts" setup>
+	import queryString from 'query-string';
+	import { ref } from 'vue';
 	import { onShow, onLoad, onInit } from '@dcloudio/uni-app';
 	import { getReceivedLike } from '../../service';
-	import { ref } from 'vue';
+	import { underlineToCamel } from '../../common/utils';
 
 	const list = ref([]);
 	onShow(async () => {
@@ -28,7 +30,11 @@
 	})
 
 	const gotoQuiz = (evt) => {
-		console.log(evt.currentTarget.dataset.vo);
+		const { quiz_id, quiz_type } = evt.currentTarget.dataset.vo;
+		const data = underlineToCamel({ quiz_id, quiz_type });
+		const queryStr = queryString.stringify(data);
+		const url = `/pages/likeDetail/likeDetail?${queryStr}`;
+		uni.navigateTo({ url })
 	}
 </script>
 

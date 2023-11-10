@@ -11,28 +11,12 @@
 		<!-- 4 个选项 -->
 		<text class="quiz__option mb20" style="flex: none;" v-for="(option) in checkboxList" :key="option.id" autoHeight
 			v-bind:class="{ option: true, 
-			selected: option.selected, 
-			isCorrect: curQuiz.submitted && option.isCorrect, 
-			isWrong: curQuiz.submitted && option.selected && !option.isCorrect}" :data-id="option.id" @click="onClickOption">
+			isCorrect: option.isCorrect}" >
 			{{option.value}}
 		</text>
 
-		<!-- 控制进度按钮 -->
-		<view class="quiz__group-btn mb30" v-if="showGroupBtns">
-			<button class="btn-primary" v-text="'提交'" v-show="!curQuiz.submitted && quizController.hasNext()"
-				@click="onSubmit"></button>
-
-			<button class="btn-primary" v-text="'进入结算页'"
-				v-show="curExerciseType === ExerciseType.Common && curQuiz.submitted && !quizController.hasNext() "
-				@click="onNext"></button>
-
-			<button class="btn-primary" v-text="'回到首页'"
-				v-show="curExerciseType !== ExerciseType.Common && curQuiz.submitted && !quizController.hasNext() "
-				@click="onNext"></button>
-		</view>
-
 		<!-- 评论区 start -->
-		<view class="card" v-show="curQuiz.submitted">
+		<view class="card mt40">
 			<view class="comment-title-row">
 				<view class="hbox">
 					<view class="text-sm">评论</view>&nbsp;·&nbsp; <view class="text-sm">
@@ -97,8 +81,9 @@
 
 	import quizController from '../../common/quizController';
 	import comment from "../../components/comment/comment.vue";
+	import { getQuizById } from '../../service/index'
 
-	const quizType = ref("");        // 题目类型
+	const ref_quizType = ref("");        // 题目类型
 	const curExerciseType = ref("")  // 做题类型
 	const showGroupBtns = ref(false);
 	const curQuiz = ref({} as IQuiz);// 当前题目的数据
@@ -111,43 +96,20 @@
 	// 关于删除弹窗
 	const showDeletePopup = ref(false);
 
-	onLoad(async (evt : { quizType : string, exerciseType : string, latest_quiz_index : number }) => {
-		const { exerciseType, latest_quiz_index } = evt;
+	onLoad(async (evt : { quizType : string, quizId : string }) => {
+		const { quizType, quizId } = evt;
 		// 1 设置类型
-		curExerciseType.value = exerciseType;
-		quizType.value = evt.quizType;
+		ref_quizType.value = evt.quizType;
 
 		// 2 设置 bar title
 		const title : string = quizNameDic.get(evt.quizType) as string;
 		uni.setNavigationBarTitle({ title });
 
-		// 3 加载所有题目 这个太垃圾了 得重构
-		let list : IQuiz[] = [];
-		if (exerciseType === ExerciseType.Common) {
-			list = (getApp().globalData as any).quizList;
-		} else if (exerciseType === ExerciseType.ErrCollection) {
-			list = (getApp().globalData as any).errList;
-		} else if (exerciseType === ExerciseType.Favorite) {
-			list = (getApp().globalData as any).favList;
-		}
-		if (list.length === 0) {
-			uni.showToast({
-				title: "没有题目",
-				duration: 1000
-			})
-			setTimeout(() => {
-				uni.navigateBack();
-			}, 1000)
-			return;
-		}
-		quizList.value.push(...list);
-		quizController.setQuizList(list);
+		// 3 加题题目数据
+		curQuiz.value = await getQuizById(quizType, quizId);
+		updateQuiz(curQuiz.value);
 
-		// 加载做题进度
-		quizController.setCurQuizIndex(parseInt(latest_quiz_index));
-
-		onNext();
-
+		// 4 键盘区
 		uni.onKeyboardHeightChange(onKeyboardHeightChange);
 	});
 
@@ -164,79 +126,8 @@
 	// 刷新当前题目题干 
 	const title_str = computed(() => curQuiz.value.title ?? '');
 	const index_str = computed(() => {
-		curQuiz.value;
-		const sn = quizController.getCurQuizSN();
-		const count = quizController.getQuizCount();
-		if (sn < 1 || count < 1) {
-			return '';
-		}
-		if (curExerciseType.value === ExerciseType.Common) {
-			return sn !== 0 ? `${sn}/${count}.  ` : "";
-		} else {
-			return sn !== 0 ? `${sn}. ` : "";
-		}
+		return curQuiz.value?.sn ? `第 ${curQuiz.value?.sn} 题` : "";
 	})
-
-	const onClickOption = (evt : any) => {
-		const clicked_id = evt.target.dataset.id;
-		checkboxList.value.forEach((v : any) => {
-			if (v.id === clicked_id) {
-				v.selected = !v.selected;
-			}
-		})
-		const _userAnswer = checkboxList.value.filter((v : ICheckbox) => v.selected).map((v : ICheckbox) => v.id).join('');
-		userAnswer.value = _userAnswer;
-	};
-
-	const onSubmit = async () => {
-		curQuiz.value.submitted = true;
-		const token = uni.getStorageSync('token');
-		const isCorrect = curQuiz.value.answer === userAnswer.value;
-		const quiz_sn = quizController.getCurQuizSN();
-		const quizCount = quizController.getQuizCount();
-		const data = {
-			quiz_title: curQuiz.value.title,
-			quiz_id: curQuiz.value.id,
-			quizType: quizType.value,
-			token, isCorrect,
-			quiz_sn,
-			quiz_count: quizCount,
-			exerciseType: curExerciseType.value
-		};
-		// data 里的 quiz_count 可能没用，待删
-		await wx.cloud.callFunction({
-			name: 'answer',
-			data
-		});
-	};
-
-	const onPrev = () => {
-		curQuiz.value = { ...quizController.goPreview(), submitted: false };
-		// console.log('onPrev', curQuiz.value);
-		updateQuiz(curQuiz.value);
-	};
-
-	const onNext = () => {
-		const nextQuiz = quizController.goNext();
-		// console.dir('nextQuiz', nextQuiz);
-		if (!nextQuiz && curExerciseType.value === ExerciseType.Common) {
-			// console.log('onNext redirectTo quizType.value', quizType.value);
-			const queryStr = queryString.stringify({ quizType: quizType.value });
-			const url = `/pages/summary/index?${queryStr}`;
-			uni.redirectTo({ url })
-			return;
-		}
-
-		if (!nextQuiz && curExerciseType.value !== ExerciseType.Common) {
-			uni.navigateBack();
-			return;
-		}
-
-		if (nextQuiz !== null) {
-			curQuiz.value = { ...nextQuiz, submitted: false };
-			updateQuiz(curQuiz.value);
-		}
-	};
 
 	/** 初始化时，更新题目选项和评论区 */
 	const updateQuiz = (quiz : any) => {
@@ -322,7 +213,7 @@
 
 			at_first_level: !parent_id,
 			quiz_id: curQuiz.value.id,
-			quiz_type: quizType.value,
+			quiz_type: ref_quizType.value,
 			parent_id,
 
 			content: commentValue,

@@ -141,7 +141,7 @@ const traversal = (comment : IComment) => {
 }
 
 const underlineToCamel = (underline : unknown) => {
-	const list = Object.keys(camel).map((v : string) => {
+	const list = Object.keys(underline).map((v : string) => {
 		const key = v.split('_').map((str : string, index : number) => index === 0 ? str : str.charAt(0).toUpperCase() + str.slice(1)).join('');
 		return [key, underline[v]];
 	})

@@ -60,4 +60,15 @@ const getReceivedLike = async (quiz_type : string) => {
 	return rsp.result;
 };
 
-export { progressPostOrPut, getAllQuiz, getErrorCollectonQuiz, addOrUpdateCommenter, getFavoriteQuiz, getReceivedLike }
+const getQuizById = async (quizType : string, quizId : string) => {
+	const token = uni.getStorageSync('token');
+	const data = { quizType, quizId, token };
+	const rsp : any = await wx.cloud.callFunction({
+		name: 'quizGet',
+		data
+	});
+	console.log("getQuizById rsp", rsp.result?.list?.[0]);
+	return rsp.result?.list?.[0];
+};
+
+export { getQuizById, progressPostOrPut, getAllQuiz, getErrorCollectonQuiz, addOrUpdateCommenter, getFavoriteQuiz, getReceivedLike }

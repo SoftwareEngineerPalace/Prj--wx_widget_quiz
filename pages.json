@@ -69,6 +69,14 @@
 				"navigationBarTitleText": "收到的赞",
 				"enablePullDownRefresh": false
 			}
+		},
+		{
+			"path" : "pages/likeDetail/likeDetail",
+			"style" : 
+			{
+				"navigationBarTitleText" : "",
+				"enablePullDownRefresh" : false
+			}
 		}
 	],
 	"globalStyle": {
