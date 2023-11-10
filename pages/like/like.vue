@@ -12,6 +12,7 @@
 				<view class="comment-content text-sm-grey">{{vo.content}}</view>
 			</view>
 		</view>
+		<view class="notice-empty" v-if='list.length === 0'>还没收到赞</view>
 	</view>
 </template>
 
@@ -24,7 +25,6 @@
 	onShow(async () => {
 		const token = uni.getStorageSync('token');
 		list.value = await getReceivedLike(token);
-		console.log('like onShow list', list.value);
 	})
 
 	const gotoQuiz = (evt) => {

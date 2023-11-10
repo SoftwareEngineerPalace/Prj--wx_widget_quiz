@@ -25,7 +25,7 @@
 			</view>
 
 			<comment v-for="(sub_comment) in vo.comment_list" style="width: 100%;" :key="sub_comment.id"
-				:vo="sub_comment" :data-vo="sub_comment" @longPressComment="onLongPressEvtBubble"
+				:vo="sub_comment" :user_ids_like="sub_comment.user_ids_like" :data-vo="sub_comment" @longPressComment="onLongPressEvtBubble"
 				@evt_clickLike='onLikeClicked'></comment>
 		</view>
 	</view>
@@ -41,7 +41,6 @@
 	const ihaveLiked = ref(false);
 
 	watch(() => props.user_ids_like, (newVal, oldVal) => {
-		console.log("comment watch", { oldVal, newVal });
 		const open_user_id = getApp().globalData.loginInfo.id;
 		ihaveLiked.value = !!props.vo.user_ids_like?.some(vo => vo.given_like_user_id.includes(open_user_id));
 	});

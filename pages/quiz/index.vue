@@ -124,7 +124,7 @@
 		const title : string = quizNameDic.get(evt.quizType) as string;
 		uni.setNavigationBarTitle({ title });
 
-		// 3 加载所有题目
+		// 3 加载所有题目 这个太垃圾了 得重构
 		let list : IQuiz[] = [];
 		if (exerciseType === ExerciseType.Common) {
 			list = (getApp().globalData as any).quizList;
@@ -247,7 +247,7 @@
 
 		commentListModel.value = [];
 
-		updateComment(quiz?.id)
+		updateComment(quiz?.id);
 	}
 
 	/** 刷新当前题目选项 */
@@ -275,6 +275,7 @@
 		});
 		if (rsp.result.length === 0) return;
 		const list = rsp.result;
+		console.log('quiz updateComment', list);
 		// 2 把 name 和 url 赋到 commenter_name 和 commenter_url 上
 		addCommenterParam(list);
 		// 3 数据 model
@@ -323,7 +324,8 @@
 			id: generateUUID(),
 
 			at_first_level: !parent_id,
-			quiz_id: parent_id ? null : curQuiz.value.id,
+			quiz_id: curQuiz.value.id,
+			quiz_type: quizType.value,
 			parent_id,
 
 			content: commentValue,
@@ -422,7 +424,7 @@
 		// 更新点赞人列表
 		comment.user_ids_like = comment.user_ids_like || [];
 		comment.user_ids_like = liked ? comment.user_ids_like.concat({ given_like_user_id: myUserId, like_time: new Date().getTime() })
-			: comment.user_ids_like.filter(vo => vo.userId !== myUserId);
+			: comment.user_ids_like.filter(vo => vo.given_like_user_id !== myUserId);
 		// 2 存到数据库里
 		const rsp = await wx.cloud.callFunction({
 			name: 'commentUpdate',
