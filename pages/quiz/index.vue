@@ -57,7 +57,7 @@
 	</view>
 	<view class="group-bottom">
 		<!-- 1 上一题 -->
-		<button class="btn-sub" v-text="'上一题'"
+		<button class="btn-sub w200" v-text="'上一题'"
 			:style="{visibility:quizController.getCurQuizIndex() > 0?'visible':'hidden'}" @click="onPrev"></button>
 		<!-- 2 收藏 -->
 		<view class="group-fav" @click="toggleFavorite">
@@ -65,7 +65,7 @@
 			<view class="text-sm favorite-word">{{ curQuiz.favorite ? '取消收藏':'收藏'}}</view>
 		</view>
 		<!-- 3 下一题 -->
-		<button class="btn-sub" v-text="'下一题'" :style="{visibility:quizController.hasNext()?'visible':'hidden'}"
+		<button class="btn-sub w200" v-text="'下一题'" :style="{visibility:quizController.hasNext()?'visible':'hidden'}"
 			@click="onNext"></button>
 	</view>
 	<!-- 以后抽取出一个组件 -->
@@ -444,7 +444,6 @@
 		.quiz-wrapper {
 			width: 100vw;
 			height: 100vh;
-			// border: 1px solid red;
 			overflow-y: auto;
 			flex-grow: 1;
 			padding-bottom: 130rpx;
@@ -452,7 +451,6 @@
 			flex-direction: column;
 			justify-content: flex-start;
 			background-color: $uni-bg-color-grey;
-			// border: 1px solid red;
 
 			.quiz__group-title {
 				font-size: 38rpx;
@@ -520,13 +518,15 @@
 		width: 100%;
 		height: 100rpx;
 		position: fixed;
-		background-color: white;
+		background-color: 0xeeeeee;
 		bottom: 0;
 		display: flex;
 		flex-direction: row;
 		justify-content: space-between;
 		align-items: center;
 		padding: 10rpx;
+		padding-bottom: constant(safe-area-inset-bottom);
+		padding-bottom: env(safe-area-inset-bottom);
 
 		.group-fav {
 			display: flex;
@@ -540,6 +540,7 @@
 
 			.favorite-word {
 				margin-left: 10rpx;
+				// border: 1px solid red;
 			}
 		}
 	}
