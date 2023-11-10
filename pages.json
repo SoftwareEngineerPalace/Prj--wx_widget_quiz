@@ -44,7 +44,7 @@
 		}, {
 			"path": "pages/summary/index",
 			"style": {
-				"navigationBarTitleText": "",
+				"navigationBarTitleText": "我的成绩",
 				"enablePullDownRefresh": false,
 				"navigationBarBackgroundColor": "#eeeeee"
 			}

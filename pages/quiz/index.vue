@@ -21,6 +21,9 @@
 		<view class="quiz__group-btn mb30" v-if="showGroupBtns">
 			<button class="btn-primary" v-text="'提交'" v-show="!curQuiz.submitted && quizController.hasNext()"
 				@click="onSubmit"></button>
+			
+			<button class="btn-sub" v-text="'提交'" v-show="!curQuiz.submitted && !quizController.hasNext()"
+				@click="onSubmit"></button>	
 
 			<button class="btn-primary" v-text="'进入结算页'"
 				v-show="curExerciseType === ExerciseType.Common && curQuiz.submitted && !quizController.hasNext() "

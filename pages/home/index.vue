@@ -7,7 +7,7 @@
 				</view>
 				<u-icon class="icon" name="arrow-down-fill" color="#5ab8b3" size="25"></u-icon>
 			</view>
-			<view class="text-sm-grey">{{processDesc}}</view>
+			<view class="text-sm-grey">{{`练习进度 ${finishedQuizCount}/${quizCount}`}}</view>
 		</view>
 
 		<!-- 2 继续 -->
@@ -101,15 +101,15 @@
 		initData()
 	})
 
-	const initData = () => {
-		// 1 进度
-		updateProgress();
-		// 2 全部题
-		getAllQuizList();
+	const initData = async () => {
 		// 2 错题本
 		getErrorQuizList();
 		// 3 收藏
 		getFavoriteQuizList();
+		// 2 全部题
+		await getAllQuizList();
+		// 1 进度
+		updateProgress();
 	}
 
 	// 1 头部
@@ -217,9 +217,10 @@
 			name: 'getProcess',
 			data: { token, quiz_type: curQuizType.value }
 		});
-		// 下面三行代码 真别扭
+		// 下面几行代码 真别扭
 		const { latest_quiz_sn, finished_quiz_count } = rsp.result;
-		latestQuizSn.value = latest_quiz_sn;
+		console.log({ latest_quiz_sn, quizCount: quizCount.value });
+		latestQuizSn.value = latest_quiz_sn !== quizCount.value ? latest_quiz_sn : 0;
 		finishedQuizCount.value = finished_quiz_count;
 	}
 
@@ -238,14 +239,6 @@
 		const list = await getFavoriteQuiz(curQuizType.value);
 		(getApp().globalData as any).favList = list;
 	}
-
-	const processDesc = computed(() => {
-		if (quizCount.value) {
-			return `练习进度 ${finishedQuizCount.value}/${quizCount.value}`;
-		} else {
-			return `练习进度 ${finishedQuizCount.value}`;
-		}
-	})
 </script>
 
 <style lang="scss" scoped>
