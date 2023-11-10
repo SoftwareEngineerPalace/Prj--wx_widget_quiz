@@ -39,7 +39,8 @@
 			</button>
 
 			<button plain class="hbox menu-btn"
-				style="padding:20rpx; justify-content: space-between; border-bottom: 1px solid #eeeeee;">
+				style="padding:20rpx; justify-content: space-between; border-bottom: 1px solid #eeeeee;"
+				@click="onAbout">
 				<view class="hbox">
 					<u-icon custom-style="margin-right:30rpx" name="error-circle" color="#bbbbbb" size="50"></u-icon>
 					<view class='label'>关于</view>
@@ -81,6 +82,12 @@
 
 	const loginInfo = ref(loginInfo_default);
 	const adminVisible = ref(false);
+
+	const onAbout = () => {
+		uni.navigateTo({
+			url: "/pages/about/about"
+		})
+	}
 
 	const commonUseSettings = ref([
 		{ id: 'wrongbook', 'label': '错题本', 'icon': 'order' },

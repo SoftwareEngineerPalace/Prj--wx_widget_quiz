@@ -77,6 +77,14 @@
 				"navigationBarTitleText" : "",
 				"enablePullDownRefresh" : false
 			}
+		},
+		{
+			"path" : "pages/about/about",
+			"style" : 
+			{
+				"navigationBarTitleText" : "关于",
+				"enablePullDownRefresh" : false
+			}
 		}
 	],
 	"globalStyle": {
