@@ -21,9 +21,9 @@
 		<view class="quiz__group-btn mb30" v-if="showGroupBtns">
 			<button class="btn-primary" v-text="'提交'" v-show="!curQuiz.submitted && quizController.hasNext()"
 				@click="onSubmit"></button>
-			
+
 			<button class="btn-sub" v-text="'提交'" v-show="!curQuiz.submitted && !quizController.hasNext()"
-				@click="onSubmit"></button>	
+				@click="onSubmit"></button>
 
 			<button class="btn-primary" v-text="'进入结算页'"
 				v-show="curExerciseType === ExerciseType.Common && curQuiz.submitted && !quizController.hasNext() "
@@ -478,13 +478,19 @@
 				}
 
 				&.isCorrect {
-					background-color: $uni-theme-primary;
-					color: white;
+					// background-color: $uni-color-success;
+					// color: white;
+					background-color: white;
+					border: 2rpx solid $uni-color-success;
+					color: $uni-color-success;
 				}
 
 				&.isWrong {
-					background-color: $uni-color-error;
-					color: white;
+					// background-color: $uni-color-error;
+					// color: white;
+					background-color: white;
+					border: 2rpx solid $uni-color-error;
+					color: $uni-color-error;
 				}
 			}
 

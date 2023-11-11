@@ -49,7 +49,7 @@
 		<button class="btn-sub mb30" style="width: 100%;" @click="closeSelectQuizTypePopup">取消</button>
 	</u-popup>
 
-	<u-popup :show="showQuizSelectPopup" round="20" :custom-style="{ padding: '20px', backgroundColor: '#ffffff', maxHeight: '650rpx', display:'flex', flexDirection: 'column', 
+	<u-popup :safeAreaInsetBottom='false' :show="showQuizSelectPopup" round="20" :custom-style="{ padding: '20px', backgroundColor: '#ffffff', maxHeight: '650rpx', display:'flex', flexDirection: 'column', 
 	justifyContent:'flex-start', alignItems:'center' }" mode="bottom" @close="onQuizSelectPopupClose"
 		@open="onQuizSelectPopupOpen" :close-on-click-overlay="true">
 		<view class="grid-quiz-sn">
@@ -170,7 +170,7 @@
 		// latestQuizSn db 更新
 		progressPostOrPut(curQuizType.value, latestQuizSn.value);
 		// 显示该题
-		onBtnContinue();
+		// onBtnContinue();
 	}
 
 	/** 3 错题本 */
@@ -243,11 +243,11 @@
 		const list = await getFavoriteQuiz(curQuizType.value);
 		(getApp().globalData as any).favList = list;
 	}
-	
-	const gotoSummary = ()=>{
+
+	const gotoSummary = () => {
 		const quizType = curQuizType.value;
 		uni.navigateTo({
-			url:`/pages/summary/index?quizType=${quizType}`
+			url: `/pages/summary/index?quizType=${quizType}`
 		})
 	}
 </script>
