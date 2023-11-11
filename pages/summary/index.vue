@@ -108,9 +108,9 @@
 			data: { token, quiz_type }
 		};
 		let { result: list } = await wx.cloud.callFunction(data);
-		// console.log('summary getRanking', { list });
+		console.log('summary getRanking', { list });
 		// list = [...list, ...list];
-		const sorted_list = list.sort((a, b) => a.rate - b.rate);// rate 从大到小
+		const sorted_list = list.sort((a, b) => b.rate - a.rate);// rate 从大到小
 		rankList.value = sorted_list;
 		const { quiz_count, answer_times, correct_times, rate } = list.find(r => r.isMe);
 		correctRate.value = rate;
