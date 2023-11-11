@@ -522,7 +522,7 @@
 	// 包含收藏按钮的 group
 	.group-bottom {
 		width: 100%;
-		height: 100rpx;
+		// height: 100rpx;
 		position: fixed;
 		background-color: $uni-bg-color-grey;
 		bottom: 0;
@@ -530,7 +530,7 @@
 		flex-direction: row;
 		justify-content: space-between;
 		align-items: center;
-		padding: 10rpx;
+		padding: 20rpx 20rpx 0 20rpx;
 		padding-bottom: constant(safe-area-inset-bottom);
 		padding-bottom: env(safe-area-inset-bottom);
 
