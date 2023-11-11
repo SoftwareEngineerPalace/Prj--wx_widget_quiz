@@ -113,22 +113,15 @@
 
 		// 3 排名数据
 		quizType.value = evt.quizType;
-		getRanking(evt.quizType);
+		getRanking();
 	})
 
-	const getRanking = async (quiz_type : string) => {
-		// 加载排名
-		const token = uni.getStorageSync('token');
-		const data = {
-			name: 'getQuizHistory',
-			data: { token, quiz_type }
-		};
-		let { result: list } = await wx.cloud.callFunction(data);
-		console.log('summary getRanking', { list });
-		// list = [...list, ...list];
-		const sorted_list = list.sort((a, b) => b.rate - a.rate);// 默认按 rate 从大到小排序
-		rankList.value = sorted_list;
-		const { quiz_count, answer_times, correct_times, rate } = list.find(r => r.isMe);
+	const getRanking = () => {
+		// 列表数据
+		rankList.value = (getApp().globalData as any).rankingList.sort((a, b) => b.rate - a.rate)
+		
+		// 个人数据
+		const { quiz_count, answer_times, correct_times, rate } = rankList.value.find(r => r.isMe);
 		correctRate.value = rate;
 		quizCount.value = quiz_count;
 		answerTimes.value = answer_times;

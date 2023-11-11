@@ -1,5 +1,5 @@
 const loginInfo_default = {
-	name: "小明",
+	name: "匿名",
 	url: 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0',
 	id: ''
 };

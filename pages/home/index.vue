@@ -68,7 +68,7 @@
 	import { checkSession } from '../../common/utils';
 	import queryString from 'query-string';
 	import { onShow, onLoad, onInit } from '@dcloudio/uni-app';
-	import { getAllQuiz, getErrorCollectonQuiz, getFavoriteQuiz, progressPostOrPut } from '../../service';
+	import { getAllQuiz, getErrorCollectonQuiz, getFavoriteQuiz, progressPostOrPut, getRankingList } from '../../service';
 
 	/** 上一个题目的序号 从 1 开始*/
 	const latestQuizSn = ref(0);
@@ -106,14 +106,16 @@
 	})
 
 	const initData = async () => {
-		// 2 错题本
+		// 1 错题本
 		getErrorQuizList();
-		// 3 收藏
+		// 2 收藏
 		getFavoriteQuizList();
-		// 2 全部题
+		// 3 全部题
 		await getAllQuizList();
-		// 1 进度
+		// 4 进度
 		updateProgress();
+		// 5 排名
+		getRanking();
 	}
 
 	// 1 头部
@@ -245,8 +247,23 @@
 		const list = await getFavoriteQuiz(curQuizType.value);
 		(getApp().globalData as any).favList = list;
 	}
+	
+	const getRanking = async ()=>{
+		const list = await getRankingList( curQuizType.value);
+		console.log("getRanking", list);
+		(getApp().globalData as any).rankingList = list;
+	}
 
 	const gotoSummary = () => {
+		const list = getApp().globalData.rankingList;
+		if (list.length === 0) {
+			uni.showToast({
+				title: "数据还没加载完",
+				icon: "none",
+				duration: 500
+			})
+			return;
+		}
 		const quizType = curQuizType.value;
 		uni.navigateTo({
 			url: `/pages/summary/index?quizType=${quizType}`

@@ -28,6 +28,16 @@ const getFavoriteQuiz = async (quiz_type : string) => {
 	return rsp.result;
 }
 
+const getRankingList = async (quizType:string)=>{
+	const token = uni.getStorageSync('token');
+	const data = {
+		name: 'getQuizHistory',
+		data: { token, quiz_type:quizType }
+	};
+	let { result: list } = await wx.cloud.callFunction(data);
+	return list;
+}
+
 const addOrUpdateCommenter = async (data : any) => {
 	// 存入内存
 	(getApp().globalData as any).loginInfo = data;
@@ -71,4 +81,4 @@ const getQuizById = async (quizType : string, quizId : string) => {
 	return rsp.result?.list?.[0];
 };
 
-export { getQuizById, progressPostOrPut, getAllQuiz, getErrorCollectonQuiz, addOrUpdateCommenter, getFavoriteQuiz, getReceivedLike }
+export { getRankingList, getQuizById, progressPostOrPut, getAllQuiz, getErrorCollectonQuiz, addOrUpdateCommenter, getFavoriteQuiz, getReceivedLike }
