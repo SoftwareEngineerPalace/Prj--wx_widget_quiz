@@ -32,6 +32,9 @@
 					<uni-th width="90rpx" sortable align="center">
 						<view @click="onSort('rate')">正确率</view>
 					</uni-th>
+					<uni-th width="90rpx" sortable align="center">
+						<view @click="onSort('received_like_count')">评论获赞</view>
+					</uni-th>
 				</uni-tr>
 				<uni-tr style="width: 100%;" align="center" v-for="(user, index) in rankList" :key="user.user_id">
 
@@ -70,6 +73,11 @@
 					<uni-td align="center">
 						<view class="grid-center">
 							{{ `${user.rate} %` }}
+						</view>
+					</uni-td>
+					<uni-td align="center">
+						<view class="grid-center">
+							{{ `${user?.received_like_count ?? 0}` }}
 						</view>
 					</uni-td>
 				</uni-tr>
@@ -139,7 +147,13 @@
 	}
 
 	// 关于排序
-	const isDescendingMap : Map<string, boolean> = new Map([['quiz_count', false], ['answer_times', false], ['correct_times', false], ['rate', true]]);
+	const isDescendingMap : Map<string, boolean> = new Map([
+		['quiz_count', false],
+		['answer_times', false],
+		['correct_times', false],
+		['rate', true],
+		['received_like_count', true],
+	]);
 	const onSort = (key : string) => {
 		let isDescending : boolean = !(isDescendingMap.get(key));
 		isDescendingMap.set(key, isDescending);
@@ -173,7 +187,7 @@
 	}
 
 	.uni-table-th {
-		padding: 0rpx 16rpx 10rpx 16rpx !important;
+		padding: 0rpx 10rpx 8rpx 10rpx !important;
 		vertical-align: middle;
 	}
 </style>
