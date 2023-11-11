@@ -14,9 +14,8 @@
 			<button class='btn-primary' @click="restart">重做</button>
 		</view>
 		<view class="text-primary mb20">排行榜</view>
-		<view class="card" style="flex-grow: 1; overflow-y: auto;">
+		<view class="card" style="flex-grow: 1; overflow-y: auto;padding-top: 25rpx;">
 			<uni-table stripe emptyText="正在计算...">
-				<!-- 表头行 -->
 				<uni-tr>
 					<uni-th width="60rpx" align="center">排名</uni-th>
 					<uni-th width="120rpx" align="center">用户</uni-th>
@@ -26,43 +25,43 @@
 					<uni-th width="90rpx" sortable align="center">正确道次</uni-th>
 					<uni-th width="90rpx" sortable align="center">正确率</uni-th>
 				</uni-tr>
-				<uni-tr style="width: 100%;" align="center" v-for="(r, index) in rankList" :key="index">
+				<uni-tr style="width: 100%;" align="center" v-for="(user, index) in rankList" :key="index">
 
 					<uni-td align="center">
 						<view class="grid-center">{{ index + 1 }}</view>
 					</uni-td>
 
 					<uni-td align="center">
-						<view class="grid-center">{{ r.user_name }}</view>
+						<view class="grid-center">{{ user.user_name }}</view>
 					</uni-td>
 
 					<uni-td align="center">
 						<view class="grid-center">
-							<u-image shape="circle" :src="r.user_url" width="50rpx" height="50rpx"></u-image>
+							<u-image shape="circle" :src="user.user_url" width="50rpx" height="50rpx"></u-image>
 						</view>
 					</uni-td>
 
 					<uni-td align="center">
 						<view class="grid-center">
-							{{ r.quiz_count }}
+							{{ user.quiz_count }}
 						</view>
 					</uni-td>
 
 					<uni-td align="center">
 						<view class="grid-center">
-							{{ r.answer_times }}
+							{{ user.answer_times }}
 						</view>
 					</uni-td>
 
 					<uni-td align="center">
 						<view class="grid-center">
-							{{ r.correct_times }}
+							{{ user.correct_times }}
 						</view>
 					</uni-td>
 
 					<uni-td align="center">
 						<view class="grid-center">
-							{{ `${r.rate} %` }}
+							{{ `${user.rate} %` }}
 						</view>
 					</uni-td>
 				</uni-tr>
@@ -148,7 +147,7 @@
 	}
 
 	.uni-table-th {
-		padding: 0 16rpx 10rpx 16rpx !important;
+		padding: 0rpx 16rpx 10rpx 16rpx !important;
 		vertical-align: middle;
 	}
 </style>
