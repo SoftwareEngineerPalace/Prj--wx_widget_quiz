@@ -182,6 +182,7 @@
 		if (list.length === 0) {
 			uni.showToast({
 				title: "还没有错题",
+				icon: "none",
 				duration: 1000
 			})
 			return;
@@ -201,6 +202,7 @@
 		// console.log('startErrCollection', { list });
 		if (list.length === 0) {
 			uni.showToast({
+				icon: "none",
 				title: "还没有收藏",
 				duration: 1000
 			})

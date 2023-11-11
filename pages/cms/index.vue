@@ -78,6 +78,7 @@
 		if (result) {
 			uni.showToast({
 				title: '更新成功',
+				icon: "none",
 				duration: 2000
 			});
 		}
@@ -95,6 +96,7 @@
 		if (result) {
 			uni.showToast({
 				title: '新建成功',
+				icon: "none",
 				duration: 2000
 			});
 			quizList.value.forEach((v : IQuiz) => {

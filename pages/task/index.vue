@@ -264,6 +264,7 @@
 		if (result) {
 			uni.showToast({
 				title: "更新成功",
+				icon: "none",
 				duration: 1000
 			})
 			showLoading.value = false;

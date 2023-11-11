@@ -142,6 +142,7 @@
 		if (list.length === 0) {
 			uni.showToast({
 				title: "没有题目",
+				icon: "none",
 				duration: 1000
 			})
 			setTimeout(() => {
@@ -422,16 +423,25 @@
 		// 为什么必须要有下两行代码
 		showDeletePopup.value = true;
 		showDeletePopup.value = false;
-		const { commentId, liked } = vo;
+		const { commentId, commenterId, liked } = vo;
 		const myUserId = getApp().globalData.loginInfo.id;
+		// 自己不可以给自己点赞
+		if (commenterId === myUserId) {
+			uni.showToast({
+				title: "只能点赞别人的评论",
+				icon: "none",
+				duration: 1000
+			})
+			return;
+		}
 		// 1 存到内存里
 		let list = toRaw(commentListModel.value);
 		const comment : IComment = findCommentById(list, vo.commentId);
-		// 更新点赞人列表
+		// 2 更新点赞人列表
 		comment.user_ids_like = comment.user_ids_like || [];
 		comment.user_ids_like = liked ? comment.user_ids_like.concat({ given_like_user_id: myUserId, like_time: new Date().getTime() })
 			: comment.user_ids_like.filter(vo => vo.given_like_user_id !== myUserId);
-		// 2 存到数据库里
+		// 3 存到数据库里
 		const rsp = await wx.cloud.callFunction({
 			name: 'commentUpdate',
 			data: { comment }

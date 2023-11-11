@@ -13,13 +13,15 @@ const generateUUID = () => {
 const waiting = () => {
 	uni.showToast({
 		title: "暂未开放",
-		duration: 1000
+		duration: 1000,
+		icon: "none",
 	})
 }
 
 const plsLogin = () => {
 	uni.showToast({
 		title: "请先登录",
+		icon: "none",
 		duration: 1000
 	})
 }
@@ -40,7 +42,7 @@ const formatTime = (totalMinutes : number) => {
 const showToast = (toast : any, message : string) => {
 	toast.show({
 		type: 'success',
-		icon: false,
+		icon: "none",
 		message,
 	});
 }

@@ -48,7 +48,7 @@
 	// 以下4个emits都应该换一下，用状态管理来实现
 	const onLike = () => {
 		// 变更数据
-		emits('evt_clickLike', { commentId: props.vo.id, liked: !ihaveLiked.value })
+		emits('evt_clickLike', { commentId: props.vo.id, liked: !ihaveLiked.value, commenterId: props.vo.commenter_id })
 	}
 
 	const onLikeClicked = (vo) => {
