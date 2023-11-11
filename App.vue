@@ -1,5 +1,4 @@
 <script>
-	import { qrCode } from './common/common'
 	export default {
 		onLaunch: function() {
 			// console.log('App Launch')
