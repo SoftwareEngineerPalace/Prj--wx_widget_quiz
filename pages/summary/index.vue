@@ -13,19 +13,27 @@
 			</view>
 			<button class='btn-primary' @click="restart">重做</button>
 		</view>
-		<!-- <view class="text-primary mb20">排行榜</view> -->
+		<view class="text-sm-grey mb10 mr30" style="align-self: flex-end;">(点击列头可排序)</view>
 		<view class="card" style="padding-top: 25rpx;">
 			<uni-table stripe emptyText="正在计算...">
 				<uni-tr>
 					<uni-th width="60rpx" align="center">排名</uni-th>
 					<uni-th width="120rpx" align="center">用户</uni-th>
 					<uni-th align="center"></uni-th>
-					<uni-th width="90rpx" sortable align="center">做题数</uni-th>
-					<uni-th width="90rpx" sortable align="center">做题道次</uni-th>
-					<uni-th width="90rpx" sortable align="center">正确道次</uni-th>
-					<uni-th width="90rpx" sortable align="center">正确率</uni-th>
+					<uni-th width="90rpx" sortable align="center">
+						<view @click="onSort('quiz_count')">做题数</view>
+					</uni-th>
+					<uni-th width="90rpx" sortable align="center">
+						<view @click="onSort('answer_times')">做题道次</view>
+					</uni-th>
+					<uni-th width="90rpx" sortable align="center">
+						<view @click="onSort('correct_times')">正确道次</view>
+					</uni-th>
+					<uni-th width="90rpx" sortable align="center">
+						<view @click="onSort('rate')">正确率</view>
+					</uni-th>
 				</uni-tr>
-				<uni-tr style="width: 100%;" align="center" v-for="(user, index) in rankList" :key="index">
+				<uni-tr style="width: 100%;" align="center" v-for="(user, index) in rankList" :key="user.user_id">
 
 					<uni-td align="center">
 						<view class="grid-center">{{ index + 1 }}</view>
@@ -72,7 +80,7 @@
 </template>
 
 <script lang="ts" setup>
-	import { Ref, ref, computed } from 'vue';
+	import { Ref, ref, computed, toRaw } from 'vue';
 	import { onLoad } from '@dcloudio/uni-app';
 	import { IQuizHistory } from '../../common/utils';
 	import { quizNameDic } from '../../common/common';
@@ -81,7 +89,7 @@
 	const quizCount = ref(0);
 	const answerTimes = ref(0);
 	const correctTimes = ref(0);
-	const rankList = ref(0);
+	const rankList = ref([]);
 	const correctRate = ref(0);
 
 	onLoad((evt : { quizType : string }) => {
@@ -110,7 +118,7 @@
 		let { result: list } = await wx.cloud.callFunction(data);
 		console.log('summary getRanking', { list });
 		// list = [...list, ...list];
-		const sorted_list = list.sort((a, b) => b.rate - a.rate);// rate 从大到小
+		const sorted_list = list.sort((a, b) => b.rate - a.rate);// 默认按 rate 从大到小排序
 		rankList.value = sorted_list;
 		const { quiz_count, answer_times, correct_times, rate } = list.find(r => r.isMe);
 		correctRate.value = rate;
@@ -128,6 +136,14 @@
 		};
 		await wx.cloud.callFunction(data);
 		uni.navigateBack();
+	}
+
+	// 关于排序
+	const isDescendingMap : Map<string, boolean> = new Map([['quiz_count', false], ['answer_times', false], ['correct_times', false], ['rate', true]]);
+	const onSort = (key : string) => {
+		let isDescending : boolean = !(isDescendingMap.get(key));
+		isDescendingMap.set(key, isDescending);
+		rankList.value = rankList.value.sort((a, b) => isDescending ? b[key] - a[key] : (a[key] - b[key]))
 	}
 </script>
 
