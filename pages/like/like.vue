@@ -19,9 +19,30 @@
 <script lang="ts" setup>
 	import queryString from 'query-string';
 	import { ref } from 'vue';
+	import { qrCode } from '../../common/common';
 	import { onShow, onLoad, onInit } from '@dcloudio/uni-app';
 	import { getReceivedLike } from '../../service';
 	import { underlineToCamel } from '../../common/utils';
+	import {
+		onShareAppMessage,
+		onShareTimeline
+	} from '@dcloudio/uni-app';
+
+	onShareAppMessage(() => {
+		return {
+			title: '软工题库',
+			path: 'pages/home/index',
+			imageUrl: qrCode,
+		};
+	});
+
+	onShareTimeline(() => {
+		return {
+			title: '软工题库',
+			path: 'pages/home/index',
+			imageUrl: qrCode,
+		};
+	})
 
 	const list = ref([]);
 	onShow(async () => {

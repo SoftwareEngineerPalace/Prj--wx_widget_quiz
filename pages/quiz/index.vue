@@ -99,13 +99,33 @@
 <script lang="ts" setup>
 	import { ref, computed, toRaw } from 'vue';
 	import { generateUUID, findCommentById, addCommenterParam } from '../../common/utils';
-	import { ICheckbox, IQuiz, quizNameDic, ExerciseType, IComment, ICommenter } from '../../common/common';
+	import { ICheckbox, IQuiz, quizNameDic, ExerciseType, IComment, ICommenter, qrCode } from '../../common/common';
 	import { words_deleted } from '../../common/langConfig';
 	import queryString from 'query-string';
 	import { onLoad, onUnload } from '@dcloudio/uni-app';
 
 	import quizController from '../../common/quizController';
 	import comment from "../../components/comment/comment.vue";
+	import {
+		onShareAppMessage,
+		onShareTimeline
+	} from '@dcloudio/uni-app';
+	
+	onShareAppMessage(() => {
+		return {
+			title: '软工题库',
+			path: 'pages/home/index',
+			imageUrl: qrCode,
+		};
+	});
+	
+	onShareTimeline(() => {
+		return {
+			title: '软工题库',
+			path: 'pages/home/index',
+			imageUrl: qrCode,
+		};
+	})
 
 	const quizType = ref("");        // 题目类型
 	const curExerciseType = ref("")  // 做题类型

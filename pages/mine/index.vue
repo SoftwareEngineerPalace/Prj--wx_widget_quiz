@@ -38,6 +38,15 @@
 				<u-icon name="arrow-right" color="#bbbbbb" size="40"></u-icon>
 			</button>
 
+			<button plain class="hbox menu-btn" @click="onShare"
+				style="padding:20rpx; justify-content: space-between; border-bottom: 1px solid #eeeeee;">
+				<view class="hbox">
+					<u-icon custom-style="margin-right:30rpx" name="share-fill" color="#bbbbbb" size="50"></u-icon>
+					<view class='label'>分享</view>
+				</view>
+				<u-icon name="arrow-right" color="#bbbbbb" size="40"></u-icon>
+			</button>
+
 			<button plain class="hbox menu-btn"
 				style="padding:20rpx; justify-content: space-between; border-bottom: 1px solid #eeeeee;"
 				@click="onAbout">
@@ -72,12 +81,32 @@
 	// 调用后台的 login，用 code 获取 token 和 openid
 
 	import { getOpenId, getProfile, checkSession, waiting, plsLogin } from '../../common/utils';
-	import { loginInfo_default, ICommenter } from '../../common/common';
+	import { loginInfo_default, ICommenter, qrCode} from '../../common/common';
 	import { addOrUpdateCommenter } from '../../service'
 
 	import queryString from 'query-string';
 
 	import { ref, onMounted } from 'vue';
+	import {
+		onShareAppMessage,
+		onShareTimeline
+	} from '@dcloudio/uni-app';
+	
+	onShareAppMessage(() => {
+		return {
+			title: '软工题库',
+			path: 'pages/home/index',
+			imageUrl: qrCode,
+		};
+	});
+	
+	onShareTimeline(() => {
+		return {
+			title: '软工题库',
+			path: 'pages/home/index',
+			imageUrl: qrCode,
+		};
+	})
 	const loggedIn = ref(false);
 
 	const loginInfo = ref(loginInfo_default);
@@ -98,7 +127,7 @@
 	const notCommonUseSettings = ref([
 		// { id: 'history', 'label': '我的做题记录', 'icon': 'order' },
 		{ id: 'like', 'label': '我收到的赞', 'icon': 'thumb-up-fill' },
-		// { id: 'share', 'label': '分享', 'icon': 'share-fill' },
+		{ id: 'share', 'label': '分享', 'icon': 'share-fill' },
 		{ id: 'feedback', 'label': '问题反馈', 'icon': 'chat-fill' },
 		// { id: 'settings', 'label': '设置', 'icon': 'setting-fill' },
 		{ id: 'about', 'label': '关于程序', 'icon': 'error-circle' }])
@@ -181,6 +210,13 @@
 				}
 			}
 		});
+	}
+
+	// 关于分享
+	const onShare = () => {
+		uni.navigateTo({
+			url: '/pages/share/share'
+		})
 	}
 </script>
 

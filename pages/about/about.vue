@@ -14,19 +14,43 @@
 		</view>
 		<view class="text-primary mb20" style="align-self: flex-start;margin-left: 25rpx;">联系方式</view>
 		<view class="card">
-			<view style="align-self: flex-start;">QQ:&nbsp;&nbsp; <span class="link-color" @click="copy('371783402')">371783402</span></view>
-			<view style="align-self: flex-start;"> 邮箱: &nbsp;<span class="link-color" @click="copy('jianjun.xiao@foxmail.com')">jianjun.xiao@foxmail.com</span></view>
+			<view style="align-self: flex-start;">QQ:&nbsp;&nbsp; <span class="link-color"
+					@click="copy('371783402')">371783402</span></view>
+			<view style="align-self: flex-start;"> 邮箱: &nbsp;<span class="link-color"
+					@click="copy('jianjun.xiao@foxmail.com')">jianjun.xiao@foxmail.com</span></view>
 		</view>
 	</view>
 </template>
 
 <script lang='ts' setup>
 	import {
+		logoImgUrl, qrCode
+	} from '../../common/common';
+	import {
 		ref
 	} from 'vue';
-	const logoUrl = ref(
-		'https://7175-quiz-0gb2aw2vb2850af4-1320288220.tcb.qcloud.la/%E8%BD%AF%E5%B7%A5%E9%A2%98%E5%BA%93.png?sign=28d38d42a40f6a756593ca3b93842e47&t=1699611121'
-	);
+	import {
+		onShareAppMessage,
+		onShareTimeline
+	} from '@dcloudio/uni-app';
+
+	onShareAppMessage(() => {
+		return {
+			title: '软工题库',
+			path: 'pages/home/index',
+			imageUrl: qrCode,
+		};
+	});
+
+	onShareTimeline(() => {
+		return {
+			title: '软工题库',
+			path: 'pages/home/index',
+			imageUrl: qrCode,
+		};
+	})
+
+	const logoUrl = ref(logoImgUrl);
 
 	const copy = (data) => {
 		uni.setClipboardData({

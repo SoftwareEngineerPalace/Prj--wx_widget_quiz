@@ -85,6 +85,14 @@
 				"navigationBarTitleText" : "关于",
 				"enablePullDownRefresh" : false
 			}
+		},
+		{
+			"path" : "pages/share/share",
+			"style" : 
+			{
+				"navigationBarTitleText" : "",
+				"enablePullDownRefresh" : false
+			}
 		}
 	],
 	"globalStyle": {

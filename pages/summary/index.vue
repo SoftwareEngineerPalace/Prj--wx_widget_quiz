@@ -89,9 +89,29 @@
 
 <script lang="ts" setup>
 	import { Ref, ref, computed, toRaw } from 'vue';
-	import { onLoad } from '@dcloudio/uni-app';
 	import { IQuizHistory } from '../../common/utils';
-	import { quizNameDic } from '../../common/common';
+	import { quizNameDic, qrCode } from '../../common/common';
+	import {
+		onShareAppMessage,
+		onShareTimeline,
+		onLoad
+	} from '@dcloudio/uni-app';
+	
+	onShareAppMessage(() => {
+		return {
+			title: '软工题库',
+			path: 'pages/home/index',
+			imageUrl: qrCode,
+		};
+	});
+	
+	onShareTimeline(() => {
+		return {
+			title: '软工题库',
+			path: 'pages/home/index',
+			imageUrl: qrCode,
+		};
+	})
 
 	const quizType = ref("js");
 	const quizCount = ref(0);

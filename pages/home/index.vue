@@ -62,12 +62,12 @@
 
 <script lang="ts" setup>
 	import { throttle } from 'lodash';
-	import { ExerciseType, quizNameDic, quizTypeArray } from '../../common/common';
+	import { ExerciseType, quizNameDic, quizTypeArray, logoImgUrl, qrCode } from '../../common/common';
 	import { computed, onMounted, ref } from 'vue';
 
 	import { checkSession } from '../../common/utils';
 	import queryString from 'query-string';
-	import { onShow, onLoad, onInit } from '@dcloudio/uni-app';
+	import { onShow, onLoad, onInit, onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
 	import { getAllQuiz, getErrorCollectonQuiz, getFavoriteQuiz, progressPostOrPut, getRankingList } from '../../service';
 
 	/** 上一个题目的序号 从 1 开始*/
@@ -77,6 +77,22 @@
 	const userOpenId = ref('');
 	const curQuizType = ref('js');
 	const quizList = ref();
+
+	onShareAppMessage(() => {
+		return {
+			title: '软工题库',
+			path: 'pages/home/index',
+			imageUrl: qrCode,
+		};
+	});
+
+	onShareTimeline(() => {
+		return {
+			title: '软工题库',
+			path: 'pages/home/index',
+			imageUrl: qrCode,
+		};
+	})
 
 	// 只更新一次
 	onLoad(async () => {
@@ -247,9 +263,9 @@
 		const list = await getFavoriteQuiz(curQuizType.value);
 		(getApp().globalData as any).favList = list;
 	}
-	
-	const getRanking = async ()=>{
-		const list = await getRankingList( curQuizType.value);
+
+	const getRanking = async () => {
+		const list = await getRankingList(curQuizType.value);
 		console.log("getRanking", list);
 		(getApp().globalData as any).rankingList = list;
 	}

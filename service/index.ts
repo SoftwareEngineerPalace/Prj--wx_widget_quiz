@@ -77,7 +77,7 @@ const getQuizById = async (quizType : string, quizId : string) => {
 		name: 'quizGet',
 		data
 	});
-	console.log("getQuizById rsp", rsp.result?.list?.[0]);
+	// console.log("getQuizById rsp", rsp.result?.list?.[0]);
 	return rsp.result?.list?.[0];
 };
 
