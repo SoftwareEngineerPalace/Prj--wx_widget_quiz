@@ -1,7 +1,7 @@
 <template>
 	<view class="summary-wrapper">
 		<!-- <view class="text-primary mb20">我的成绩</view> -->
-		<view class="card mb20">
+		<view class="card mb40">
 			<view class="summary__row-view">
 				{{`我一共做了 ${quizCount} 道题`}}
 			</view>
@@ -13,7 +13,7 @@
 			</view>
 			<button class='btn-primary' @click="restart">重做</button>
 		</view>
-		<view class="text-primary mb20">排行榜</view>
+		<!-- <view class="text-primary mb20">排行榜</view> -->
 		<view class="card" style="flex-grow: 1; overflow-y: auto;padding-top: 25rpx;">
 			<uni-table stripe emptyText="正在计算...">
 				<uni-tr>
@@ -75,6 +75,7 @@
 	import { Ref, ref, computed } from 'vue';
 	import { onLoad } from '@dcloudio/uni-app';
 	import { IQuizHistory } from '../../common/utils';
+	import { quizNameDic } from '../../common/common';
 
 	const quizType = ref("js");
 	const quizCount = ref(0);
@@ -84,11 +85,19 @@
 	const correctRate = ref(0);
 
 	onLoad((evt : { quizType : string }) => {
-		// console.log('summary onLoad', evt);
-		if (evt.hasOwnProperty('quizType')) {
-			quizType.value = evt.quizType;
-			getRanking(evt.quizType)
+		console.log("summary evt", evt);
+		if (!evt?.quizType) {
+			uni.navigateBack();
+			return;
 		}
+
+		// 2 设置 bar title
+		const title : string = quizNameDic.get(evt.quizType) as string;
+		uni.setNavigationBarTitle({ title });
+
+		// 3 排名数据
+		quizType.value = evt.quizType;
+		getRanking(evt.quizType);
 	})
 
 	const getRanking = async (quiz_type : string) => {
