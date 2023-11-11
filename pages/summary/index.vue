@@ -14,7 +14,7 @@
 			<button class='btn-primary' @click="restart">重做</button>
 		</view>
 		<!-- <view class="text-primary mb20">排行榜</view> -->
-		<view class="card" style="flex-grow: 1; overflow-y: auto;padding-top: 25rpx;">
+		<view class="card" style="padding-top: 25rpx;">
 			<uni-table stripe emptyText="正在计算...">
 				<uni-tr>
 					<uni-th width="60rpx" align="center">排名</uni-th>
@@ -107,10 +107,10 @@
 			name: 'getQuizHistory',
 			data: { token, quiz_type }
 		};
-		const { result: list } = await wx.cloud.callFunction(data);
+		let { result: list } = await wx.cloud.callFunction(data);
 		console.log('summary getRanking', { list });
-		let raw = [...list, ...list];
-		const sorted_list = raw.sort((a, b) => a.rate - b.rate);// rate 从大到小
+		list = [...list, ...list];
+		const sorted_list = list.sort((a, b) => a.rate - b.rate);// rate 从大到小
 		rankList.value = sorted_list;
 		const { quiz_count, answer_times, correct_times, rate } = list.find(r => r.isMe);
 		correctRate.value = rate;
@@ -137,9 +137,10 @@
 		flex-direction: column;
 		justify-content: flex-start;
 		align-items: center;
-		padding: 20rpx 30rpx 30rpx 30rpx;
+		padding: 20rpx 30rpx 40rpx 30rpx;
 		height: 100vh;
 		background-color: $uni-bg-color-grey;
+		overflow-y: auto;
 
 		.summary__row-view {
 			margin-bottom: 30rpx;
