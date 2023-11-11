@@ -3,7 +3,7 @@
 		<!-- <view class="text-primary mb20">我的成绩</view> -->
 		<view class="card mb20">
 			<view class="summary__row-view">
-				{{`你一共做了 ${quizCount} 道题`}}
+				{{`我一共做了 ${quizCount} 道题`}}
 			</view>
 			<view class="summary__row-view">
 				{{`作答 ${answerTimes} 道次，答对了 ${correctTimes} 道次`}}
@@ -22,8 +22,8 @@
 					<uni-th width="120rpx" align="center">用户</uni-th>
 					<uni-th align="center"></uni-th>
 					<uni-th width="90rpx" sortable align="center">做题数</uni-th>
-					<uni-th width="90rpx" sortable align="center">做题次数</uni-th>
-					<uni-th width="90rpx" sortable align="center">正确次数</uni-th>
+					<uni-th width="90rpx" sortable align="center">做题道次</uni-th>
+					<uni-th width="90rpx" sortable align="center">正确道次</uni-th>
 					<uni-th width="90rpx" sortable align="center">正确率</uni-th>
 				</uni-tr>
 				<uni-tr style="width: 100%;" align="center" v-for="(r, index) in rankList" :key="index">
@@ -82,26 +82,25 @@
 	const answerTimes = ref(0);
 	const correctTimes = ref(0);
 	const rankList = ref(0);
+	const correctRate = ref(0);
 
 	onLoad((evt : { quizType : string }) => {
 		// console.log('summary onLoad', evt);
 		if (evt.hasOwnProperty('quizType')) {
 			quizType.value = evt.quizType;
-			getHistory(evt.quizType)
+			getRanking(evt.quizType)
 		}
 	})
 
-	const correctRate = ref(0);
-
-	const getHistory = async (quiz_type : string) => {
-		// 加载做题历史记录
+	const getRanking = async (quiz_type : string) => {
+		// 加载排名
 		const token = uni.getStorageSync('token');
 		const data = {
 			name: 'getQuizHistory',
 			data: { token, quiz_type }
 		};
 		const { result: list } = await wx.cloud.callFunction(data);
-		console.log('summary getHistory', { list });
+		console.log('summary getRanking', { list });
 		let raw = [...list, ...list];
 		const sorted_list = raw.sort((a, b) => a.rate - b.rate);// rate 从大到小
 		rankList.value = sorted_list;
@@ -145,6 +144,11 @@
 
 	.uni-table-td {
 		padding: 14rpx !important;
+		vertical-align: middle;
+	}
+
+	.uni-table-th {
+		padding: 0 16rpx 10rpx 16rpx !important;
 		vertical-align: middle;
 	}
 </style>

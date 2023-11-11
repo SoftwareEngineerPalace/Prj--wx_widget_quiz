@@ -21,15 +21,19 @@
 					<u-icon name="arrow-right" :color="'#000'" size="35"></u-icon>
 				</view>
 			</view>
-			<button class="btn-primary" @click="onBtnContinue">顺序练习</button>
+			<button class="btn-primary" @click="onBtnContinue">开始</button>
 		</view>
 
 		<!-- 3 回顾练习 -->
 		<view class="card mb40">
 			<view class="text-primary mb20" style="align-self: flex-start;">回顾练习</view>
 			<view class="text-sm-grey mb20" style="align-self: flex-start;">练习错题本 / 收藏夹中的题目</view>
-			<button class="btn-primary mb20" @click="startErrCollection">错题练习</button>
-			<button class="btn-primary" @click="startFavQuiz">收藏夹练习</button>
+			<button class="btn-primary mb20" @click="startErrCollection">错题</button>
+			<button class="btn-primary" @click="startFavQuiz">收藏夹</button>
+		</view>
+
+		<view class="card">
+			<button class="btn-sub" v-text="'我的成绩'" @click="gotoSummary"></button>
 		</view>
 	</view>
 
@@ -239,6 +243,13 @@
 		const list = await getFavoriteQuiz(curQuizType.value);
 		(getApp().globalData as any).favList = list;
 	}
+	
+	const gotoSummary = ()=>{
+		const quizType = curQuizType.value;
+		uni.navigateTo({
+			url:`/pages/summary/index?quizType=${quizType}`
+		})
+	}
 </script>
 
 <style lang="scss" scoped>
@@ -254,6 +265,7 @@
 			height: 100vh;
 			background-color: $uni-bg-color-grey;
 			align-items: center;
+			overflow-y: scroll;
 		}
 
 		.grid-quiz-sn {
