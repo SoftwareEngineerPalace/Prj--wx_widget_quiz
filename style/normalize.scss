@@ -34,6 +34,9 @@
 	color: $uni-text-color-inverse;
 	background-color: $uni-theme-primary;
 	width: 100%; // 放在这儿合适吗
+	&:active {
+		background-color: $uni-theme-primary-active;
+	}
 }
 
 .btn-sub {
@@ -42,6 +45,9 @@
 	color: $uni-theme-primary;
 	border: 1px solid $uni-theme-primary;
 	width: 100%;
+	&:active {
+		background-color: $uni-bg-color-grey-lighter;
+	}
 }
 
 .card {
