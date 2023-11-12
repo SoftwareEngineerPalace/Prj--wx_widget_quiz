@@ -7,7 +7,7 @@
 				</view>
 				<u-icon class="icon" name="arrow-down-fill" color="#5ab8b3" size="25"></u-icon>
 			</view>
-			<view class="text-sm-grey">{{`练习进度 ${finishedQuizCount}/${quizCount}`}}</view>
+			<view class="text-sm-grey">{{`练习进度 ${finishedQuizCount} / ${quizCount}`}}</view>
 		</view>
 
 		<!-- 2 继续 -->
@@ -243,7 +243,7 @@
 		});
 		// 下面几行代码 真别扭
 		const { latest_quiz_sn, finished_quiz_count } = rsp.result;
-		console.log({ latest_quiz_sn, quizCount: quizCount.value });
+		// console.log({ latest_quiz_sn, quizCount: quizCount.value });
 		latestQuizSn.value = latest_quiz_sn !== quizCount.value ? latest_quiz_sn : 0;
 		finishedQuizCount.value = finished_quiz_count;
 	}
@@ -266,7 +266,7 @@
 
 	const getRanking = async () => {
 		const list = await getRankingList(curQuizType.value);
-		console.log("getRanking", list);
+		// console.log("getRanking", list);
 		(getApp().globalData as any).rankingList = list;
 	}
 

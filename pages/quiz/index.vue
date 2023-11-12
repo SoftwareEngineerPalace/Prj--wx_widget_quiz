@@ -41,6 +41,24 @@
 					@click="gotoHome"></button>
 			</view>
 
+			<view class="card mb40" v-show="curQuiz.submitted" style="padding-top: 15rpx;">
+				<view class="text-base text-title-sub mb20">做题统计</view>
+				<view class="hbox mb10 text-sm">
+					<view>{{`本题你做过 ${myAnswerTimes} 次, 错了 `}}</view>
+					<view style="color: red;">{{` &nbsp;${myWrongTimes}&nbsp; `}}</view>
+					<view> 次</view>
+				</view>
+				<view class="hbox text-sm mb10">
+					<view>{{`所有人正确率 ${allUserCorrectRate} %`}}</view>
+				</view>
+				<view class="hbox text-sm">
+					<view class="mr20">正确率你战胜了</view>
+					<progress style="flex-grow: 1; color: #5ab8b3" :percent="100 - correctRateProportion" active
+						activeColor="#5ab8b3" stroke-width="3" show-info="true" font-size="26rpx"></progress>
+					<view>&nbsp;的答友</view>
+				</view>
+			</view>
+
 			<!-- 评论区 start -->
 			<view class="card" v-show="curQuiz.submitted">
 				<view class="comment-title-row">
@@ -120,6 +138,12 @@
 		onShareAppMessage,
 		onShareTimeline
 	} from '@dcloudio/uni-app';
+
+	const myAnswerTimes = ref(0);
+	const myCorrectTimes = ref(0);
+	const myWrongTimes = ref(0);
+	const allUserCorrectRate = ref(0);
+	const correctRateProportion = ref(0);
 
 	const startX = ref(0);
 	const startY = ref(0);
@@ -224,7 +248,7 @@
 	});
 
 	const onKeyboardHeightChange = (value) => {
-		console.log('onKeyboardHeightChange', value);
+		// console.log('onKeyboardHeightChange', value);
 		commentPopupBottom.value = `${value.height}px`;
 	}
 
@@ -277,11 +301,23 @@
 			exerciseType: curExerciseType.value
 		};
 		// data 里的 quiz_count 可能没用，待删
-		await wx.cloud.callFunction({
+		const { result } = await wx.cloud.callFunction({
 			name: 'answer',
 			data
 		});
+		console.log("answer", result);
+		const { answer_times, correct_times, all_user_rate, all_user_answer_times, all_user_correct_times, correct_rate_proportion } = result;
+		myAnswerTimes.value = answer_times;
+		myWrongTimes.value = answer_times - correct_times;
+		allUserCorrectRate.value = all_user_rate;
+		correctRateProportion.value = correct_rate_proportion;
 	};
+
+	const resetStatistics = () => {
+		myAnswerTimes.value = 0;
+		myWrongTimes.value = 0;
+		allUserCorrectRate.value = 0;
+	}
 
 	const onPrev = () => {
 		const preQuiz = quizController.goPreview();
@@ -291,8 +327,9 @@
 			})
 			return;
 		}
+		resetStatistics()
 
-		curQuiz.value = { ...quizController.goPreview(), submitted: false };
+		curQuiz.value = { ...preQuiz, submitted: false };
 		updateQuiz(curQuiz.value);
 	};
 
@@ -304,6 +341,7 @@
 			})
 			return;
 		}
+		resetStatistics()
 
 		curQuiz.value = { ...nextQuiz, submitted: false };
 		updateQuiz(curQuiz.value);
@@ -353,7 +391,7 @@
 		});
 		if (rsp.result.length === 0) return;
 		const list = rsp.result;
-		console.log('quiz updateComment', list);
+		// console.log('quiz updateComment', list);
 		// 2 把 name 和 url 赋到 commenter_name 和 commenter_url 上
 		addCommenterParam(list);
 		// 3 数据 model
@@ -428,7 +466,7 @@
 			if (!parent?.comment_list) {
 				parent.comment_list = [];// 这三行得优化
 			};
-			console.log('parent', parent);
+			// console.log('parent', parent);
 			parent.comment_list.push(comment);
 			list = toRaw(commentListModel.value);
 		}
@@ -646,7 +684,6 @@
 
 					.favorite-word {
 						margin-left: 10rpx;
-						// border: 1px solid red;
 					}
 				}
 

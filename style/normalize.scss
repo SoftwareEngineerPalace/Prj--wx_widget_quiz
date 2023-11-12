@@ -173,6 +173,14 @@
 	to { height: 0;}
 }
 
+.text-title-sub {
+	width: 100%;
+	line-height: 75rpx;
+	align-self: flex-start; 
+	font-weight: 500; 
+	border-bottom: 1px solid  $uni-border-color;
+}
+
 .scale-small {
 	animation: scaleSmallAnimation 0.1s ease-in-out forwards;
 }
