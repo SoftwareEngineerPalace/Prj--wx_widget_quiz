@@ -17,10 +17,10 @@
 		<view class="card" style="padding-top: 25rpx;">
 			<uni-table stripe emptyText="正在计算...">
 				<uni-tr>
-					<uni-th width="60rpx" align="center">排名</uni-th>
-					<uni-th width="120rpx" align="center">用户</uni-th>
+					<uni-th width="50rpx" align="center">排名</uni-th>
+					<uni-th width="130rpx" align="center">用户</uni-th>
 					<uni-th align="center"></uni-th>
-					<uni-th width="90rpx" sortable align="center">
+					<uni-th width="60rpx" sortable align="center">
 						<view @click="onSort('quiz_count')">做题数</view>
 					</uni-th>
 					<uni-th width="90rpx" sortable align="center">
@@ -29,10 +29,10 @@
 					<uni-th width="90rpx" sortable align="center">
 						<view @click="onSort('correct_times')">正确道次</view>
 					</uni-th>
-					<uni-th width="90rpx" sortable align="center">
+					<uni-th width="110rpx" sortable align="center">
 						<view @click="onSort('rate')">正确率</view>
 					</uni-th>
-					<uni-th width="90rpx" sortable align="center">
+					<uni-th width="50rpx" sortable align="center">
 						<view @click="onSort('received_like_count')">评论获赞</view>
 					</uni-th>
 				</uni-tr>
@@ -43,7 +43,7 @@
 					</uni-td>
 
 					<uni-td align="center">
-						<view class="grid-center">{{ user.user_name }}</view>
+						<view class="grid-center grid-ellipse">{{ user.user_name }}</view>
 					</uni-td>
 
 					<uni-td align="center">
@@ -76,7 +76,7 @@
 						</view>
 					</uni-td>
 					<uni-td align="center">
-						<view class="grid-center">
+						<view class="grid-center grid-like">
 							{{ `${user?.received_like_count ?? 0}` }}
 						</view>
 					</uni-td>
@@ -94,9 +94,9 @@
 	import {
 		onShareAppMessage,
 		onShareTimeline,
-		onLoad
+		onLoad, onShow, onInit
 	} from '@dcloudio/uni-app';
-	
+
 	onShareAppMessage(() => {
 		return {
 			title: '软工题库',
@@ -104,7 +104,7 @@
 			imageUrl: qrCode,
 		};
 	});
-	
+
 	onShareTimeline(() => {
 		return {
 			title: '软工题库',
@@ -121,35 +121,30 @@
 	const correctRate = ref(0);
 
 	onLoad((evt : { quizType : string }) => {
-		console.log("summary evt", evt);
 		if (!evt?.quizType) {
 			uni.navigateBack();
 			return;
 		}
 
-		// 2 设置 bar title
-		const title : string = quizNameDic.get(evt.quizType) as string;
-		uni.setNavigationBarTitle({ title });
+		// 1 列表数据
+		rankList.value = (getApp().globalData as any).rankingList;
 
-		// 3 排名数据
-		quizType.value = evt.quizType;
-		getRanking();
-	})
-
-	const getRanking = () => {
-		// 列表数据
-		rankList.value = (getApp().globalData as any).rankingList.sort((a, b) => b.rate - a.rate)
-		
-		// 个人数据
+		// 2 个人数据
 		const { quiz_count, answer_times, correct_times, rate } = rankList.value.find(r => r.isMe);
 		correctRate.value = rate;
 		quizCount.value = quiz_count;
 		answerTimes.value = answer_times;
 		correctTimes.value = correct_times;
-	};
+
+		// 3 bar title
+		const title : string = quizNameDic.get(evt.quizType) as string;
+		uni.setNavigationBarTitle({ title });
+
+		// 4
+		quizType.value = evt.quizType;
+	})
 
 	const restart = async () => {
-		// const queryStr = queryString.stringify({ quizType: quizType.value });
 		const token = uni.getStorageSync('token');
 		const data = {
 			name: 'resetProcess',
@@ -202,5 +197,23 @@
 	.uni-table-th {
 		padding: 0rpx 10rpx 8rpx 10rpx !important;
 		vertical-align: middle;
+	}
+
+	.grid-name {
+		max-width: 130rpx;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		text-align: center;
+		justify-content: flex-start;
+	}
+
+	.grid-like {
+		max-width: 100rpx;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		text-align: center;
+		justify-content: flex-start;
 	}
 </style>
