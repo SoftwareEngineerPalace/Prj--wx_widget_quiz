@@ -7,7 +7,6 @@ const loginInfo_default = {
 	id: ''
 };
 
-
 interface IQuiz {
 	id : string;
 	title : string;

@@ -1,5 +1,5 @@
 <template>
-	<view class="quiz-wrapper padding30">
+	<view class="quiz-wrapper padding30" @touchstart="onTouchStart" @touchmove="onTouchMove" @touchend="onTouchEnd">
 
 		<!-- 题目 -->
 		<view class="quiz__group-title mb20">
@@ -27,11 +27,11 @@
 
 			<button class="btn-primary" v-text="'进入结算页'"
 				v-show="curExerciseType === ExerciseType.Common && curQuiz.submitted && !quizController.hasNext() "
-				@click="onNext"></button>
+				@click="gotoSummary"></button>
 
 			<button class="btn-primary" v-text="'回到首页'"
 				v-show="curExerciseType !== ExerciseType.Common && curQuiz.submitted && !quizController.hasNext() "
-				@click="onNext"></button>
+				@click="gotoHome"></button>
 		</view>
 
 		<!-- 评论区 start -->
@@ -110,7 +110,39 @@
 		onShareAppMessage,
 		onShareTimeline
 	} from '@dcloudio/uni-app';
-	
+
+	const startX = ref(0);
+	const startY = ref(0);
+	const readyToNext = ref(false);
+	const readyToPrev = ref(false);
+
+	const onTouchStart = (evt) => {
+		readyToNext.value = readyToPrev.value = false;
+		startX.value = evt.touches[0].pageX;
+		startY.value = evt.touches[0].pageY;
+	}
+
+	const onTouchMove = (evt) => {
+		const curX = evt.touches[0].pageX;
+		const curY = evt.touches[0].pageY;
+		if (curX - startX.value > 60 && Math.abs(curY - startY.value) < 150) {
+			readyToPrev.value = true; 		// 可以上一题
+		}
+		if (startX.value - curX > 60 && Math.abs(curY - startY.value) < 150) {
+			readyToNext.value = true;	// 可以下一题
+		}
+	}
+
+	const onTouchEnd = () => {
+		if (readyToNext.value) {
+			onNext()
+		}
+		if (readyToPrev.value) {
+			onPrev()
+		}
+		readyToNext.value = readyToPrev.value = false;
+	}
+
 	onShareAppMessage(() => {
 		return {
 			title: '软工题库',
@@ -118,7 +150,7 @@
 			imageUrl: qrCode,
 		};
 	});
-	
+
 	onShareTimeline(() => {
 		return {
 			title: '软工题库',
@@ -241,32 +273,40 @@
 	};
 
 	const onPrev = () => {
+		const preQuiz = quizController.goPreview();
+		if (!preQuiz) {
+			uni.showToast({
+				title: "已是第一题"
+			})
+			return;
+		}
+		
 		curQuiz.value = { ...quizController.goPreview(), submitted: false };
-		// console.log('onPrev', curQuiz.value);
 		updateQuiz(curQuiz.value);
 	};
 
 	const onNext = () => {
 		const nextQuiz = quizController.goNext();
-		// console.dir('nextQuiz', nextQuiz);
-		if (!nextQuiz && curExerciseType.value === ExerciseType.Common) {
-			// console.log('onNext redirectTo quizType.value', quizType.value);
-			const queryStr = queryString.stringify({ quizType: quizType.value });
-			const url = `/pages/summary/index?${queryStr}`;
-			uni.redirectTo({ url })
+		if (!nextQuiz) {
+			uni.showToast({
+				title: "已是最后一题"
+			})
 			return;
 		}
 
-		if (!nextQuiz && curExerciseType.value !== ExerciseType.Common) {
-			uni.navigateBack();
-			return;
-		}
-
-		if (nextQuiz !== null) {
-			curQuiz.value = { ...nextQuiz, submitted: false };
-			updateQuiz(curQuiz.value);
-		}
+		curQuiz.value = { ...nextQuiz, submitted: false };
+		updateQuiz(curQuiz.value);
 	};
+	
+	const gotoSummary = ()=>{
+		const queryStr = queryString.stringify({ quizType: quizType.value });
+		const url = `/pages/summary/index?${queryStr}`;
+		uni.redirectTo({ url })
+	}
+	
+	const gotoHome = ()=>{
+		uni.navigateBack();
+	}
 
 	/** 初始化时，更新题目选项和评论区 */
 	const updateQuiz = (quiz : any) => {
