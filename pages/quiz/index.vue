@@ -1,79 +1,84 @@
 <template>
-	<view class="quiz-wrapper padding30" @touchstart="onTouchStart" @touchmove="onTouchMove" @touchend="onTouchEnd">
+	<view class="quiz-wrapper padding30" style="padding-top: 10rpx;" @touchstart="onTouchStart" @touchmove="onTouchMove" @touchend="onTouchEnd">
+		<view class="quiz-wrapper__group-up">
+			<!-- 题目 -->
+			<view class="quiz__group-title mb20">
+				<text class="index">{{index_str}}</text>
+				<text>{{`&nbsp;&nbsp;`}}</text>
+				<text class="title">{{title_str}}</text>
+			</view>
 
-		<!-- 题目 -->
-		<view class="quiz__group-title mb20">
-			<text class="index">{{index_str}}</text>
-			<text>{{`&nbsp;&nbsp;`}}</text>
-			<text class="title">{{title_str}}</text>
-		</view>
+			<!-- 4 个选项 -->
+			<text class="quiz__option mb20" style="flex: none;" v-for="(option) in checkboxList" :key="option.id"
+				autoHeight v-bind:class="{ option: true, 
+				selected: option.selected, 
+				isCorrect: curQuiz.submitted && option.isCorrect, 
+				isWrong: curQuiz.submitted && option.selected && !option.isCorrect}" :data-id="option.id" @click="onClickOption">
+				{{option.value}}
+			</text>
 
-		<!-- 4 个选项 -->
-		<text class="quiz__option mb20" style="flex: none;" v-for="(option) in checkboxList" :key="option.id" autoHeight
-			v-bind:class="{ option: true, 
-			selected: option.selected, 
-			isCorrect: curQuiz.submitted && option.isCorrect, 
-			isWrong: curQuiz.submitted && option.selected && !option.isCorrect}" :data-id="option.id" @click="onClickOption">
-			{{option.value}}
-		</text>
+			<!-- 控制进度按钮 v-show="!curQuiz.submitted && quizController.hasNext()"  -->
+			<view class="quiz__group-btn mb30" v-if="showGroupBtns">
+				<button :class="{'btn-primary':true,
+				 'fade-in':!curQuiz.submitted && quizController.hasNext(),
+				 'fade-out':!(!curQuiz.submitted && quizController.hasNext())
+				 }" v-text="'提交'" @click="onSubmit"></button>
 
-		<!-- 控制进度按钮 -->
-		<view class="quiz__group-btn mb30" v-if="showGroupBtns">
-			<button class="btn-primary" v-text="'提交'" v-show="!curQuiz.submitted && quizController.hasNext()"
-				@click="onSubmit"></button>
+				<button class="btn-sub fade-in" v-text="'提交'" v-show="!curQuiz.submitted && !quizController.hasNext()"
+					@click="onSubmit"></button>
 
-			<button class="btn-sub" v-text="'提交'" v-show="!curQuiz.submitted && !quizController.hasNext()"
-				@click="onSubmit"></button>
+				<button class="btn-primary" v-text="'进入结算页'"
+					v-show="curExerciseType === ExerciseType.Common && curQuiz.submitted && !quizController.hasNext() "
+					@click="gotoSummary"></button>
 
-			<button class="btn-primary" v-text="'进入结算页'"
-				v-show="curExerciseType === ExerciseType.Common && curQuiz.submitted && !quizController.hasNext() "
-				@click="gotoSummary"></button>
+				<button class="btn-primary" v-text="'回到首页'"
+					v-show="curExerciseType !== ExerciseType.Common && curQuiz.submitted && !quizController.hasNext() "
+					@click="gotoHome"></button>
+			</view>
 
-			<button class="btn-primary" v-text="'回到首页'"
-				v-show="curExerciseType !== ExerciseType.Common && curQuiz.submitted && !quizController.hasNext() "
-				@click="gotoHome"></button>
-		</view>
-
-		<!-- 评论区 start -->
-		<view class="card" v-show="curQuiz.submitted">
-			<view class="comment-title-row">
-				<view class="hbox">
-					<view class="text-sm">评论</view>&nbsp;·&nbsp; <view class="text-sm">
-						{{_1stDepthCommentCount}}
+			<!-- 评论区 start -->
+			<view class="card" v-show="curQuiz.submitted">
+				<view class="comment-title-row">
+					<view class="hbox">
+						<view class="text-sm">评论</view>&nbsp;·&nbsp; <view class="text-sm">
+							{{_1stDepthCommentCount}}
+						</view>
+					</view>
+					<view class="hbox" style="width: auto;" @click="onComment">
+						<view class="text-sm">评论</view>&nbsp;
+						<!-- 这里颜色用的是主题色，要抽取出来 TODO -->
+						<u-icon name="edit-pen-fill" color="#5ab8b3" size="40"></u-icon>
 					</view>
 				</view>
-				<view class="hbox" style="width: auto;" @click="onComment">
-					<view class="text-sm">评论</view>&nbsp;
-					<!-- 这里颜色用的是主题色，要抽取出来 TODO -->
-					<u-icon name="edit-pen-fill" color="#5ab8b3" size="40"></u-icon>
-				</view>
+				<!-- 不明白为什么这里有 style="width: 100%;" -->
+				<comment v-for="(c) in commentListModel" style="width: 100%;" :key="c.id" :vo="c"
+					:user_ids_like="c.user_ids_like" @reply="onReplyComment" @longPressComment="onCommentLongPress"
+					@evt_clickLike='onLikeClicked'>
+				</comment>
 			</view>
-			<!-- 不明白为什么这里有 style="width: 100%;" -->
-			<comment v-for="(c) in commentListModel" style="width: 100%;" :key="c.id" :vo="c"
-				:user_ids_like="c.user_ids_like" @reply="onReplyComment" @longPressComment="onCommentLongPress"
-				@evt_clickLike='onLikeClicked'>
-			</comment>
+		</view>
+
+		<view class="quiz-wrapper__group-bottom">
+			<!-- 1 上一题 -->
+			<button class="btn-sub w200" v-text="'上一题'"
+				:style="{visibility:quizController.getCurQuizIndex() > 0?'visible':'hidden'}" @click="onPrev"></button>
+			<!-- 2 收藏 -->
+			<view class="group-fav" @click="toggleFavorite">
+				<u-icon :name="curQuiz.favorite?'star-fill':'star'" :color="curQuiz.favorite?'#5ab8b3':'0xbbbbbb'"
+					size="40"></u-icon>
+				<view :style="{color:curQuiz.favorite?'#5ab8b3':'0xbbbbbb'}" class="text-sm ml10">{{'收藏'}}</view>
+			</view>
+			<!-- 3 反馈 -->
+			<button plain class="hbox btn-mini" open-type="feedback">
+				<u-icon name="chat-fill" color="0xbbbbbb" size="40"></u-icon>
+				<view class='text-sm ml10'>反馈</view>
+			</button>
+			<!-- 3 下一题 -->
+			<button class="btn-sub w200" v-text="'下一题'"
+				:style="{visibility:quizController.hasNext()?'visible':'hidden'}" @click="onNext"></button>
 		</view>
 	</view>
-	<view class="group-bottom">
-		<!-- 1 上一题 -->
-		<button class="btn-sub w200" v-text="'上一题'"
-			:style="{visibility:quizController.getCurQuizIndex() > 0?'visible':'hidden'}" @click="onPrev"></button>
-		<!-- 2 收藏 -->
-		<view class="group-fav" @click="toggleFavorite">
-			<u-icon :name="curQuiz.favorite?'star-fill':'star'" :color="curQuiz.favorite?'#5ab8b3':'0xbbbbbb'"
-				size="40"></u-icon>
-			<view :style="{color:curQuiz.favorite?'#5ab8b3':'0xbbbbbb'}" class="text-sm ml10">{{'收藏'}}</view>
-		</view>
-		<!-- 3 反馈 -->
-		<button plain class="hbox btn-mini" open-type="feedback">
-			<u-icon name="chat-fill" color="0xbbbbbb" size="40"></u-icon>
-			<view class='text-sm ml10'>反馈</view>
-		</button>
-		<!-- 3 下一题 -->
-		<button class="btn-sub w200" v-text="'下一题'" :style="{visibility:quizController.hasNext()?'visible':'hidden'}"
-			@click="onNext"></button>
-	</view>
+
 	<!-- 以后抽取出一个组件 -->
 	<u-popup :show="showCommentPopup" :custom-style="{ paddingBottom: commentPopupBottom}" mode="bottom"
 		@close="onCommentPopupClose" @open="onCommentPopupOpen" :close-on-click-overlay="true">
@@ -280,7 +285,7 @@
 			})
 			return;
 		}
-		
+
 		curQuiz.value = { ...quizController.goPreview(), submitted: false };
 		updateQuiz(curQuiz.value);
 	};
@@ -297,14 +302,14 @@
 		curQuiz.value = { ...nextQuiz, submitted: false };
 		updateQuiz(curQuiz.value);
 	};
-	
-	const gotoSummary = ()=>{
+
+	const gotoSummary = () => {
 		const queryStr = queryString.stringify({ quizType: quizType.value });
 		const url = `/pages/summary/index?${queryStr}`;
 		uni.redirectTo({ url })
 	}
-	
-	const gotoHome = ()=>{
+
+	const gotoHome = () => {
 		uni.navigateBack();
 	}
 
@@ -520,117 +525,129 @@
 		.quiz-wrapper {
 			width: 100vw;
 			height: 100vh;
-			overflow-y: auto;
 			flex-grow: 1;
-			padding-bottom: 130rpx;
+			// padding-bottom: 130rpx;
 			display: flex;
 			flex-direction: column;
-			justify-content: flex-start;
+			justify-content: space-between;
 			background-color: $uni-bg-color-grey;
+			padding-bottom: env(safe-area-inset-bottom);
 
-			.quiz__group-title {
-				font-size: 38rpx;
-				font-weight: 400;
+			.quiz-wrapper__group-up {
 				display: flex;
+				flex-grow: 1;
+				flex-direction: column;
 				justify-content: flex-start;
-			}
+				align-items: stretch;
+				overflow-y: auto;
+				padding-bottom: 20rpx;
 
-			.quiz__option {
-				font-size: 33rpx;
-				background-color: white;
-				border-radius: 20rpx;
-				padding: 20rpx;
-				color: black;
-
-				&.selected {
-					background-color: gray;
-					color: white;
+				.quiz__group-title {
+					font-size: 38rpx;
+					font-weight: 400;
+					display: flex;
+					justify-content: flex-start;
 				}
 
-				&.isCorrect {
-					// background-color: $uni-color-success;
-					// color: white;
+				.quiz__option {
+					font-size: 33rpx;
 					background-color: white;
-					border: 2rpx solid $uni-color-success;
-					color: $uni-color-success;
-				}
-
-				&.isWrong {
-					// background-color: $uni-color-error;
-					// color: white;
-					background-color: white;
-					border: 2rpx solid $uni-color-error;
-					color: $uni-color-error;
-				}
-			}
-
-			.quiz__group-btn {
-				display: flex;
-				// position: fixed;
-				// bottom: 0;
-				width: 100%;
-				flex-direction: row;
-
-				.btn {
-					font-size: $uni-font-size-base;
-					width: 40%;
-					margin-top: 30rpx;
-					font-size: 40rpx;
 					border-radius: 20rpx;
-					border: none;
+					padding: 20rpx;
+					color: black;
 
-					&::after {
-						border: none;
+					&.selected {
+						background-color: gray;
+						color: white;
+					}
+
+					&.isCorrect {
+						// background-color: $uni-color-success;
+						// color: white;
+						background-color: white;
+						border: 2rpx solid $uni-color-success;
+						color: $uni-color-success;
+					}
+
+					&.isWrong {
+						// background-color: $uni-color-error;
+						// color: white;
+						background-color: white;
+						border: 2rpx solid $uni-color-error;
+						color: $uni-color-error;
 					}
 				}
+
+				.quiz__group-btn {
+					display: flex;
+					// position: fixed;
+					// bottom: 0;
+					width: 100%;
+					flex-direction: row;
+
+					.btn {
+						font-size: $uni-font-size-base;
+						width: 40%;
+						margin-top: 30rpx;
+						font-size: 40rpx;
+						border-radius: 20rpx;
+						border: none;
+
+						&::after {
+							border: none;
+						}
+					}
+				}
+				
+				.comment-title-row {
+					display: flex;
+					flex-direction: row;
+					justify-content: space-between;
+					align-items: center;
+					width: 100%;
+				}
+			}
+		
+			// 包含收藏按钮的 group
+			.quiz-wrapper__group-bottom {
+				width: 100%;
+				// height: 100rpx;
+				// position: fixed;
+				background-color: $uni-bg-color-grey;
+				bottom: 0;
+				display: flex;
+				flex-direction: row;
+				justify-content: space-between;
+				align-items: center;
+				padding: 20rpx 20rpx 0 20rpx;
+				// padding-bottom: constant(safe-area-inset-bottom);
+				// padding-bottom: env(safe-area-inset-bottom);
+			
+				.group-fav {
+					display: flex;
+					flex-direction: row;
+					justify-content: center;
+					height: 50rpx;
+					align-items: center;
+					width: 200rpx;
+					// margin-left: 50rpx;
+					// margin-right: 50rpx;
+			
+					.favorite-word {
+						margin-left: 10rpx;
+						// border: 1px solid red;
+					}
+				}
+			
+				.btn-mini {
+					border: none;
+					height: 50rpx;
+					width: 200rpx;
+					font-size: $uni-font-size-sm;
+				}
 			}
 		}
 	}
 
-	.comment-title-row {
-		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
-		align-items: center;
-		width: 100%;
-	}
-
-	// 包含收藏按钮的 group
-	.group-bottom {
-		width: 100%;
-		// height: 100rpx;
-		position: fixed;
-		background-color: $uni-bg-color-grey;
-		bottom: 0;
-		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
-		align-items: center;
-		padding: 20rpx 20rpx 0 20rpx;
-		padding-bottom: constant(safe-area-inset-bottom);
-		padding-bottom: env(safe-area-inset-bottom);
-
-		.group-fav {
-			display: flex;
-			flex-direction: row;
-			justify-content: center;
-			height: 50rpx;
-			align-items: center;
-			width: 200rpx;
-			// margin-left: 50rpx;
-			// margin-right: 50rpx;
-
-			.favorite-word {
-				margin-left: 10rpx;
-				// border: 1px solid red;
-			}
-		}
-
-		.btn-mini {
-			border: none;
-			height: 50rpx;
-			width: 200rpx;
-			font-size: $uni-font-size-sm;
-		}
-	}
+	
 </style>

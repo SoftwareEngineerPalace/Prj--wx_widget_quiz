@@ -148,3 +148,21 @@
 .btn-warning {
 	background-color: $uni-color-error;
 }
+
+.fade-in {
+	animation: fadeInMovie 0.3s ease forwards;
+}
+
+.fade-out {
+	animation: fadeOutMovie 0.1s ease forwards;
+}
+
+@keyframes fadeInMovie {
+	from { height: 0;}
+	to { height: 100%;}
+}
+
+@keyframes fadeOutMovie {
+	from { height: 100%;}
+	to { height: 0;}
+}
