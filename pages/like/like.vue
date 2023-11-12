@@ -1,5 +1,5 @@
 <template>
-	<view class="card">
+	<view class="card" v-if='list.length !== 0'>
 		<view class="like" v-for="(vo,index) in list" :key="index" :data-vo="vo" @click="gotoQuiz">
 			<!-- 左头像 -->
 			<u-image :show-loading="true" mode="widthFix" shape="circle" :src="vo.commenter_url" width="80rpx"
@@ -12,8 +12,8 @@
 				<view class="comment-content text-sm-grey">{{vo.content}}</view>
 			</view>
 		</view>
-		<view class="notice-empty" v-if='list.length === 0'>还没收到赞</view>
 	</view>
+	<view class="notice-empty" v-if='list.length === 0'>还没收到赞</view>
 </template>
 
 <script lang="ts" setup>
@@ -64,6 +64,17 @@
 		width: 100vw;
 		height: 100vh;
 		overflow-y: hidden;
+
+		.notice-empty {
+			width: 100vw;
+			height: 100vh;
+			display: flex;
+			flex-direction: row;
+			justify-content: center;
+			align-items: center;
+			padding-bottom: constant(safe-area-inset-bottom);
+			padding-bottom: env(safe-area-inset-bottom);
+		}
 
 		.like {
 			display: flex;
