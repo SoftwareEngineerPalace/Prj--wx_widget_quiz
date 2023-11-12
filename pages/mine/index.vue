@@ -1,10 +1,11 @@
 <template>
 	<view class="mine-wrapper padding30">
 		<view class="card mb40">
-			<view v-if="loggedIn" class="hbox" style="justify-content: center;" @click="login">
+			<view class="hbox" style="justify-content: center;">
 				<input type="nickname" class="mine__name weui-input text-primary" placeholder="修改名字"
-					:value="loginInfo.name" @change="onNameChange" />
-				<button class="mine__avatar" open-type="chooseAvatar" @chooseavatar="onChooseAvatar">
+					:value="loginInfo.name" @change="onNameChange" :disabled="!loggedIn" />
+				<button class="mine__avatar" :disabled="!loggedIn" open-type="chooseAvatar"
+					@chooseavatar="onChooseAvatar">
 					<u--image :src="loginInfo.url" shape="circle" width="80px" height="80px"></u--image>
 				</button>
 			</view>
@@ -59,7 +60,7 @@
 
 			<button class="btn-primary mb20 mt40" @click="login" v-if="!loggedIn">点击登录</button>
 
-			<button class="btn-primary mb20 mt40" @click="logout" v-if="loggedIn">退出登录</button>
+			<button class="btn-primary mb20 mt40 btn-warning" @click="logout" v-if="loggedIn">退出登录</button>
 
 			<button v-if="loginInfo.id==='oGJqI61rEAICwpBqGgw_hteePEbY'" class="btn-primary mb20"
 				@click="adminVisible=!adminVisible">{{adminVisible?'关闭后台':'显示后台'}}</button>
@@ -81,7 +82,7 @@
 	// 调用后台的 login，用 code 获取 token 和 openid
 
 	import { getOpenId, getProfile, checkSession, waiting, plsLogin } from '../../common/utils';
-	import { loginInfo_default, ICommenter, qrCode} from '../../common/common';
+	import { loginInfo_default, ICommenter, qrCode } from '../../common/common';
 	import { addOrUpdateCommenter } from '../../service'
 
 	import queryString from 'query-string';
@@ -91,7 +92,7 @@
 		onShareAppMessage,
 		onShareTimeline
 	} from '@dcloudio/uni-app';
-	
+
 	onShareAppMessage(() => {
 		return {
 			title: '软工题库',
@@ -99,7 +100,7 @@
 			imageUrl: qrCode,
 		};
 	});
-	
+
 	onShareTimeline(() => {
 		return {
 			title: '软工题库',
@@ -187,10 +188,13 @@
 	const login = async () => {
 		if (loggedIn.value) return;
 		const rsp = await getOpenId();
-		loginInfo.value = { ...loginInfo.value, ...rsp };
+		loginInfo.value = { ...loginInfo.value, ...rsp, name: '匿名' };
 		// console.log('loginInfo', loginInfo.value);
 		loggedIn.value = true;
 		uni.showTabBar();
+		uni.showToast({
+			title: '登录成功'
+		})
 
 		addOrUpdateCommenter(loginInfo.value)
 	}

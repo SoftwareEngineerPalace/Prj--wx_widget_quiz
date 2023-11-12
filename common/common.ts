@@ -1,7 +1,8 @@
 const logoImgUrl = 'https://7175-quiz-0gb2aw2vb2850af4-1320288220.tcb.qcloud.la/%E8%BD%AF%E5%B7%A5%E9%A2%98%E5%BA%93.png?sign=28d38d42a40f6a756593ca3b93842e47&t=1699611121';
 const qrCode = "https://7175-quiz-0gb2aw2vb2850af4-1320288220.tcb.qcloud.la/qrCode.png?sign=12652364954f6a1849a609e965b46329&t=1699699634";
+
 const loginInfo_default = {
-	name: "匿名",
+	name: "未登录",
 	url: 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0',
 	id: ''
 };
