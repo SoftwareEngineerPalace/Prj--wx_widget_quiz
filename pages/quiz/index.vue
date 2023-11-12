@@ -1,5 +1,6 @@
 <template>
-	<view class="quiz-wrapper padding30" style="padding-top: 10rpx;" @touchstart="onTouchStart" @touchmove="onTouchMove" @touchend="onTouchEnd">
+	<view class="quiz-wrapper padding30" style="padding-top: 10rpx;" @touchstart="onTouchStart" @touchmove="onTouchMove"
+		@touchend="onTouchEnd">
 		<view class="quiz-wrapper__group-up">
 			<!-- 题目 -->
 			<view class="quiz__group-title mb20">
@@ -17,22 +18,23 @@
 				{{option.value}}
 			</text>
 
-			<!-- 控制进度按钮 v-show="!curQuiz.submitted && quizController.hasNext()"  -->
+			<!-- 控制进度按钮 下面三个按钮 重复代码太多了 需要重构  -->
 			<view class="quiz__group-btn mb30" v-if="showGroupBtns">
 				<button :class="{'btn-primary':true,
-				 'fade-in':!curQuiz.submitted && quizController.hasNext(),
-				 'fade-out':!(!curQuiz.submitted && quizController.hasNext())
-				 }" v-text="'提交'" @click="onSubmit"></button>
+				 'fade-in':!curQuiz.submitted,
+				 'fade-out': curQuiz.submitted
+				 }" v-text="'提交'" v-show="!curQuiz.submitted" @click="onSubmit"></button>
 
-				<button class="btn-sub fade-in" v-text="'提交'" v-show="!curQuiz.submitted && !quizController.hasNext()"
-					@click="onSubmit"></button>
-
-				<button class="btn-primary" v-text="'进入结算页'"
-					v-show="curExerciseType === ExerciseType.Common && curQuiz.submitted && !quizController.hasNext() "
+				<button v-text="'进入结算页'" :class="{'btn-primary':true,
+					 'fade-in':curExerciseType === ExerciseType.Common && curQuiz.submitted && !quizController.hasNext(),
+					 'fade-out':!(curExerciseType === ExerciseType.Common && curQuiz.submitted && !quizController.hasNext())
+					 }" v-show="curExerciseType === ExerciseType.Common && curQuiz.submitted && !quizController.hasNext() "
 					@click="gotoSummary"></button>
 
-				<button class="btn-primary" v-text="'回到首页'"
-					v-show="curExerciseType !== ExerciseType.Common && curQuiz.submitted && !quizController.hasNext() "
+				<button v-text="'回到首页'" :class="{'btn-primary':true,
+					 'fade-in':curExerciseType !== ExerciseType.Common && curQuiz.submitted && !quizController.hasNext(),
+					 'fade-out':!(curExerciseType !== ExerciseType.Common && curQuiz.submitted && !quizController.hasNext())
+					 }" v-show="curExerciseType !== ExerciseType.Common && curQuiz.submitted && !quizController.hasNext() "
 					@click="gotoHome"></button>
 			</view>
 
@@ -599,7 +601,7 @@
 						}
 					}
 				}
-				
+
 				.comment-title-row {
 					display: flex;
 					flex-direction: row;
@@ -608,7 +610,7 @@
 					width: 100%;
 				}
 			}
-		
+
 			// 包含收藏按钮的 group
 			.quiz-wrapper__group-bottom {
 				width: 100%;
@@ -623,7 +625,7 @@
 				padding: 20rpx 20rpx 0 20rpx;
 				// padding-bottom: constant(safe-area-inset-bottom);
 				// padding-bottom: env(safe-area-inset-bottom);
-			
+
 				.group-fav {
 					display: flex;
 					flex-direction: row;
@@ -633,13 +635,13 @@
 					width: 200rpx;
 					// margin-left: 50rpx;
 					// margin-right: 50rpx;
-			
+
 					.favorite-word {
 						margin-left: 10rpx;
 						// border: 1px solid red;
 					}
 				}
-			
+
 				.btn-mini {
 					border: none;
 					height: 50rpx;
@@ -649,6 +651,4 @@
 			}
 		}
 	}
-
-	
 </style>
