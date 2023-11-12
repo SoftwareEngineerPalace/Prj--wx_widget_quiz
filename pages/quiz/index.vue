@@ -9,12 +9,15 @@
 				<text class="title">{{title_str}}</text>
 			</view>
 
-			<!-- 4 个选项 -->
-			<text class="quiz__option mb20" style="flex: none;" v-for="(option) in checkboxList" :key="option.id"
-				autoHeight v-bind:class="{ option: true, 
-				selected: option.selected, 
-				isCorrect: curQuiz.submitted && option.isCorrect, 
-				isWrong: curQuiz.submitted && option.selected && !option.isCorrect}" :data-id="option.id" @click="onClickOption">
+			<!-- 4 个选项 :class="{'quiz__option':true,'mb20':true, 'scale-small': option.scaleSmall}"-->
+			<text style="flex: none;" v-for="(option) in checkboxList" :key="option.id" autoHeight v-bind:class="{ 'option': true, 
+				'selected': option.selected, 
+				'isCorrect': curQuiz.submitted && option.isCorrect, 
+				'isWrong': curQuiz.submitted && option.selected && !option.isCorrect,
+				'quiz__option': true,
+				'mb20': true,
+				'scale-small': option.scaleSmall
+				}" :data-id="option.id" @click="onClickOption">
 				{{option.value}}
 			</text>
 
@@ -250,6 +253,7 @@
 		const clicked_id = evt.target.dataset.id;
 		checkboxList.value.forEach((v : any) => {
 			if (v.id === clicked_id) {
+				if (!v.selected) v.scaleSmall = true;
 				v.selected = !v.selected;
 			}
 		})
@@ -558,6 +562,10 @@
 					padding: 20rpx;
 					color: black;
 					border: 2rpx solid #00000000;
+
+					&:active {
+						animation: fadeInMovie 0.3s ease forwards;
+					}
 
 					&.selected {
 						background-color: gray;

@@ -156,19 +156,35 @@
 }
 
 .fade-in {
-	animation: fadeInMovie 0.3s ease forwards;
+	animation: fadeInAnimation 0.3s ease forwards;
 }
 
 .fade-out {
-	animation: fadeOutMovie 0.1s ease forwards;
+	animation: fadeOutAnimation 0.1s ease forwards;
 }
 
-@keyframes fadeInMovie {
+@keyframes fadeInAnimation {
 	from { height: 0;}
 	to { height: 100%;}
 }
 
-@keyframes fadeOutMovie {
+@keyframes fadeOutAnimation {
 	from { height: 100%;}
 	to { height: 0;}
+}
+
+.scale-small {
+	animation: scaleSmallAnimation 0.1s ease-in-out forwards;
+}
+
+@keyframes scaleSmallAnimation {
+	  0% {  
+	    transform: scale(1);  
+	  }  
+	  50% {  
+	    transform: scale(0.98);  
+	  }  
+	  100% {  
+	    transform: scale(1);  
+	  }  
 }
