@@ -84,6 +84,7 @@
 
 		.comment__time {
 			white-space: nowrap;
+			color: #999;
 		}
 
 		.comment__like-count {
