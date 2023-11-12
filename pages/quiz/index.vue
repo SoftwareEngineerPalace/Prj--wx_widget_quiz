@@ -555,6 +555,7 @@
 					border-radius: 20rpx;
 					padding: 20rpx;
 					color: black;
+					border: 2rpx solid #00000000;
 
 					&.selected {
 						background-color: gray;
