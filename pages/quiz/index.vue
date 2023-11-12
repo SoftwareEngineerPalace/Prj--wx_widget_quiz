@@ -662,8 +662,6 @@
 			// 包含收藏按钮的 group
 			.quiz-wrapper__group-bottom {
 				width: 100%;
-				// height: 100rpx;
-				// position: fixed;
 				background-color: $uni-bg-color-grey;
 				bottom: 0;
 				display: flex;
@@ -671,8 +669,6 @@
 				justify-content: space-between;
 				align-items: center;
 				padding: 20rpx 20rpx 0 20rpx;
-				// padding-bottom: constant(safe-area-inset-bottom);
-				// padding-bottom: env(safe-area-inset-bottom);
 
 				.group-fav {
 					display: flex;

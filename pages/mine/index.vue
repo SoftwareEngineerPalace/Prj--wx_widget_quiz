@@ -146,12 +146,16 @@
 	})
 
 	const onChooseAvatar = async (e) => {
-		console.log('onChooseAvatar');
 		const { avatarUrl: filePath } = e.detail;
+		// console.log('onChooseAvatar filePath', filePath);
 		const cloudPath = `commenter/${loginInfo.value.id}.jpg`;
-		const { fileID: url } = await wx.cloud.uploadFile({ cloudPath, filePath })
-		// console.log('上传图片到云存储后', url);
-		loginInfo.value = { ...loginInfo.value, url };
+		const { fileID } = await wx.cloud.uploadFile({ cloudPath, filePath });
+		const { fileList } = await wx.cloud.getTempFileURL({ fileList: [{ fileID }] })
+		// console.log("getTempFileURL", fileList);
+		const [first] = fileList;
+		const { tempFileURL } = first;
+		loginInfo.value = { ...loginInfo.value, url: `${tempFileURL}?t=${Math.floor(Math.random() * 1000)}` }; // 
+		// console.log('loginInfo.value', loginInfo.value);
 		addOrUpdateCommenter(loginInfo.value);
 	}
 
@@ -173,7 +177,7 @@
 				title: '名字不可以为空'
 			})
 			loginInfo.value = { ...loginInfo.value, name: '匿名' };
-			return ;
+			return;
 		}
 		loginInfo.value = { ...loginInfo.value, name: e.detail.value };
 		addOrUpdateCommenter(loginInfo.value);
