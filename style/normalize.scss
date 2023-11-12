@@ -196,3 +196,12 @@
 	    transform: scale(1);  
 	  }  
 }
+
+.bottom-tween-popup {
+	animation: bottomTweenPopup 0.4s ease-in forwards;
+}
+
+@keyframes bottomTweenPopup {
+	from { margin-top: 200rpx;}
+	to { margin-top: 0;}
+}

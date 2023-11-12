@@ -41,7 +41,8 @@
 					@click="gotoHome"></button>
 			</view>
 
-			<view class="card mb40" v-show="curQuiz.submitted" style="padding-top: 15rpx;">
+			<view class="card mb40" :class="{'bottom-tween-popup':curQuiz.submitted}" v-show="curQuiz.submitted"
+				style="padding-top: 15rpx;">
 				<view class="text-base text-title-sub mb20">做题统计</view>
 				<view class="hbox mb10 text-sm">
 					<view>{{`本题你做过 ${myAnswerTimes} 次, 错了 `}}</view>
@@ -60,7 +61,7 @@
 			</view>
 
 			<!-- 评论区 start -->
-			<view class="card" v-show="curQuiz.submitted">
+			<view class="card" :class="{'bottom-tween-popup':curQuiz.submitted}" v-show="curQuiz.submitted">
 				<view class="comment-title-row">
 					<view class="hbox">
 						<view class="text-sm">评论</view>&nbsp;·&nbsp; <view class="text-sm">
@@ -143,7 +144,7 @@
 	const myCorrectTimes = ref(0);
 	const myWrongTimes = ref(0);
 	const allUserCorrectRate = ref(0);
-	const correctRateProportion = ref(0);
+	const correctRateProportion = ref(100);
 
 	const startX = ref(0);
 	const startY = ref(0);
@@ -317,6 +318,7 @@
 		myAnswerTimes.value = 0;
 		myWrongTimes.value = 0;
 		allUserCorrectRate.value = 0;
+		correctRateProportion.value = 100;
 	}
 
 	const onPrev = () => {
