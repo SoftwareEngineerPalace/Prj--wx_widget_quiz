@@ -166,7 +166,15 @@
 	}
 
 	const onNameChange = (e) => {
-		// console.log("onNameChange", e);
+		console.log("onNameChange", e);
+		if (!e.detail.value) {
+			uni.showToast({
+				icon: 'none',
+				title: '名字不可以为空'
+			})
+			loginInfo.value = { ...loginInfo.value, name: '匿名' };
+			return ;
+		}
 		loginInfo.value = { ...loginInfo.value, name: e.detail.value };
 		addOrUpdateCommenter(loginInfo.value);
 	}
