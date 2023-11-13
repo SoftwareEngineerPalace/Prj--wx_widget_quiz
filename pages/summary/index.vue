@@ -43,7 +43,7 @@
 					</uni-td>
 
 					<uni-td align="center">
-						<view class="grid-center grid-ellipse">{{ user.user_name }}</view>
+						<view class="grid-center grid-name">{{ user.user_name }}</view>
 					</uni-td>
 
 					<uni-td align="center">
@@ -201,7 +201,6 @@
 
 	.grid-name {
 		max-width: 130rpx;
-		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		text-align: center;
@@ -210,7 +209,6 @@
 
 	.grid-like {
 		max-width: 100rpx;
-		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		text-align: center;
