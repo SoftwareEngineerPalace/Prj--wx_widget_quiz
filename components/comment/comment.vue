@@ -17,8 +17,8 @@
 				<view class="comment__time">{{vo.time}}</view>
 				<!-- 1.2.2 赞 -->
 				<view class="hbox" :style="{width: 'auto', pointerEvents: vo.exist?'auto':'none'}" @click="onLike">
-					<u-icon name="thumb-up-fill" :color="ihaveLiked?'#5ab8b3':'#999'" size="40"></u-icon>
-					<view class="comment__like-count text-sm" :style="{color:ihaveLiked?'#5ab8b3':'#999'}">
+					<u-icon name="thumb-up-fill" :color="ihaveLiked?themeColor:'#999'" size="40"></u-icon>
+					<view class="comment__like-count text-sm" :style="{color:ihaveLiked?themeColor:'#999'}">
 						{{ vo.user_ids_like?.length || '点赞' }}
 					</view>
 				</view>
@@ -39,6 +39,7 @@
 	const props = defineProps(['vo']);
 	const emits = defineEmits(['reply', 'longPressComment', 'evt_clickLike']);
 	const ihaveLiked = ref(false);
+	const themeColor = ref(getApp().globalData.themeColor)
 
 	watch(() => props.user_ids_like, (newVal, oldVal) => {
 		const open_user_id = getApp().globalData.loginInfo.id;

@@ -9,7 +9,7 @@
 						<view class="text-primary" style="margin-right: 20rpx;">
 							{{`当前题库: ${quizNameDic.get(curQuizType)}`}}
 						</view>
-						<u-icon class="icon" name="arrow-down-fill" color="#5ab8b3" size="25"></u-icon>
+						<u-icon name="arrow-down-fill" :color="themeColor" size="25"></u-icon>
 					</view>
 					<view class="text-sm-grey">{{`练习进度 ${finishedQuizCount} / ${quizCount}`}}</view>
 				</view>
@@ -84,6 +84,7 @@
 	const curQuizType = ref('js');
 	const quizList = ref();
 	const logoUrl = ref(logoImgUrlDeep);
+	const themeColor = ref(getApp().globalData.themeColor)
 
 	onShareAppMessage(() => {
 		return {

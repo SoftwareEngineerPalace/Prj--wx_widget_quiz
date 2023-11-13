@@ -18,6 +18,7 @@
 			errList: [], // 错题本
 			favList: [], // 收藏
 			rankingList: [], // 排名
+			themeColor: '#5ab8b3'
 		},
 	}
 </script>

@@ -7,6 +7,7 @@
 	"tabBar": {
 		"color": "#000",
 		"selectedColor": "#5ab8b3",
+		// "selectedColor": "$uni-theme-primary",
 		"list": [{
 			"pagePath": "pages/home/index",
 			"text": "练习",

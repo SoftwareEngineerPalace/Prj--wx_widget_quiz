@@ -26,7 +26,7 @@
 				<view class="hbox" style="width: auto;" @click="onComment">
 					<view class="text-sm">评论</view>&nbsp;
 					<!-- 这里颜色用的是主题色，要抽取出来 TODO -->
-					<u-icon name="edit-pen-fill" color="#5ab8b3" size="40"></u-icon>
+					<u-icon name="edit-pen-fill" :color="themeColor" size="40"></u-icon>
 				</view>
 			</view>
 			<!-- 不明白为什么这里有 style="width: 100%;" -->
@@ -42,9 +42,9 @@
 			:style="{visibility:quizController.getCurQuizIndex() > 0?'visible':'hidden'}" @click="onPrev"></button>
 		<!-- 2 收藏 -->
 		<view class="group-fav" @click="toggleFavorite">
-			<u-icon :name="curQuiz.favorite?'star-fill':'star'" :color="curQuiz.favorite?'#5ab8b3':'0xbbbbbb'"
+			<u-icon :name="curQuiz.favorite?'star-fill':'star'" :color="curQuiz.favorite?themeColor:'0xbbbbbb'"
 				size="40"></u-icon>
-			<view :style="{color:curQuiz.favorite?'#5ab8b3':'0xbbbbbb'}" class="text-sm ml10">{{'收藏'}}</view>
+			<view :style="{color:curQuiz.favorite?themeColor:'0xbbbbbb'}" class="text-sm ml10">{{'收藏'}}</view>
 		</view>
 		<!-- 3 下一题 -->
 		<button class="btn-sub w200" v-text="'下一题'" :style="{visibility:quizController.hasNext()?'visible':'hidden'}"
@@ -59,7 +59,7 @@
 					v-model="comment_value" :auto-height="true" class="text-primary mr30"
 					:placeholder="`${!commentToReply?.commenter_name?'发表评论...':'回复给:' + commentToReply?.commenter_name}`"></u-textarea>
 				&nbsp;
-				<u-icon name="arrow-upward" color="#5ab8b3" size="40" @click="onConfirmComment"></u-icon>
+				<u-icon name="arrow-upward" :color="themeColor" size="40" @click="onConfirmComment"></u-icon>
 			</view>
 		</view>
 	</u-popup>
@@ -87,7 +87,9 @@
 		onShareAppMessage,
 		onShareTimeline
 	} from '@dcloudio/uni-app';
-	
+
+	const themeColor = ref(getApp().globalData.themeColor)
+
 	onShareAppMessage(() => {
 		return {
 			title: '软工题库',
@@ -95,7 +97,7 @@
 			imageUrl: qrCode,
 		};
 	});
-	
+
 	onShareTimeline(() => {
 		return {
 			title: '软工题库',
