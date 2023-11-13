@@ -2,12 +2,18 @@
 	<view class='home-wrapper'>
 		<!-- 1 当前题库 -->
 		<view class="card mb40" @click="onClickTitle">
-			<view class="hbox mb20" style="justify-content: center;">
-				<view class="text-primary" style="margin-right: 20rpx;">{{`当前题库: ${quizNameDic.get(curQuizType)}`}}
+			<view class="hbox">
+				<u-image :show-loading="true" shape="circle" :src="logoUrl" width="140rpx" height="140rpx"></u-image>
+				<view class="vbox" style="width: 100%;">
+					<view class="hbox mb20" style="justify-content: center;">
+						<view class="text-primary" style="margin-right: 20rpx;">
+							{{`当前题库: ${quizNameDic.get(curQuizType)}`}}
+						</view>
+						<u-icon class="icon" name="arrow-down-fill" color="#5ab8b3" size="25"></u-icon>
+					</view>
+					<view class="text-sm-grey">{{`练习进度 ${finishedQuizCount} / ${quizCount}`}}</view>
 				</view>
-				<u-icon class="icon" name="arrow-down-fill" color="#5ab8b3" size="25"></u-icon>
 			</view>
-			<view class="text-sm-grey">{{`练习进度 ${finishedQuizCount} / ${quizCount}`}}</view>
 		</view>
 
 		<!-- 2 继续 -->
@@ -62,7 +68,7 @@
 
 <script lang="ts" setup>
 	import { throttle } from 'lodash';
-	import { ExerciseType, quizNameDic, quizTypeArray, logoImgUrl, qrCode } from '../../common/common';
+	import { ExerciseType, quizNameDic, quizTypeArray, logoImgUrlDeep, qrCode } from '../../common/common';
 	import { computed, onMounted, ref } from 'vue';
 
 	import { checkSession } from '../../common/utils';
@@ -77,6 +83,7 @@
 	const userOpenId = ref('');
 	const curQuizType = ref('js');
 	const quizList = ref();
+	const logoUrl = ref(logoImgUrlDeep);
 
 	onShareAppMessage(() => {
 		return {
@@ -98,7 +105,7 @@
 	onLoad(async () => {
 		const hasSession = await checkSession();
 		const token = uni.getStorageSync('token');
-		// console.log('home onLoad', { hasSession, token })
+		console.log('home onLoad', { hasSession, token })
 		if (!hasSession || !token) {
 			uni.switchTab({
 				url: '/pages/mine/index'
@@ -111,8 +118,12 @@
 				name: 'getCommenter',
 				data: { id }
 			});
+			// console.log("getCommenter", rsp);
 			if (rsp.result.data.length === 0) return;
-			(getApp().globalData as any).loginInfo = rsp.result.data[0];// 存到这里有什么用
+			const [first] = rsp.result.data;
+			delete first._id;
+			(getApp().globalData as any).loginInfo = first;// 存到这里有什么用
+			// console.log("(getApp().globalData as any).loginInfo", (getApp().globalData as any).loginInfo);
 		}
 	})
 

@@ -134,6 +134,7 @@
 		{ id: 'about', 'label': '关于程序', 'icon': 'error-circle' }])
 
 	onMounted(async () => {
+		// console.log("mine onMounted");
 		// 1 登录状态
 		const hasSession = await checkSession();
 		const token = uni.getStorageSync('token');
