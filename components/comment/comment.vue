@@ -25,8 +25,8 @@
 			</view>
 
 			<comment v-for="(sub_comment) in vo.comment_list" style="width: 100%;" :key="sub_comment.id"
-				:vo="sub_comment" :user_ids_like="sub_comment.user_ids_like" :data-vo="sub_comment" @longPressComment="onLongPressEvtBubble"
-				@evt_clickLike='onLikeClicked'></comment>
+				:vo="sub_comment" :user_ids_like="sub_comment.user_ids_like" :data-vo="sub_comment"
+				@longPressComment="onLongPressEvtBubble" @evt_clickLike='onLikeClicked'></comment>
 		</view>
 	</view>
 </template>
@@ -78,8 +78,13 @@
 			height: 50rpx;
 		}
 
+		.comment__commenter-name {
+			font-weight: bold;
+		}
+
 		.comment__content {
 			align-self: stretch;
+			font-size: $uni-font-size-sm;
 		}
 
 		.comment__time {

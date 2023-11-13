@@ -10,13 +10,13 @@
 		<view class="card mb40">
 			<view>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本应用除了微信昵称和头像外，没收集您的任何信息，不存在侵权。</view>
 			<view>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;题目来源于 <span @click="copy('')"
-					class="link-color">"阮一峰网道教程"</span>，本小程序内容不代表官方，开发者不保证题目和答案的正确性，有想法可以讨论区留言或反馈给开发者。</view>
+					class="primary-color">"阮一峰网道教程"</span>，本小程序内容不代表官方，开发者不保证题目和答案的正确性，有想法可以讨论区留言或反馈给开发者。</view>
 		</view>
 		<view class="text-primary mb20" style="align-self: flex-start;margin-left: 25rpx;">联系方式</view>
 		<view class="card">
-			<view style="align-self: flex-start;">QQ:&nbsp;&nbsp; <span class="link-color"
+			<view style="align-self: flex-start;">QQ:&nbsp;&nbsp; <span class="primary-color"
 					@click="copy('371783402')">371783402</span></view>
-			<view style="align-self: flex-start;"> 邮箱: &nbsp;<span class="link-color"
+			<view style="align-self: flex-start;"> 邮箱: &nbsp;<span class="primary-color"
 					@click="copy('jianjun.xiao@foxmail.com')">jianjun.xiao@foxmail.com</span></view>
 		</view>
 	</view>

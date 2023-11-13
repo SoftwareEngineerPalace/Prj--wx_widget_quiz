@@ -2,27 +2,28 @@
 	<view class="quiz-wrapper padding30" style="padding-top: 10rpx;" @touchstart="onTouchStart" @touchmove="onTouchMove"
 		@touchend="onTouchEnd">
 		<view class="quiz-wrapper__group-up">
-			<!-- 题目 -->
-			<view class="quiz__group-title mb20">
-				<text class="index">{{index_str}}</text>
-				<text>{{`&nbsp;&nbsp;`}}</text>
-				<text class="title">{{title_str}}</text>
+			<view class="quiz-main vbox mb40">
+				<!-- 题目 -->
+				<view class="quiz__group-title mb20">
+					<text class="index">{{index_str}}</text>
+					<text>{{`&nbsp;&nbsp;`}}</text>
+					<text class="title">{{title_str}}</text>
+				</view>
+
+				<!-- 4 个选项 :class="{'quiz__option':true,'mb20':true, 'scale-small': option.scaleSmall}"-->
+				<text style="flex: none;" v-for="(option) in checkboxList" :key="option.id" autoHeight v-bind:class="{ 'option': true, 
+					'selected': option.selected, 
+					'isCorrect': curQuiz.submitted && option.isCorrect, 
+					'isWrong': curQuiz.submitted && option.selected && !option.isCorrect,
+					'quiz__option': true,
+					'mb20': true,
+					'scale-small': option.scaleSmall
+					}" :data-id="option.id" @click="onClickOption">
+					{{option.value}}
+				</text>
 			</view>
-
-			<!-- 4 个选项 :class="{'quiz__option':true,'mb20':true, 'scale-small': option.scaleSmall}"-->
-			<text style="flex: none;" v-for="(option) in checkboxList" :key="option.id" autoHeight v-bind:class="{ 'option': true, 
-				'selected': option.selected, 
-				'isCorrect': curQuiz.submitted && option.isCorrect, 
-				'isWrong': curQuiz.submitted && option.selected && !option.isCorrect,
-				'quiz__option': true,
-				'mb20': true,
-				'scale-small': option.scaleSmall
-				}" :data-id="option.id" @click="onClickOption">
-				{{option.value}}
-			</text>
-
 			<!-- 控制进度按钮 下面三个按钮 重复代码太多了 需要重构  -->
-			<view class="quiz__group-btn mb30" v-if="showGroupBtns">
+			<view class="quiz__group-btn mb30" v-if="!curQuiz.submitted || !quizController.hasNext()">
 				<button :class="{'btn-primary':true,
 				 'fade-in':!curQuiz.submitted,
 				 'fade-out': curQuiz.submitted
@@ -69,8 +70,8 @@
 						</view>
 					</view>
 					<view class="hbox" style="width: auto;" @click="onComment">
-						<view class="text-sm">评论</view>&nbsp;
-						<!-- 这里颜色用的是主题色，要抽取出来 TODO -->
+						<view class="text-sm primary-color">评论</view>&nbsp;
+						<!-- 这里颜色用的是主题色，要抽取出来, 作为变量 TODO -->
 						<u-icon name="edit-pen-fill" color="#5ab8b3" size="40"></u-icon>
 					</view>
 				</view>
@@ -196,7 +197,6 @@
 
 	const quizType = ref("");        // 题目类型
 	const curExerciseType = ref("")  // 做题类型
-	const showGroupBtns = ref(false);
 	const curQuiz = ref({} as IQuiz);// 当前题目的数据
 	const checkboxList = ref([]);    // 当前4个选项
 	const userAnswer = ref('');      // 用户的答案
@@ -381,7 +381,6 @@
 			};
 			return option;
 		})
-		showGroupBtns.value = true;
 	}
 
 	/** 初始化时 更新评论区 */
@@ -588,44 +587,52 @@
 				overflow-y: auto;
 				padding-bottom: 20rpx;
 
-				.quiz__group-title {
-					font-size: 38rpx;
-					font-weight: 400;
-					display: flex;
-					justify-content: flex-start;
-				}
+				.quiz-main {
+					align-items: stretch;
 
-				.quiz__option {
-					font-size: 33rpx;
-					background-color: white;
-					border-radius: 20rpx;
-					padding: 20rpx;
-					color: black;
-					border: 2rpx solid #00000000;
-
-					&:active {
-						animation: fadeInMovie 0.3s ease forwards;
+					.quiz__group-title {
+						font-size: 38rpx;
+						font-weight: 400;
+						display: flex;
+						justify-content: flex-start;
 					}
 
-					&.selected {
-						background-color: gray;
-						color: white;
-					}
-
-					&.isCorrect {
-						// background-color: $uni-color-success;
-						// color: white;
+					.quiz__option {
+						font-size: 33rpx;
 						background-color: white;
-						border: 2rpx solid $uni-color-success;
-						color: $uni-color-success;
-					}
+						border-radius: 20rpx;
+						padding: 20rpx;
+						color: black;
+						border: 2rpx solid #00000000;
 
-					&.isWrong {
-						// background-color: $uni-color-error;
-						// color: white;
-						background-color: white;
-						border: 2rpx solid $uni-color-error;
-						color: $uni-color-error;
+						&:last-child {
+							margin-bottom: 0;
+						}
+
+						&:active {
+							animation: fadeInMovie 0.3s ease forwards;
+						}
+
+						&.selected {
+							background-color: gray;
+							color: white;
+						}
+
+						&.isCorrect {
+							// background-color: $uni-color-success;
+							// color: white;
+							background-color: white;
+							border: 2rpx solid $uni-color-success;
+							color: $uni-color-success;
+						}
+
+						&.isWrong {
+							// background-color: $uni-color-error;
+							// color: white;
+							background-color: white;
+							border: 2rpx solid $uni-color-error;
+							color: $uni-color-error;
+						}
 					}
 				}
 
@@ -656,6 +663,7 @@
 					justify-content: space-between;
 					align-items: center;
 					width: 100%;
+					font-weight: bolder;
 				}
 			}
 
