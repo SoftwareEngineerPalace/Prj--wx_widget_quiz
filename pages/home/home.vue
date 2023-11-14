@@ -278,7 +278,7 @@
 
 	const getRanking = async () => {
 		const list = await getRankingList(curQuizType.value);
-		console.log("getRanking", list);
+		// console.log("getRanking", list);
 		(getApp().globalData as any).rankingList = list;
 	}
 
