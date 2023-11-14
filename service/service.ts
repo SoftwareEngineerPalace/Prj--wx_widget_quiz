@@ -1,5 +1,5 @@
 import { camelToUnderline, underlineToCamel } from '../common/utils'
-const getAllQuiz = async (quiz_type : string) => {
+const getQuizListByType = async (quiz_type : string) => {
 	const token = uni.getStorageSync('token');
 	const rsp : any = await wx.cloud.callFunction({
 		name: 'getAllQuiz',
@@ -124,4 +124,4 @@ const getOpenId = () => {
 	})
 };
 
-export { getOpenId, deleteQuizByTypeAndUserId, getRankingList, getQuizById, progressPostOrPut, getAllQuiz, getErrorCollectonQuiz, addOrUpdateCommenter, getFavoriteQuiz, getReceivedLike }
+export { getOpenId, deleteQuizByTypeAndUserId, getRankingList, getQuizById, progressPostOrPut, getQuizListByType, getErrorCollectonQuiz, addOrUpdateCommenter, getFavoriteQuiz, getReceivedLike }

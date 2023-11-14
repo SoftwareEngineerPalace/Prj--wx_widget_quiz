@@ -74,10 +74,9 @@
 	import { checkSession } from '../../common/utils';
 	import queryString from 'query-string';
 	import { onShow, onLoad, onInit, onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
-	import { getAllQuiz, getErrorCollectonQuiz, getFavoriteQuiz, progressPostOrPut, getRankingList } from '../../service/service';
+	import { getQuizListByType, getErrorCollectonQuiz, getFavoriteQuiz, progressPostOrPut, getRankingList } from '../../service/service';
 
-	/** 上一个题目的序号 从 1 开始*/
-	const latestQuizSn = ref(0);
+	
 	const finishedQuizCount = ref(0);
 	const quizCount = ref(0);
 	const userOpenId = ref('');
@@ -130,20 +129,20 @@
 
 	// 每次展示都会调用
 	onShow(() => {
-		initData()
+		console.log("home onShow");
+		initData();
 	})
 
 	const initData = async () => {
-		// 1 错题本
-		getErrorQuizList();
-		// 2 收藏
-		getFavoriteQuizList();
-		// 3 全部题
-		await getAllQuizList();
-		// 4 进度
-		updateProgress();
-		// 5 排名
-		getRanking();
+		uni.showLoading({
+			title: "正在加载",
+			mask: true
+		})
+
+		const list = [getErrorQuizList(), getFavoriteQuizList(), getQuizList(), updateProgress(), getRanking()];
+		await Promise.all(list);
+
+		uni.hideLoading()
 	}
 
 	// 1 头部
@@ -184,7 +183,7 @@
 		showQuizSelectPopup.value = false;
 	}
 	const onQuizSelectPopupOpen = () => {
-		console.log('onQuizSelectPopupOpen')
+		// console.log('onQuizSelectPopupOpen')
 	}
 	const closeSelectQuizPopup = () => {
 		showQuizSelectPopup.value = false;
@@ -195,7 +194,7 @@
 		showQuizSelectPopup.value = false;
 		// latestQuizSn 内存更新 
 		const nextQuizSn = evt.currentTarget.dataset.sn;
-		console.log('evt', nextQuizSn);
+		// console.log('evt', nextQuizSn);
 		latestQuizSn.value = nextQuizSn - 1;
 		// latestQuizSn db 更新
 		progressPostOrPut(curQuizType.value, latestQuizSn.value);
@@ -254,16 +253,18 @@
 			data: { token, quiz_type: curQuizType.value }
 		});
 		// 下面几行代码 真别扭
-		const { latest_quiz_sn, finished_quiz_count } = rsp.result;
-		// console.log({ latest_quiz_sn, quizCount: quizCount.value });
-		latestQuizSn.value = latest_quiz_sn !== quizCount.value ? latest_quiz_sn : 0;
+		const { latest_quiz_sn, finished_quiz_count, quiz_count } = rsp.result;
+		latestQuizSn.value = latest_quiz_sn;
 		finishedQuizCount.value = finished_quiz_count;
 	}
+	
+	/** 上一个题目的序号 从 1 开始*/
+	const latestQuizSn = ref(0);
 
-	const getAllQuizList = async () => {
-		const list = await getAllQuiz(curQuizType.value);
-		(getApp().globalData as any).quizList = list;
+	const getQuizList = async () => {
+		const list = await getQuizListByType(curQuizType.value);
 		quizCount.value = list.length;
+		(getApp().globalData as any).quizList = list;
 	}
 
 	const getErrorQuizList = async () => {
@@ -273,7 +274,9 @@
 
 	const getFavoriteQuizList = async () => {
 		const list = await getFavoriteQuiz(curQuizType.value);
-		(getApp().globalData as any).favList = list;
+		const favList = list.sort((a, b) => a.sn - b.sn);
+		console.log('getFavoriteQuizList', favList);
+		(getApp().globalData as any).favList = favList;
 	}
 
 	const getRanking = async () => {

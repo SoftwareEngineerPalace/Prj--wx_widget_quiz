@@ -210,6 +210,7 @@
 	const showDeletePopup = ref(false);
 
 	onLoad(async (evt : { quizType : string, exerciseType : string, latest_quiz_index : number }) => {
+		// console.log('quiz onLoad');
 		const { exerciseType, latest_quiz_index } = evt;
 		// 1 设置类型
 		curExerciseType.value = exerciseType;
@@ -289,7 +290,7 @@
 	};
 
 	const onSubmit = async () => {
-		console.log("onSubmit");
+		// console.log("onSubmit");
 		curQuiz.value.submitted = true;
 		const token = uni.getStorageSync('token');
 		const isCorrect = curQuiz.value.answer === userAnswer.value;
@@ -493,14 +494,18 @@
 
 	// 下面关于收藏
 	const toggleFavorite = async () => {
+		// console.log('题目当前 favorite 是', curQuiz.value.favorite);
 		// 1 更新当前按钮
 		curQuiz.value.favorite = !curQuiz.value.favorite;
 		// 2 存入数据库
 		const token = uni.getStorageSync('token');
-		const { result: favorite } = await wx.cloud.callFunction({
+		const { result } = await wx.cloud.callFunction({
 			name: 'toggleFavorite',
 			data: { token, quiz_id: curQuiz.value.id }
 		});
+		const { favorite } = result;
+		// console.log('数据库更新后，favorite 变成', favorite);
+
 		// 3 存入内存
 		quizController.updateFavorite(curQuiz.value.id, favorite);
 	}
