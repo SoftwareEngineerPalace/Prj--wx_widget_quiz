@@ -40,32 +40,22 @@
 							<u-radio-group size='10px'
 								:customStyle="{ backgroundColor:'blue', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr'}"
 								v-model="item.duration" @change="onDurationChange" class="duration-group">
-								<!-- <u-grid :col="3">
-									<u-grid-item> -->
-										<u-radio labelSize="12px" :key="10" :name="10" :label="10" shape="square"
-											:customStyle="{marginRight: '4px'}">10</u-radio>
-								<!-- 	</u-grid-item>
-									<u-grid-item> -->
-										<u-radio labelSize="12px" :key="20" :name="20" :label="20" shape="square"
-											:customStyle="{marginRight: '4px'}">20</u-radio>
-									<!-- </u-grid-item>
-									<u-grid-item> -->
-										<u-radio labelSize="12px" :key="30" :name="30" :label="30" shape="square"
-											:customStyle="{marginRight: '4px'}">30</u-radio>
-									<!-- </u-grid-item>
-									<u-grid-item> -->
-										<u-radio labelSize="12px" :key="40" :name="40" :label="40" shape="square"
-											:customStyle="{marginRight: '4px'}">40</u-radio>
-									<!-- </u-grid-item>
-									<u-grid-item> -->
-										<u-radio labelSize="12px" :key="60" :name="60" :label="60" shape="square"
-											:customStyle="{marginRight: '4px'}">60</u-radio>
-									<!-- </u-grid-item>
-									<u-grid-item> -->
-										<u-radio labelSize="12px" :key="90" :name="90" :label="90" shape="square"
-											:customStyle="{marginRight: '4px'}">90</u-radio>
-									<!-- </u-grid-item>
-								</u-grid> -->
+
+								<u-radio labelSize="12px" :key="10" :name="10" :label="10" shape="square"
+									:customStyle="{marginRight: '4px'}">10</u-radio>
+								<u-radio labelSize="12px" :key="20" :name="20" :label="20" shape="square"
+									:customStyle="{marginRight: '4px'}">20</u-radio>
+
+								<u-radio labelSize="12px" :key="30" :name="30" :label="30" shape="square"
+									:customStyle="{marginRight: '4px'}">30</u-radio>
+
+								<u-radio labelSize="12px" :key="40" :name="40" :label="40" shape="square"
+									:customStyle="{marginRight: '4px'}">40</u-radio>
+
+								<u-radio labelSize="12px" :key="60" :name="60" :label="60" shape="square"
+									:customStyle="{marginRight: '4px'}">60</u-radio>
+								<u-radio labelSize="12px" :key="90" :name="90" :label="90" shape="square"
+									:customStyle="{marginRight: '4px'}">90</u-radio>
 							</u-radio-group>
 						</view>
 
@@ -78,8 +68,8 @@
 						</view>
 
 						<!-- 任务名字 -->
-						<u-textarea :customStyle="{marginLeft:'8px', width:'100px', marginRight:'20rpx'}" class="task__input" autoHeight
-							v-model="item.review" placeholder="复盘">
+						<u-textarea :customStyle="{marginLeft:'8px', width:'100px', marginRight:'20rpx'}"
+							class="task__input" autoHeight v-model="item.review" placeholder="复盘">
 						</u-textarea>
 
 					</view>
@@ -419,7 +409,7 @@
 			}
 		}
 	}
-	
+
 	.container-duraion {
 		:deep(.u-radio-group) {
 			display: grid !important;
