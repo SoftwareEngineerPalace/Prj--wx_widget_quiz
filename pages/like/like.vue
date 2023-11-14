@@ -21,7 +21,7 @@
 	import { ref } from 'vue';
 	import { qrCode } from '../../common/common';
 	import { onShow, onLoad, onInit } from '@dcloudio/uni-app';
-	import { getReceivedLike } from '../../service';
+	import { getReceivedLike } from '../../service/service';
 	import { underlineToCamel } from '../../common/utils';
 	import {
 		onShareAppMessage,

@@ -82,7 +82,7 @@
 
 	import quizController from '../../common/quizController';
 	import comment from "../../components/comment/comment.vue";
-	import { getQuizById } from '../../service/index';
+	import { getQuizById } from '../../service/service';
 	import {
 		onShareAppMessage,
 		onShareTimeline

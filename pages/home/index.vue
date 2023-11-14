@@ -74,7 +74,7 @@
 	import { checkSession } from '../../common/utils';
 	import queryString from 'query-string';
 	import { onShow, onLoad, onInit, onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
-	import { getAllQuiz, getErrorCollectonQuiz, getFavoriteQuiz, progressPostOrPut, getRankingList } from '../../service';
+	import { getAllQuiz, getErrorCollectonQuiz, getFavoriteQuiz, progressPostOrPut, getRankingList } from '../../service/service';
 
 	/** 上一个题目的序号 从 1 开始*/
 	const latestQuizSn = ref(0);
@@ -106,7 +106,7 @@
 	onLoad(async () => {
 		const hasSession = await checkSession();
 		const token = uni.getStorageSync('token');
-		console.log('home onLoad', { hasSession, token })
+		// console.log('home onLoad', { hasSession, token })
 		if (!hasSession || !token) {
 			uni.switchTab({
 				url: '/pages/mine/index'
@@ -278,7 +278,7 @@
 
 	const getRanking = async () => {
 		const list = await getRankingList(curQuizType.value);
-		// console.log("getRanking", list);
+		console.log("getRanking", list);
 		(getApp().globalData as any).rankingList = list;
 	}
 
@@ -286,7 +286,7 @@
 		const list = getApp().globalData.rankingList;
 		if (list.length === 0) {
 			uni.showToast({
-				title: "数据还没加载完",
+				title: "还没有数据",
 				icon: "none",
 				duration: 500
 			})

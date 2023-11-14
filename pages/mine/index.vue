@@ -70,6 +70,21 @@
 				<button class="btn-primary mb20" @click="onCms" data-quizType="js">JavaScript 后台</button>
 				<button class="btn-primary mb20" @click="onCms" data-quizType="es6">ECMAScript 6 后台</button>
 				<button class="btn-primary mb20" @click="onCms" data-quizType="ts">TypeScript 后台</button>
+
+				<input class="mb20" placeholder="输入用户 id" v-model="userIdToDelete"
+					style="width: 100%; text-align: center;" />
+				<view class="hbox mb20" style="justify-content: space-evenly;">
+					<u-radio-group :customStyle="{flew:'none'}" v-model="quizTypeRadioValue" placement="row" size="40"
+						class="flex-grow:0">
+						<u-radio activeColor="red" :customStyle="{marginBottom: '8px', marginRight:'30rpx'}"
+							:labelSize="40" :iconSize="80" v-for="(type) in ['js','es6','ts']" :key="type" :label="type"
+							:name="type">
+						</u-radio>
+					</u-radio-group>
+					<button class="btn-primary btn-warning" style="width: auto; margin: 0;"
+						@click="deleteQuiz">删除</button>
+				</view>
+
 				<button class="btn-primary mb20" @click="onTask">任务</button>
 			</view>
 		</view>
@@ -81,9 +96,9 @@
 	// uni.login 获取 weixin 获取 code
 	// 调用后台的 login，用 code 获取 token 和 openid
 
-	import { getOpenId, getProfile, checkSession, waiting, plsLogin } from '../../common/utils';
+	import { getProfile, checkSession, waiting, plsLogin } from '../../common/utils';
 	import { loginInfo_default, ICommenter, qrCode } from '../../common/common';
-	import { addOrUpdateCommenter } from '../../service'
+	import { addOrUpdateCommenter, getOpenId, deleteQuizByTypeAndUserId } from '../../service/service'
 
 	import queryString from 'query-string';
 
@@ -92,6 +107,8 @@
 		onShareAppMessage,
 		onShareTimeline
 	} from '@dcloudio/uni-app';
+
+	const userIdToDelete = ref('')
 
 	onShareAppMessage(() => {
 		return {
@@ -138,12 +155,15 @@
 		// 1 登录状态
 		const hasSession = await checkSession();
 		const token = uni.getStorageSync('token');
-		loggedIn.value = hasSession as boolean && !!token;
+		loggedIn.value = (!!hasSession && !!token);
 
 		// 2 个人信息
 		if (loggedIn.value) {
 			loginInfo.value = (getApp().globalData as any).loginInfo;
+			userIdToDelete.value = loginInfo.value.id;
+			console.log("mine onMounted userIdToDelete", userIdToDelete.value);
 		}
+
 	})
 
 	const onChooseAvatar = async (e) => {
@@ -200,9 +220,13 @@
 
 	const login = async () => {
 		if (loggedIn.value) return;
-		const rsp = await getOpenId();
-		loginInfo.value = { ...loginInfo.value, ...rsp, name: '匿名' };
-		// console.log('loginInfo', loginInfo.value);
+		const { id } = await getOpenId();
+		const name = `用户${id.slice(-3, id.length)}`
+		// console.log('登录后', { id, name });
+		loginInfo.value = { ...loginInfo.value, id, name };
+		userIdToDelete.value = id;
+		console.log('userIdToDelete', userIdToDelete.value);
+		// console.log('登录后 loginInfo', loginInfo.value);
 		loggedIn.value = true;
 		uni.showTabBar();
 		uni.showToast({
@@ -235,6 +259,21 @@
 			url: '/pages/share/share'
 		})
 	}
+
+	const deleteQuiz = async () => {
+		const quizType = quizTypeRadioValue.value;
+		const userOpenId = userIdToDelete.value;
+		console.log({ quizType, userOpenId });
+		const { result } = await deleteQuizByTypeAndUserId(quizType, userOpenId);
+		if (result.errMsg === "collection.remove:ok") {
+			uni.showToast({
+				title: '删除成功',
+				icon: "none"
+			})
+		}
+	}
+
+	const quizTypeRadioValue = ref('js');
 </script>
 
 <style lang="scss" scoped>
@@ -289,5 +328,13 @@
 		border: none;
 		height: 90rpx;
 		font-size: $uni-font-size-sm;
+	}
+
+	:deep(.u-radio-group) {
+		flex: none !important; // 如果不想加 !important 怎么办
+	}
+
+	.u-radio-group--raw {
+		flex-flow: row nowrap;
 	}
 </style>
