@@ -289,6 +289,7 @@
 	};
 
 	const onSubmit = async () => {
+		console.log("onSubmit");
 		curQuiz.value.submitted = true;
 		const token = uni.getStorageSync('token');
 		const isCorrect = curQuiz.value.answer === userAnswer.value;
@@ -303,12 +304,13 @@
 			quiz_count: quizCount,
 			exerciseType: curExerciseType.value
 		};
+		// console.log('onSubmit data', data);
 		// data 里的 quiz_count 可能没用，待删
 		const { result } = await wx.cloud.callFunction({
 			name: 'answer',
 			data
 		});
-		console.log("answer", result);
+		// console.log("answer", result);
 		const { answer_times, correct_times, all_user_rate, all_user_answer_times, all_user_correct_times, correct_rate_proportion } = result;
 		myAnswerTimes.value = answer_times;
 		myWrongTimes.value = answer_times - correct_times;
@@ -353,7 +355,7 @@
 
 	const gotoSummary = () => {
 		const queryStr = queryString.stringify({ quizType: quizType.value });
-		const url = `/pages/summary/index?${queryStr}`;
+		const url = `/pages/summary/summary?${queryStr}`;
 		uni.redirectTo({ url })
 	}
 

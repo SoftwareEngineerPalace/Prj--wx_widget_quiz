@@ -208,13 +208,13 @@
 		// console.log('onCms evt', evt);
 		const { quiztype } = evt.target.dataset;
 		const queryStr = queryString.stringify({ quizType: quiztype })
-		const url = `/pages/cms/index?${queryStr}`;
+		const url = `/pages/cms/cms?${queryStr}`;
 		// console.log('onCms', url);
 		uni.navigateTo({ url });
 	};
 
 	const onTask = () => {
-		const url = `/pages/task/index`;
+		const url = `/pages/task/task`;
 		uni.navigateTo({ url });
 	};
 

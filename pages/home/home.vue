@@ -171,7 +171,7 @@
 	const onBtnContinue = async () => {
 		// 1 题目类型
 		const queryStr = queryString.stringify({ quizType: curQuizType.value, exerciseType: ExerciseType.Common, latest_quiz_index: latestQuizSn.value - 1 });
-		const url = `/pages/quiz/index?${queryStr}`;
+		const url = `/pages/quiz/quiz?${queryStr}`;
 		uni.navigateTo({ url })
 	};
 
@@ -219,7 +219,7 @@
 		}
 		// 传给下一页的数据
 		const queryStr = queryString.stringify({ quizType, exerciseType: ExerciseType.ErrCollection, latest_quiz_index: -1 });
-		const url = `/pages/quiz/index?${queryStr}`;
+		const url = `/pages/quiz/quiz?${queryStr}`;
 		uni.navigateTo({ url })
 	}
 
@@ -241,7 +241,7 @@
 
 		// 传给下一页的数据
 		const queryStr = queryString.stringify({ quizType, exerciseType: ExerciseType.Favorite, latest_quiz_index: -1 });
-		const url = `/pages/quiz/index?${queryStr}`;
+		const url = `/pages/quiz/quiz?${queryStr}`;
 		uni.navigateTo({ url })
 	}
 
@@ -294,7 +294,7 @@
 		}
 		const quizType = curQuizType.value;
 		uni.navigateTo({
-			url: `/pages/summary/index?quizType=${quizType}`
+			url: `/pages/summary/summary?quizType=${quizType}`
 		})
 	}
 </script>
