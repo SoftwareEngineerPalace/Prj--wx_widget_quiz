@@ -423,7 +423,7 @@
 	/** 要回复的评论 vo */
 	const commentToReply = ref(null);
 	const onReplyComment = async (comment : IComment) => {
-		if (!comment.exist) return;
+		if (!comment.exist) return; // 已被删除 ，则跳过
 		commentToReply.value = comment;
 		showCommentPopup.value = true;
 	}
@@ -433,6 +433,14 @@
 		const commentValue : string = comment_value.value;
 		comment_value.value = '';
 		showCommentPopup.value = false;
+
+		if (!commentValue) {
+			uni.showToast({
+				title: '没有输入',
+				icon: "none"
+			})
+			return
+		}; // 没数据则跳过
 
 		// 2 评论人信息
 		const { name: commenter_name, url: commenter_url, id: commenter_id } = (getApp().globalData as any).loginInfo as ICommenter;
