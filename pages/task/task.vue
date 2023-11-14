@@ -18,7 +18,7 @@
 						<view class="deadline" :style="{color: colorDic[item.priority]}">{{ `${item.deadline}` }}</view>
 
 						<!-- 任务名字 -->
-						<u-textarea :customStyle="{marginLeft:'8px', width:'100px'}" class="name" autoHeight
+						<u-textarea :customStyle="{marginLeft:'8px', width:'100px'}" class="task__input" autoHeight
 							v-model="item.name" placeholder="任务" @blur="onBlur">
 						</u-textarea>
 
@@ -69,13 +69,18 @@
 							</u-radio-group>
 						</view>
 
-						<!-- 删除按钮 -->
+						<!-- 多个按钮 -->
 						<view class="container-action">
 							<button class="btn delete" @click="onDelete(index)">删</button>
 							<button class="btn up" @click="moveUp(index)" v-if="index !== 0">上</button>
 							<button class="btn down" @click="moveDown(index)"
 								v-if="index !== list.length - 1">下</button>
 						</view>
+
+						<!-- 任务名字 -->
+						<u-textarea :customStyle="{marginLeft:'8px', width:'100px'}" class="task__input" autoHeight
+							v-model="item.review" placeholder="复盘" @blur="onReviewBlur">
+						</u-textarea>
 
 					</view>
 				</view>
@@ -128,6 +133,7 @@
 						duration: 10,
 						deadline: "",
 						priority: 1,
+						review: ''
 					};
 				});
 			console.log("onMounted");
@@ -143,7 +149,8 @@
 			duration: 10,
 			deadline: "",
 			priority: 1,
-			id: generateUUID()
+			id: generateUUID(),
+			review: ''
 		};
 		list.value.push(one);
 		console.log("addOne", toRaw(list.value));
@@ -366,19 +373,21 @@
 						font-size: 14px;
 					}
 
-					.name {
+					.task__input {
 						text-align: center;
 						color: white;
-						margin-right: 10px;
-						margin-left: 30px;
+						margin-right: 10rpx;
+						margin-left: 30rpx;
 						font-weight: 500;
 						background: #eeeeee;
 						padding: 0;
 						text-align: center;
-						width: 150px;
+						width: 150rpx;
 						white-space: wrap;
 						color: red;
 					}
+
+
 
 					.container-action {
 						display: flex;

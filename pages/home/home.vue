@@ -108,7 +108,7 @@
 		// console.log('home onLoad', { hasSession, token })
 		if (!hasSession || !token) {
 			uni.switchTab({
-				url: '/pages/mine/index'
+				url: '/pages/mine/mine'
 			})
 			uni.hideTabBar();
 		} else {
@@ -281,7 +281,7 @@
 
 	const getRanking = async () => {
 		const list = await getRankingList(curQuizType.value);
-		// console.log("getRanking", list);
+		console.log("getRanking", list);
 		(getApp().globalData as any).rankingList = list;
 	}
 
