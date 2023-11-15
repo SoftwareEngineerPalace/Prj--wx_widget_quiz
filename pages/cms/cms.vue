@@ -41,6 +41,7 @@
 	import { quizNameDic, IQuiz } from '../../common/common';
 	import { ref, Ref } from 'vue';
 	import { onLoad } from '@dcloudio/uni-app';
+	import { getQuizListByType } from '../../service/service'
 
 	const quizList : Ref<Array<IQuiz>> = ref([]);
 	const dbName = ref('');
@@ -49,18 +50,9 @@
 	onLoad(async (evt : { quizType : string }) => {
 		dbName.value = evt.quizType;
 		uni.setNavigationBarTitle({ title: `${quizNameDic.get(evt.quizType)} 后台` });
-		const data : IQuiz[] = await getAllQuiz(evt.quizType);
-		quizList.value.push(...data);
+		const list : IQuiz[] = await getQuizListByType(evt.quizType);
+		quizList.value.push(...list);
 	});
-
-	// 获取全部题目
-	const getAllQuiz = async (quiz_type : string) => {
-		const rsp : any = await wx.cloud.callFunction({
-			name: 'getAllQuiz',
-			data: { quiz_type }
-		})
-		return rsp.result.data;
-	};
 
 	// 更新一条
 	const onUpdateOne = async (evt : any) => {
