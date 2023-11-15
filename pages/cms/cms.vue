@@ -110,17 +110,23 @@
 
 <style lang="scss">
 	page {
-		min-height: 100vh;
+		height: 100vh;
+		width: 100vw;
+		padding-bottom: env(safe-area-inset-bottom);
 
 		.first-chapter {
 			display: flex;
 			flex-direction: column;
 			align-items: center;
-			justify-content: center;
+			justify-content: flex-start;
+			height: 100vh;
+			width: 100vw;
+			overflow-y: auto;
+			padding-bottom: env(safe-area-inset-bottom);
 
 			.u-form {
 				width: 600rpx;
-				margin-bottom: 60rpx;
+				margin-bottom: 0;
 
 				.quiz {
 					margin-bottom: 40rpx;
