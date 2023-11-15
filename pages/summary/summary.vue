@@ -13,7 +13,9 @@
 			</view>
 			<button class='btn-primary' @click="restart">重做</button>
 		</view>
-		<view class="text-sm-grey mb10 mr30" style="align-self: flex-end;">( 点击列头可排序 )</view>
+
+		<view class="text-sm-grey mb10 mr20"
+			style="align-self: flex-end;">( 点击列头可排序 )</view>
 		<view class="card" style="padding-top: 25rpx;">
 			<uni-table stripe emptyText="正在计算...">
 				<uni-tr>

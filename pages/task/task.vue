@@ -19,7 +19,7 @@
 
 						<!-- 任务名字 -->
 						<u-textarea :customStyle="{marginLeft:'8px', width:'100px'}" class="task__input" autoHeight
-							v-model="item.name" placeholder="任务" @blur="onBlur">
+							v-model="item.name" placeholder="任务">
 						</u-textarea>
 
 						<!-- 选择优先级 -->
@@ -67,7 +67,7 @@
 								v-if="index !== list.length - 1">下</button>
 						</view>
 
-						<!-- 任务名字 -->
+						<!-- 复盘 -->
 						<u-textarea :customStyle="{marginLeft:'8px', width:'100px', marginRight:'20rpx'}"
 							class="task__input" autoHeight v-model="item.review" placeholder="复盘">
 						</u-textarea>

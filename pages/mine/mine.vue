@@ -10,6 +10,8 @@
 				</button>
 			</view>
 
+			<view v-if="loggedIn" class="text-sm-grey mr20 mt30" style="align-self: center;">用户名、头像可点击修改</view>
+
 			<u-line v-if="false" class="line" color="#dddddd"></u-line>
 
 			<view v-if="false" class="hbox" style="padding-top: 30rpx; justify-content: space-evenly;">
@@ -19,6 +21,8 @@
 				</view>
 			</view>
 		</view>
+
+
 
 		<view class="card">
 			<button plain class="hbox menu-btn" @click="onClickLike"

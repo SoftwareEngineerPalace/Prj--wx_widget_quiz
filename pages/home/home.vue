@@ -129,7 +129,6 @@
 
 	// 每次展示都会调用
 	onShow(() => {
-		console.log("home onShow");
 		initData();
 	})
 
@@ -275,13 +274,13 @@
 	const getFavoriteQuizList = async () => {
 		const list = await getFavoriteQuiz(curQuizType.value);
 		const favList = list.sort((a, b) => a.sn - b.sn);
-		console.log('getFavoriteQuizList', favList);
+		// console.log('getFavoriteQuizList', favList);
 		(getApp().globalData as any).favList = favList;
 	}
 
 	const getRanking = async () => {
 		const list = await getRankingList(curQuizType.value);
-		console.log("getRanking", list);
+		// console.log("getRanking", list);
 		(getApp().globalData as any).rankingList = list;
 	}
 
