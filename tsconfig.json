@@ -4,10 +4,11 @@
 			"@ttou/uview-typings/v26",
 			"@ttou/uview-typings/refs"
 		],
-		
+
 		"noImplicitAny": true,
 		"strictNullChecks": true,
 		"esModuleInterop": true,
+		"strict": true,
 		"lib": ["es2017", "dom"]
 	}
 }
