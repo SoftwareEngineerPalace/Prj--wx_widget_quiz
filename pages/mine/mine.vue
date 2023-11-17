@@ -22,8 +22,6 @@
 			</view>
 		</view>
 
-
-
 		<view class="card">
 			<button plain class="hbox menu-btn" @click="onClickLike"
 				style="padding:20rpx; justify-content: space-between; border-bottom: 1px solid #eeeeee;">
@@ -71,9 +69,10 @@
 
 			<!-- 3 后台 -->
 			<view class="mine__admin" v-if="adminVisible">
-				<button class="btn-primary mb20" @click="onCms" data-quizType="js">JavaScript 后台</button>
-				<button class="btn-primary mb20" @click="onCms" data-quizType="es6">ECMAScript 6 后台</button>
-				<button class="btn-primary mb20" @click="onCms" data-quizType="ts">TypeScript 后台</button>
+				<button class="btn-primary mb20" @click="onCms" data-quizType="js">阮一峰 JavaScript</button>
+				<button class="btn-primary mb20" @click="onCms" data-quizType="es6">阮一峰 ECMAScript 6</button>
+				<button class="btn-primary mb20" @click="onCms" data-quizType="ts">阮一峰 TypeScript</button>
+				<button class="btn-primary mb20" @click="onCms" data-quizType="effective_ts">Effective TypeScript</button>
 
 				<input class="mb20" placeholder="输入用户 id" v-model="userIdToDelete"
 					style="width: 100%; text-align: center;" />

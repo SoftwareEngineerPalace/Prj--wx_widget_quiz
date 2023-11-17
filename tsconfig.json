@@ -4,6 +4,7 @@
 			"@ttou/uview-typings/v26",
 			"@ttou/uview-typings/refs"
 		],
+		
 		"noImplicitAny": true,
 		"strictNullChecks": true,
 		"esModuleInterop": true,

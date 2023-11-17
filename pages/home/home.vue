@@ -5,9 +5,10 @@
 			<view class="hbox">
 				<u-image :show-loading="true" shape="circle" :src="logoUrl" width="140rpx" height="140rpx"></u-image>
 				<view class="vbox" style="width: 100%;">
+					<view class="text-primary mb10">当前题库</view>
 					<view class="hbox mb20" style="justify-content: center;">
 						<view class="text-primary" style="margin-right: 20rpx;">
-							{{`当前题库: ${quizNameDic.get(curQuizType)}`}}
+							{{`${quizNameDic.get(curQuizType)}`}}
 						</view>
 						<u-icon name="arrow-down-fill" :color="themeColor" size="25"></u-icon>
 					</view>
@@ -76,7 +77,7 @@
 	import { onShow, onLoad, onInit, onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
 	import { getQuizListByType, getErrorCollectonQuiz, getFavoriteQuiz, progressPostOrPut, getRankingList } from '../../service/service';
 
-	
+
 	const finishedQuizCount = ref(0);
 	const quizCount = ref(0);
 	const userOpenId = ref('');
@@ -256,7 +257,7 @@
 		latestQuizSn.value = latest_quiz_sn;
 		finishedQuizCount.value = finished_quiz_count;
 	}
-	
+
 	/** 上一个题目的序号 从 1 开始*/
 	const latestQuizSn = ref(0);
 

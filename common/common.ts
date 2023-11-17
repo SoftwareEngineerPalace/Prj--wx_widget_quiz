@@ -88,15 +88,20 @@ interface ICommenter {
 	id : string;
 }
 
+// 下面两对象应该合并
 const quizNameDic : Map<string, string> = new Map([
-	['js', "JavaScript"],
-	['es6', "ECMAScript 6"],
-	['ts', "TypeScript"]]
+	['js', "阮一峰 JavaScript"],
+	['es6', "阮一峰 ECMAScript"],
+	['ts', "阮一峰 TypeScript"],
+	['effective_ts', "Effective TypeScript"]]
 )
 
-const quizTypeArray = [{ value: 'js', label: "JavaScript" },
-{ value: 'es6', label: "ECMAScript 6" },
-{ value: 'ts', label: "TypeScript" }]
+const quizTypeArray = [
+	{ value: 'js', label: "阮一峰 JavaScript" },
+	{ value: 'es6', label: "阮一峰 ECMAScript 6" },
+	{ value: 'ts', label: "阮一峰 TypeScript" },
+	{ value: 'effective_ts', label: "Effective TypeScript" }
+]
 
 export {
 	loginInfo_default,

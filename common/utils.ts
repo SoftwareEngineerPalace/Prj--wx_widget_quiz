@@ -134,7 +134,6 @@ export {
 	ExerciseType,
 	generateUUID,
 	showToast,
-	quizNameDic,
 	checkSession,
 	quizTypeArray,
 	formatTime,
