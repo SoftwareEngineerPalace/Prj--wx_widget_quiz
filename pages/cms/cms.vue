@@ -58,8 +58,8 @@
 	const onUpdateOne = async (evt : any) => {
 		const id_to_update : string = evt.target.dataset.id;
 		const quiz = quizList.value.find((v : IQuiz) => v.id === id_to_update);
-		const sn = quizList.value.findIndex((v : IQuiz) => v.id === id_to_update);
-		const data = { ...quiz, dbName: dbName.value, sn: sn + 1 };
+		const index = quizList.value.findIndex((v : IQuiz) => v.id === id_to_update);
+		const data = { ...quiz, dbName: dbName.value, sn: index + 1 };
 		// console.log('onUpdateOne', data)
 		const rsp : any = await wx.cloud.callFunction({
 			name: 'updateQuiz',
@@ -80,9 +80,10 @@
 		const id_to_add : string = e.target.dataset.id;
 		const data = quizList.value.find((v : IQuiz) => v.id === id_to_add);
 		const index = quizList.value.findIndex((v : IQuiz) => v.id === id_to_add);
+		console.log("onAddOne", { id_to_add, data, index })
 		const rsp : any = await wx.cloud.callFunction({
 			name: 'addQuiz',
-			data: { ...data, init: false, dbName: dbName.value, index }
+			data: { ...data, init: false, dbName: dbName.value, sn: index + 1 }
 		})
 		const result = rsp.result?.errMsg === 'collection.add:ok';
 		if (result) {

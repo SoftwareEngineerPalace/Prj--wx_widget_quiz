@@ -267,6 +267,7 @@
 		curQuiz.value;
 		const sn = quizController.getCurQuizSN();
 		const count = quizController.getQuizCount();
+		console.log({ sn, count })
 		if (sn < 1 || count < 1) {
 			return '';
 		}
