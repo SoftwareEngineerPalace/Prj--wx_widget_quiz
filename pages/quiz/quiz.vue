@@ -391,11 +391,14 @@
 
 	/** 初始化时 更新评论区 */
 	const updateComment = async (quiz_id : string) => {
+		// console.log("updateComment", { quiz_id });
+		const quiz_type = quizType.value;
 		// 1 取出数据库数据
 		const rsp : any = await wx.cloud.callFunction({
 			name: 'getComments',
-			data: { quiz_id }
+			data: { quiz_id, quiz_type }
 		});
+		// console.log('updateComment getComments', { rsp })
 		if (rsp.result.length === 0) return;
 		const list = rsp.result;
 		// console.log('quiz updateComment', list);
