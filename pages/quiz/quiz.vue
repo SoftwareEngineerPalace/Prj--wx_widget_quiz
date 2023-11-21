@@ -69,7 +69,7 @@
 							{{_1stDepthCommentCount}}
 						</view>
 					</view>
-					<view class="hbox" style="width: auto;" @click="onComment">
+					<view class="hbox" style="width: auto;" @click="showCommentPopup">
 						<view class="text-sm primary-color">评论</view>&nbsp;
 						<!-- 这里颜色用的是主题色，要抽取出来, 作为变量 TODO -->
 						<u-icon name="edit-pen-fill" :color="themeColor" size="40"></u-icon>
@@ -105,7 +105,7 @@
 	</view>
 
 	<!-- 以后抽取出一个组件 -->
-	<u-popup :show="showCommentPopup" :custom-style="{ paddingBottom: commentPopupBottom}" mode="bottom"
+	<u-popup :show="commentPopupVisible" :custom-style="{ paddingBottom: commentPopupBottom}" mode="bottom"
 		@close="onCommentPopupClose" @open="onCommentPopupOpen" :close-on-click-overlay="true">
 		<view class="card">
 			<view class="hbox">
@@ -117,11 +117,27 @@
 			</view>
 		</view>
 	</u-popup>
+
+	<!-- 以后和上面组件合并 -->
+	<u-popup :show="editCommentPopupVisible" :custom-style="{ paddingBottom: commentPopupBottom}" mode="bottom"
+		@close="onEditCommentPopupClose" @open="onEditCommentPopupOpen" :close-on-click-overlay="true">
+		<view class="card">
+			<view class="hbox">
+				<u-textarea :show-confirm-bar="false" :focus="inputFocus" confirm-type="发送" :adjust-position="false"
+					v-model="edit_comment_value" :auto-height="true" class="text-primary mr30"
+					placeholder="编辑评论..."></u-textarea>
+				&nbsp;
+				<u-icon name="arrow-upward" :color="themeColor" size="40" @click="onConfirmEditComment"></u-icon>
+			</view>
+		</view>
+	</u-popup>
+
 	<!-- 以后抽取出一个组件 -->
-	<u-popup :show="showDeletePopup" mode="bottom" @close="onDeletePopupClose" @open="onDeletePopupOpen"
+	<u-popup :show="operationPopupVisible" mode="bottom" @close="onOperationPopupClose" @open="onOperationPopupOpen"
 		:close-on-click-overlay="true">
-		<view class="card" @click="onDeleteComment">
-			删除
+		<view class="card">
+			<button class="btn-sub mb30" style="width: 100%;" @click="toEditComment">编辑</button>
+			<button class="btn-sub" style="width: 100%;" @click="toDeleteComment">删除</button>
 		</view>
 	</u-popup>
 </template>
@@ -142,13 +158,24 @@
 	} from '@dcloudio/uni-app';
 
 	const themeColor = ref(getApp().globalData.themeColor)
-
 	const myAnswerTimes = ref(0);
 	const myCorrectTimes = ref(0);
 	const myWrongTimes = ref(0);
 	const allUserCorrectRate = ref(0);
 	const correctRateProportion = ref(100);
+	const quizType = ref("");        // 题目类型
+	const curExerciseType = ref("")  // 做题类型
+	const curQuiz = ref({} as IQuiz);// 当前题目的数据
+	const checkboxList = ref([]);    // 当前4个选项
+	const userAnswer = ref('');      // 用户的答案
+	const quizList = ref([]);
+	const commentPopupBottom = ref('');
+	const _1stDepthCommentCount = computed(() => commentListModel.value.length)
+	const inputFocus = ref();
+	// 关于删除弹窗
+	const operationPopupVisible = ref(false);
 
+	// 1 左右滑动切题
 	const startX = ref(0);
 	const startY = ref(0);
 	const readyToNext = ref(false);
@@ -181,6 +208,7 @@
 		readyToNext.value = readyToPrev.value = false;
 	}
 
+	// 2 分享
 	onShareAppMessage(() => {
 		return {
 			title: '软工题库',
@@ -197,18 +225,24 @@
 		};
 	})
 
-	const quizType = ref("");        // 题目类型
-	const curExerciseType = ref("")  // 做题类型
-	const curQuiz = ref({} as IQuiz);// 当前题目的数据
-	const checkboxList = ref([]);    // 当前4个选项
-	const userAnswer = ref('');      // 用户的答案
-	const quizList = ref([]);
-	const commentPopupBottom = ref('');
-	const _1stDepthCommentCount = computed(() => commentListModel.value.length)
-	const inputFocus = ref();
-	// 关于删除弹窗
-	const showDeletePopup = ref(false);
+	// 3 刷新当前题目题干
+	const title_str = computed(() => curQuiz.value.title ?? '');
+	const index_str = computed(() => {
+		curQuiz.value;
+		const sn = quizController.getCurQuizSN();
+		const count = quizController.getQuizCount();
+		// console.log({ sn, count })
+		if (sn < 1 || count < 1) {
+			return '';
+		}
+		if (curExerciseType.value === ExerciseType.Common) {
+			return sn !== 0 ? `${sn}/${count}.  ` : "";
+		} else {
+			return sn !== 0 ? `${sn}. ` : "";
+		}
+	})
 
+	// 4 初始化
 	onLoad(async (evt : { quizType : string, exerciseType : string, latest_quiz_index : number }) => {
 		// console.log('quiz onLoad');
 		const { exerciseType, latest_quiz_index } = evt;
@@ -256,115 +290,6 @@
 		commentPopupBottom.value = `${value.height}px`;
 	}
 
-	onUnload(() => {
-		uni.offKeyboardHeightChange(onKeyboardHeightChange);
-		quizController.setQuizList([]);
-	})
-
-	// 刷新当前题目题干 
-	const title_str = computed(() => curQuiz.value.title ?? '');
-	const index_str = computed(() => {
-		curQuiz.value;
-		const sn = quizController.getCurQuizSN();
-		const count = quizController.getQuizCount();
-		console.log({ sn, count })
-		if (sn < 1 || count < 1) {
-			return '';
-		}
-		if (curExerciseType.value === ExerciseType.Common) {
-			return sn !== 0 ? `${sn}/${count}.  ` : "";
-		} else {
-			return sn !== 0 ? `${sn}. ` : "";
-		}
-	})
-
-	const onClickOption = (evt : any) => {
-		const clicked_id = evt.target.dataset.id;
-		checkboxList.value.forEach((v : any) => {
-			if (v.id === clicked_id) {
-				if (!v.selected) v.scaleSmall = true;
-				v.selected = !v.selected;
-			}
-		})
-		const _userAnswer = checkboxList.value.filter((v : ICheckbox) => v.selected).map((v : ICheckbox) => v.id).join('');
-		userAnswer.value = _userAnswer;
-	};
-
-	const onSubmit = async () => {
-		// console.log("onSubmit");
-		curQuiz.value.submitted = true;
-		const token = uni.getStorageSync('token');
-		const isCorrect = curQuiz.value.answer === userAnswer.value;
-		const quiz_sn = quizController.getCurQuizSN();
-		const quizCount = quizController.getQuizCount();
-		const data = {
-			quiz_title: curQuiz.value.title,
-			quiz_id: curQuiz.value.id,
-			quizType: quizType.value,
-			token, isCorrect,
-			quiz_sn,
-			quiz_count: quizCount,
-			exerciseType: curExerciseType.value
-		};
-		// console.log('onSubmit data', data);
-		// data 里的 quiz_count 可能没用，待删
-		const { result } = await wx.cloud.callFunction({
-			name: 'answer',
-			data
-		});
-		// console.log("answer", result);
-		const { answer_times, correct_times, all_user_rate, all_user_answer_times, all_user_correct_times, correct_rate_proportion } = result;
-		myAnswerTimes.value = answer_times;
-		myWrongTimes.value = answer_times - correct_times;
-		allUserCorrectRate.value = all_user_rate;
-		correctRateProportion.value = correct_rate_proportion;
-	};
-
-	const resetStatistics = () => {
-		myAnswerTimes.value = 0;
-		myWrongTimes.value = 0;
-		allUserCorrectRate.value = 0;
-		correctRateProportion.value = 100;
-	}
-
-	const onPrev = () => {
-		const preQuiz = quizController.goPreview();
-		if (!preQuiz) {
-			uni.showToast({
-				title: "已是第一题"
-			})
-			return;
-		}
-		resetStatistics()
-
-		curQuiz.value = { ...preQuiz, submitted: false };
-		updateQuiz(curQuiz.value);
-	};
-
-	const onNext = () => {
-		const nextQuiz = quizController.goNext();
-		if (!nextQuiz) {
-			uni.showToast({
-				title: "已是最后一题"
-			})
-			return;
-		}
-		resetStatistics()
-
-		curQuiz.value = { ...nextQuiz, submitted: false };
-		updateQuiz(curQuiz.value);
-	};
-
-	const gotoSummary = () => {
-		const queryStr = queryString.stringify({ quizType: quizType.value });
-		const url = `/pages/summary/summary?${queryStr}`;
-		uni.redirectTo({ url })
-	}
-
-	const gotoHome = () => {
-		uni.navigateBack();
-	}
-
 	/** 初始化时，更新题目选项和评论区 */
 	const updateQuiz = (quiz : any) => {
 		updateOptions(quiz);
@@ -408,18 +333,159 @@
 		commentListModel.value = list;
 	}
 
-	// 下面是关于评论的
-	const showCommentPopup = ref(false);
+	onUnload(() => {
+		uni.offKeyboardHeightChange(onKeyboardHeightChange);
+		quizController.setQuizList([]);
+	})
+
+	// 5 做题
+	const onClickOption = (evt : any) => {
+		const clicked_id = evt.target.dataset.id;
+		checkboxList.value.forEach((v : any) => {
+			if (v.id === clicked_id) {
+				if (!v.selected) v.scaleSmall = true;
+				v.selected = !v.selected;
+			}
+		})
+		const _userAnswer = checkboxList.value.filter((v : ICheckbox) => v.selected).map((v : ICheckbox) => v.id).join('');
+		userAnswer.value = _userAnswer;
+	};
+
+	const onSubmit = async () => {
+		// console.log("onSubmit");
+		curQuiz.value.submitted = true;
+		const token = uni.getStorageSync('token');
+		const isCorrect = curQuiz.value.answer === userAnswer.value;
+		const quiz_sn = quizController.getCurQuizSN();
+		const quizCount = quizController.getQuizCount();
+		const data = {
+			quiz_title: curQuiz.value.title,
+			quiz_id: curQuiz.value.id,
+			quizType: quizType.value,
+			token, isCorrect,
+			quiz_sn,
+			quiz_count: quizCount,
+			exerciseType: curExerciseType.value
+		};
+		// console.log('onSubmit data', data);
+		// data 里的 quiz_count 可能没用，待删
+		const { result } = await wx.cloud.callFunction({
+			name: 'answer',
+			data
+		});
+		// console.log("answer", result);
+		const { answer_times, correct_times, all_user_rate, all_user_answer_times, all_user_correct_times, correct_rate_proportion } = result;
+		myAnswerTimes.value = answer_times;
+		myWrongTimes.value = answer_times - correct_times;
+		allUserCorrectRate.value = all_user_rate;
+		correctRateProportion.value = correct_rate_proportion;
+	};
+
+	// 6 下一题或上一题
+	const resetStatistics = () => {
+		myAnswerTimes.value = 0;
+		myWrongTimes.value = 0;
+		allUserCorrectRate.value = 0;
+		correctRateProportion.value = 100;
+	}
+
+	const onPrev = () => {
+		const preQuiz = quizController.goPreview();
+		if (!preQuiz) {
+			uni.showToast({
+				title: "已是第一题"
+			})
+			return;
+		}
+		resetStatistics()
+
+		curQuiz.value = { ...preQuiz, submitted: false };
+		updateQuiz(curQuiz.value);
+	};
+
+	const onNext = () => {
+		const nextQuiz = quizController.goNext();
+		if (!nextQuiz) {
+			uni.showToast({
+				title: "已是最后一题"
+			})
+			return;
+		}
+		resetStatistics()
+
+		curQuiz.value = { ...nextQuiz, submitted: false };
+		updateQuiz(curQuiz.value);
+	};
+
+	// 7 换页面
+	const gotoSummary = () => {
+		const queryStr = queryString.stringify({ quizType: quizType.value });
+		const url = `/pages/summary/summary?${queryStr}`;
+		uni.redirectTo({ url })
+	}
+
+	const gotoHome = () => {
+		uni.navigateBack();
+	}
+
+	// 8 下面是关于评论的
+
+	// 8.1 长按显示操作窗
+	const pendingOperateCommentId = ref(null);
+	const onCommentLongPress = async (comment : IComment) => {
+		const { commenter_id, exist } = comment;
+		const open_user_id = getApp().globalData.loginInfo.id;
+		if (!(comment.commenter_id === open_user_id && exist)) return; // 自己的且存在的才可以操作
+		pendingOperateCommentId.value = comment.id;
+		operationPopupVisible.value = true;
+	}
+	const commentPopupVisible = ref(false);
 	const comment_value = ref('');
 	const commentListModel = ref([]);
 
-	const onComment = () => {
+	const onOperationPopupClose = () => {
+		operationPopupVisible.value = false;
+	}
+
+	const onOperationPopupOpen = () => {
+		operationPopupVisible.value = true;
+	}
+
+	// 8.2 删除
+	const toDeleteComment = async () => {
+		operationPopupVisible.value = false;
+		// 1 删除内存数据
+		let list = toRaw(commentListModel.value);
+		const comment : IComment = findCommentById(list, pendingOperateCommentId.value);
+		// console.log('quiz onDeleteComment comment.content', comment.content);
+		// console.log('quiz onDeleteComment comment', comment); // 这有系统 bug
+		comment.content = words_deleted;
+		comment.time = new Date().toLocaleDateString();
+		comment.exist = false;
+		// 2 删除数据库数据
+		const rsp = await wx.cloud.callFunction({
+			name: 'commentUpdate',
+			data: { comment }
+		});
+	}
+
+	// 8.3 编辑
+	const toEditComment = async () => {
+		operationPopupVisible.value = false;
+		editCommentPopupVisible.value = true;
+		let list = toRaw(commentListModel.value);
+		const comment : IComment = findCommentById(list, pendingOperateCommentId.value);
+		edit_comment_value.value = comment.content;
+	}
+
+	// 8.4 打开评论输入窗
+	const showCommentPopup = () => {
 		commentToReply.value = null;
-		showCommentPopup.value = true;
+		commentPopupVisible.value = true;
 	}
 
 	const onCommentPopupClose = () => {
-		showCommentPopup.value = false;
+		commentPopupVisible.value = false;
 		inputFocus.value = false;
 	}
 
@@ -427,19 +493,48 @@
 		inputFocus.value = true;
 	}
 
-	/** 要回复的评论 vo */
+	/** 要回复的评论 vo，作用是新评论加上 parent_id */
 	const commentToReply = ref(null);
+	// 8.5 点击回复，从子组件中发出的
 	const onReplyComment = async (comment : IComment) => {
-		if (!comment.exist) return; // 已被删除 ，则跳过
+		if (!comment.exist) return; // 已被删除，则跳过
 		commentToReply.value = comment;
-		showCommentPopup.value = true;
+		commentPopupVisible.value = true;
 	}
 
+	const editCommentPopupVisible = ref(false);
+	const edit_comment_value = ref('');
+
+	const onEditCommentPopupOpen = () => {
+
+	}
+	const onEditCommentPopupClose = () => {
+		editCommentPopupVisible.value = false;
+	}
+	const onConfirmEditComment = async () => {
+		editCommentPopupVisible.value = false;
+
+		// 1 更新内存
+		let list = toRaw(commentListModel.value);
+		const comment : IComment = findCommentById(list, pendingOperateCommentId.value);
+		// console.log('quiz onConfirmEditComment comment.content', comment.content);
+		// console.log('quiz onConfirmEditComment comment', comment); // 这有系统 bug
+		comment.content = edit_comment_value.value;
+		comment.time = new Date().toLocaleDateString();
+
+		// 2 更新数据库数据
+		const rsp = await wx.cloud.callFunction({
+			name: 'commentUpdate',
+			data: { comment }
+		});
+	}
+
+	// 8.6 新评论确认
 	const onConfirmComment = async (e) => {
 		// 1 清空 popup
 		const commentValue : string = comment_value.value;
 		comment_value.value = '';
-		showCommentPopup.value = false;
+		commentPopupVisible.value = false;
 
 		if (!commentValue) {
 			uni.showToast({
@@ -473,7 +568,7 @@
 			user_ids_like: []
 		}
 
-		// 4 新的评论 UI 数据'
+		// 4 新的评论 UI 数据
 		if (!parent_id) {
 			// 放到第一层
 			commentListModel.value.push(comment);
@@ -496,7 +591,7 @@
 		})
 	}
 
-	// 下面关于收藏
+	// 9 下面关于收藏
 	const toggleFavorite = async () => {
 		// console.log('题目当前 favorite 是', curQuiz.value.favorite);
 		// 1 更新当前按钮
@@ -514,46 +609,11 @@
 		quizController.updateFavorite(curQuiz.value.id, favorite);
 	}
 
-	// ---- 下面关于评论的删除 ------
-	const onDeletePopupClose = () => {
-		showDeletePopup.value = false;
-	}
-
-	const onDeletePopupOpen = () => {
-		showDeletePopup.value = true;
-	}
-
-	// 要删除的评论 id
-	const commentIdToBeDeleted = ref(null);
-	const onCommentLongPress = async (comment : IComment) => {
-		const { commenter_id, exist } = comment;
-		const open_user_id = getApp().globalData.loginInfo.id;
-		if (!(comment.commenter_id === open_user_id && exist)) return; // 自己的且存在的才可以被删
-		commentIdToBeDeleted.value = comment.id;
-		showDeletePopup.value = true;
-	}
-
-	const onDeleteComment = async () => {
-		showDeletePopup.value = false;
-		// 1 删除内存数据
-		let list = toRaw(commentListModel.value);
-		const comment : IComment = findCommentById(list, commentIdToBeDeleted.value);
-		// console.log('quiz onDeleteComment comment.content', comment.content);
-		// console.log('quiz onDeleteComment comment', comment); // 这有系统 bug
-		comment.content = words_deleted;
-		comment.time = new Date().toLocaleDateString();
-		comment.exist = false;
-		// 2 删除数据库数据
-		const rsp = await wx.cloud.callFunction({
-			name: 'commentUpdate',
-			data: { comment }
-		});
-	}
-
+	// 关于点赞
 	const onLikeClicked = async (vo) => {
 		// 为什么必须要有下两行代码
-		showDeletePopup.value = true;
-		showDeletePopup.value = false;
+		operationPopupVisible.value = true;
+		operationPopupVisible.value = false;
 		const { commentId, commenterId, liked } = vo;
 		const myUserId = getApp().globalData.loginInfo.id;
 		// 自己不可以给自己点赞
