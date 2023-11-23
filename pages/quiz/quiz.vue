@@ -257,15 +257,16 @@
 		// 3 设置键盘
 		uni.onKeyboardHeightChange(onKeyboardHeightChange);
 
-		// 4 加载所有题目 这个太垃圾了 得重构
+		// 4 把 list 和 index 设置进 quizController
 		initQuizListAndIndex(exerciseType, parseInt(latest_quiz_index));
 
-		// 渲染下一题
+		// 5 渲染下一题
 		initNextQuiz();
 	});
 
 	const initQuizListAndIndex = (exerciseType : string, latest_quiz_index : number) => {
 		let list : IQuiz[];
+		// 下面这个得优化
 		if (exerciseType === ExerciseType.Common) {
 			list = (getApp().globalData as any).quizList;
 		} else if (exerciseType === ExerciseType.ErrCollection) {

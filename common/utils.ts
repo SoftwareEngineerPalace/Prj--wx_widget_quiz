@@ -64,7 +64,6 @@ const checkSession = () => {
 const findCommentById = (comments : IComment[], targetId : string) => {
 	for (let i = 0, len = comments.length; i < len; i++) {
 		const target = preOrder(comments[i], targetId);
-		// console.log('findCommentById target', target)
 		if (target) {
 			return target;
 		}
@@ -112,7 +111,6 @@ const underlineToCamel = (underline : unknown) => {
 		return [key, underline[v]];
 	})
 	const result = Object.fromEntries(list);
-	console.log('underlineToCamel', result);
 	return result;
 }
 
