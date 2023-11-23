@@ -105,19 +105,19 @@ const traversal = (comment : IComment) => {
 	}
 }
 
-const underlineToCamel = (underline : unknown) => {
-	const list = Object.keys(underline).map((v : string) => {
+const underlineToCamel = (objWithUnderscoredProps : { [index : string] : unknown }) => {
+	const list = Object.keys(objWithUnderscoredProps).map((v : string) => {
 		const key = v.split('_').map((str : string, index : number) => index === 0 ? str : str.charAt(0).toUpperCase() + str.slice(1)).join('');
-		return [key, underline[v]];
+		return [key, objWithUnderscoredProps[v]];
 	})
 	const result = Object.fromEntries(list);
 	return result;
 }
 
-const camelToUnderline = (camel : unknown) => {
-	const list = Object.keys(camel).map((v : string) => {
+const camelToUnderline = (objWithCamelProps : { [index : string] : unknown }) => {
+	const list = Object.keys(objWithCamelProps).map((v : string) => {
 		const key = v.replace(/[A-Z]/g, (match) => `_${match.toLowerCase()}`).toLowerCase()
-		return [key, camel[v]];
+		return [key, objWithCamelProps[v]];
 	})
 	const result = Object.fromEntries(list);
 	return result;

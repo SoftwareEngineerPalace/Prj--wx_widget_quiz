@@ -323,18 +323,14 @@
 
 	/** 初始化时 更新评论区 */
 	const updateComment = async (quiz_id : string) => {
-		// console.log("updateComment", { quiz_id });
 		const quiz_type = quizType.value;
 		// 1 取出数据库数据
 		const rsp : any = await wx.cloud.callFunction({
 			name: 'getComments',
 			data: { quiz_id, quiz_type }
 		});
-		// console.log('updateComment getComments', { rsp })
 		if (rsp.result.length === 0) return;
 		const list = rsp.result;
-		// console.log('quiz updateComment', list);
-		// 2 把 name 和 url 赋到 commenter_name 和 commenter_url 上
 		addCommenterParam(list);
 		// 3 数据 model
 		commentListModel.value = list;
@@ -369,13 +365,12 @@
 			quiz_title: curQuiz.value.title,
 			quiz_id: curQuiz.value.id,
 			quizType: quizType.value,
-			token, isCorrect,
+			token,
+			isCorrect,
 			quiz_sn,
 			quiz_count: quizCount,
 			exerciseType: curExerciseType.value
 		};
-		// console.log('onSubmit data', data);
-		// data 里的 quiz_count 可能没用，待删
 		const { result } = await wx.cloud.callFunction({
 			name: 'answer',
 			data
