@@ -86,7 +86,8 @@
 		<view class="quiz-wrapper__group-bottom">
 			<!-- 1 上一题 -->
 			<button class="btn-sub w200" v-text="'上一题'"
-				:style="{visibility:quizController.getCurQuizIndex() > 0?'visible':'hidden'}" @click="onPrev"></button>
+				:style="{visibility:quizController.getCurQuizIndex() > 0?'visible':'hidden'}"
+				@click="initPrevQuiz"></button>
 			<!-- 2 收藏 -->
 			<view class="group-fav" @click="toggleFavorite">
 				<u-icon :name="curQuiz.favorite?'star-fill':'star'" :color="curQuiz.favorite?themeColor:'0xbbbbbb'"
@@ -100,7 +101,7 @@
 			</button>
 			<!-- 3 下一题 -->
 			<button class="btn-sub w200" v-text="'下一题'"
-				:style="{visibility:quizController.hasNext()?'visible':'hidden'}" @click="onNext"></button>
+				:style="{visibility:quizController.hasNext()?'visible':'hidden'}" @click="initNextQuiz"></button>
 		</view>
 	</view>
 
@@ -168,7 +169,6 @@
 	const curQuiz = ref({} as IQuiz);// 当前题目的数据
 	const checkboxList = ref([]);    // 当前4个选项
 	const userAnswer = ref('');      // 用户的答案
-	const quizList = ref([]);
 	const commentPopupBottom = ref('');
 	const _1stDepthCommentCount = computed(() => commentListModel.value.length)
 	const inputFocus = ref();
@@ -200,10 +200,10 @@
 
 	const onTouchEnd = () => {
 		if (readyToNext.value) {
-			onNext()
+			initNextQuiz()
 		}
 		if (readyToPrev.value) {
-			onPrev()
+			initPrevQuiz()
 		}
 		readyToNext.value = readyToPrev.value = false;
 	}
@@ -254,8 +254,18 @@
 		const title : string = quizNameDic.get(evt.quizType) as string;
 		uni.setNavigationBarTitle({ title });
 
-		// 3 加载所有题目 这个太垃圾了 得重构
-		let list : IQuiz[] = [];
+		// 3 设置键盘
+		uni.onKeyboardHeightChange(onKeyboardHeightChange);
+
+		// 4 加载所有题目 这个太垃圾了 得重构
+		initQuizListAndIndex(exerciseType, parseInt(latest_quiz_index));
+
+		// 渲染下一题
+		initNextQuiz();
+	});
+
+	const initQuizListAndIndex = (exerciseType : string, latest_quiz_index : number) => {
+		let list : IQuiz[];
 		if (exerciseType === ExerciseType.Common) {
 			list = (getApp().globalData as any).quizList;
 		} else if (exerciseType === ExerciseType.ErrCollection) {
@@ -274,16 +284,12 @@
 			}, 1000)
 			return;
 		}
-		quizList.value.push(...list);
+		// list
 		quizController.setQuizList(list);
 
-		// 加载做题进度
-		quizController.setCurQuizIndex(parseInt(latest_quiz_index));
-
-		onNext();
-
-		uni.onKeyboardHeightChange(onKeyboardHeightChange);
-	});
+		// index
+		quizController.setCurQuizIndex(latest_quiz_index);
+	}
 
 	const onKeyboardHeightChange = (value) => {
 		// console.log('onKeyboardHeightChange', value);
@@ -381,15 +387,14 @@
 		correctRateProportion.value = correct_rate_proportion;
 	};
 
-	// 6 下一题或上一题
-	const resetStatistics = () => {
+	const resetCurQuizStat = () => {
 		myAnswerTimes.value = 0;
 		myWrongTimes.value = 0;
 		allUserCorrectRate.value = 0;
 		correctRateProportion.value = 100;
 	}
 
-	const onPrev = () => {
+	const initPrevQuiz = () => {
 		const preQuiz = quizController.goPreview();
 		if (!preQuiz) {
 			uni.showToast({
@@ -397,13 +402,13 @@
 			})
 			return;
 		}
-		resetStatistics()
+		resetCurQuizStat();
 
 		curQuiz.value = { ...preQuiz, submitted: false };
 		updateQuiz(curQuiz.value);
 	};
 
-	const onNext = () => {
+	const initNextQuiz = () => {
 		const nextQuiz = quizController.goNext();
 		if (!nextQuiz) {
 			uni.showToast({
@@ -411,7 +416,7 @@
 			})
 			return;
 		}
-		resetStatistics()
+		resetCurQuizStat();
 
 		curQuiz.value = { ...nextQuiz, submitted: false };
 		updateQuiz(curQuiz.value);
@@ -441,6 +446,7 @@
 	}
 	const commentPopupVisible = ref(false);
 	const comment_value = ref('');
+	// TODO 最好用 class 来定义，对于可变的数据记录，最好用 class 类定义
 	const commentListModel = ref([]);
 
 	const onOperationPopupClose = () => {
@@ -456,6 +462,8 @@
 		operationPopupVisible.value = false;
 		// 1 删除内存数据
 		let list = toRaw(commentListModel.value);
+
+		// 这里应该封装一个 set 函数
 		const comment : IComment = findCommentById(list, pendingOperateCommentId.value);
 		// console.log('quiz onDeleteComment comment.content', comment.content);
 		// console.log('quiz onDeleteComment comment', comment); // 这有系统 bug
